@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	
 	final static String TABLE_DOCUMENT_DETAILS = "document_details";
+	final static String TABLE_AUTHORS = "authors";
+	
 	final static String _ID = "_id";
 	final static String TYPE = "type";
 	final static String MONTH = "month";
@@ -20,6 +22,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final static String TITLE = "title";
 	final static String REVISION = "revision";
 	final static String IDENTIFIERS  = "identifiers";   //MAP
+	final static String PMID  = "pmid";   //MAP
+	final static String DOI  = "doi";   //MAP
+	final static String ISSN  = "issn";   //MAP
 	final static String ABSTRACT = "abstract";
 	final static String PROFILE_ID = "profile_id";
 	final static String AUTHORS = "authors";        //ARRAY
@@ -39,24 +44,32 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final static String STARRED = "starred";
 	final static String AUTHORED = "authored";
 	final static String CONFIRMED = "confirmed";
-	final static String HIDDEN = "hidden";
+	final static String HIDDEN = "hidden";	
+	final static String DOC_DETAILS_ID = "doc_details_id";
+	final static String AUTHOR_NAME = "author_name";
 	
 	
 	final static String[] document_details_columns = { _ID, TYPE, MONTH, YEAR, LAST_MODIFIED, DAY, GROUP_ID, SOURCE, TITLE, REVISION, IDENTIFIERS, ABSTRACT, PROFILE_ID, AUTHORS, ADDED, PAGES, VOLUME, ISSUE, WEBSITE, PUBLISHER, CITY, EDITION, INSTITUTION, SERIES, CHAPTER, EDITORS, READ, STARRED, AUTHORED, CONFIRMED, HIDDEN};
 
+	final private static String CREATE_TABLE_AUTHORS = "CREATE TABLE authors (" + DOC_DETAILS_ID + " TEXT, "
+			+ AUTHOR_NAME + " TEXT, PRIMARY KEY (" + DOC_DETAILS_ID +","+ AUTHOR_NAME +" ) ) ";
+	
+	
 	final private static String CREATE_TABLE_DOCUMENT_DETAILS =
 
 	"CREATE TABLE document_details (" + _ID + " TEXT PRIMARY KEY, "
 			+ TYPE + " TEXT, "
-			+ MONTH + " INTEGER, "
-			+ YEAR + " INTEGER, "
+			+ MONTH + " TEXT, "
+			+ YEAR + " TEXT, "
 			+ LAST_MODIFIED + " TEXT, "
-			+ DAY + " INTEGER, "
+			+ DAY + " TEXT, "
 			+ GROUP_ID + " TEXT, "
 			+ SOURCE + " TEXT, "
 			+ TITLE + " TEXT, "
 			+ REVISION + " TEXT, "
-			+ IDENTIFIERS + " TEXT, "
+			+ PMID + " TEXT, "
+			+ DOI + " TEXT, "
+			+ ISSN + " TEXT, "
 			+ ABSTRACT + " TEXT, "
 			+ PROFILE_ID + " TEXT, "
 			+ AUTHORS + " TEXT, "
@@ -70,7 +83,6 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			+ EDITION + " TEXT, "
 			+ INSTITUTION + " TEXT, "
 			+ SERIES + " TEXT, "
-			+ CHAPTER + " TEXT, "
 			+ EDITORS + " TEXT, "
 			+ READ + " TEXT, "
 			+ STARRED + " TEXT, "
@@ -80,18 +92,19 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			
 			
 			
-	final private static String NAME = "Mendeley_library.db";
+	final private static String DATABASE_NAME = "Mendeley_library.db";
 	final private static Integer VERSION = 1;
 	final private Context mContext;
 
 	public DatabaseOpenHelper(Context context) {
-		super(context, NAME, null, VERSION);
+		super(context, DATABASE_NAME, null, VERSION);
 		this.mContext = context;
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE_TABLE_DOCUMENT_DETAILS);
+		db.execSQL(CREATE_TABLE_AUTHORS);
 	}
 
 	@Override
@@ -100,7 +113,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	}
 
 	void deleteDatabase() {
-		mContext.deleteDatabase(NAME);
+		mContext.deleteDatabase(DATABASE_NAME);
 	}
 }
 

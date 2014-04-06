@@ -1,35 +1,27 @@
 package com.android.mendeleypaperreader;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.os.Build;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
+import com.android.mendeleypaperreader.utl.GetAccessToken;
+import com.android.mendeleypaperreader.utl.Globalconstant;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -45,7 +37,9 @@ public class MainActivity extends Activity {
 	  private static String TOKEN_URL ="https://api-oauth2.mendeley.com/oauth/token";
 	  private static String OAUTH_URL ="https://api-oauth2.mendeley.com/oauth/authorize?";
 	  private static String OAUTH_SCOPE="all";
-	  //Change the Scope as you need
+	  private GetAccessToken jParser = new GetAccessToken();
+	  
+	 
 	  WebView web;
 	  Button auth;
 	  SharedPreferences pref;
@@ -54,6 +48,7 @@ public class MainActivity extends Activity {
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.activity_main);
+	   
 	    pref = getSharedPreferences("AppPref", MODE_PRIVATE);
 
 	    
@@ -63,7 +58,7 @@ public class MainActivity extends Activity {
 	      Dialog auth_dialog;
 	      @Override 
 	      public void onClick(View arg0) {
-	    	  
+
 	        auth_dialog = new Dialog(MainActivity.this);
 	        auth_dialog.setContentView(R.layout.webviewoauth);
 	        web = (WebView)auth_dialog.findViewById(R.id.webview);
@@ -72,6 +67,7 @@ public class MainActivity extends Activity {
 	        web.setWebViewClient(new WebViewClient() {
 	              boolean authComplete = false;
 	              Intent resultIntent = new Intent();
+	             
 	              @Override
 	              public void onPageStarted(WebView view, String url, Bitmap favicon){
 	               super.onPageStarted(view, url, favicon);
@@ -88,10 +84,9 @@ public class MainActivity extends Activity {
 	                      resultIntent.putExtra("code", authCode);
 	                      MainActivity.this.setResult(Activity.RESULT_OK, resultIntent);
 	                      setResult(Activity.RESULT_CANCELED, resultIntent);
-	                      SharedPreferences.Editor edit = pref.edit();
-	                      edit.putString("Code", authCode);
-	                      edit.commit();
-	                      auth_dialog.dismiss();
+	                      //save access code in shared preferences
+	                      jParser.savePreferences(getApplicationContext(), "Code",authCode, Globalconstant.shared_file_name);
+	                      //auth_dialog.dismiss();
 	                      new TokenGet().execute();
 	                     
 	                      //TODO Fazer aqui o carregamento dos dados no primeiro acesso e validação 
@@ -99,6 +94,8 @@ public class MainActivity extends Activity {
 	                      //     Talvez criar uma variavel na shared preferences para controlar a estado da bd
 	                      // 	Nova class que carega os dados do livraria
 	                      
+	                      Intent options = new Intent(getApplicationContext(), MainMenuActivity.class);
+	                      startActivity(options);
 	                      
 	                      Toast.makeText(getApplicationContext(),"Authorization Code is: " +authCode, Toast.LENGTH_SHORT).show();
 	                  }else if(url.contains("error=access_denied")){
@@ -107,12 +104,11 @@ public class MainActivity extends Activity {
 	                      authComplete = true;
 	                      setResult(Activity.RESULT_CANCELED, resultIntent);
 	                    Toast.makeText(getApplicationContext(), "Error Occured", Toast.LENGTH_SHORT).show();
-	                      auth_dialog.dismiss();
+	                      //auth_dialog.dismiss();
 	                  }
 	              }
 	          });
 	        auth_dialog.show();
-	        auth_dialog.setTitle("Authorize Mendley");
 	        auth_dialog.setCancelable(true);
 	      }
 	    });
@@ -144,7 +140,7 @@ public class MainActivity extends Activity {
 	             pDialog.setMessage("Contacting Mendeley ...");
 	             pDialog.setIndeterminate(false);
 	             pDialog.setCancelable(true);
-	             Code = pref.getString("Code", "");
+	             Code =  jParser.LoadPreference(getApplicationContext(), "Code", Globalconstant.shared_file_name);
 	             pDialog.show();
 	         }
 	         @Override
@@ -158,16 +154,19 @@ public class MainActivity extends Activity {
 	              pDialog.dismiss();
 	              if (json != null){
 	               try {
-	              String tok = json.getString("access_token");
-	            String expire = json.getString("expires_in");
-	            String refresh = json.getString("refresh_token");
-	                 Log.d("Token Access", tok);
-	                 Log.d("Expire", expire);
-	                 Log.d("Refresh", refresh);
-	                   auth.setText("Authenticated");
-	                  // Access.setText("Access Token:"+tok+"nExpires:"+expire+"nRefresh Token:"+refresh);
+	            	   	String tok = json.getString("access_token");
+	            	   	String expire = json.getString("expires_in");
+	            	   	String refresh = json.getString("refresh_token");
+	            	   	
+	            	    //Save access token in shared preferences
+	            	   	jParser.savePreferences(getApplicationContext(), "access_token", json.getString("access_token"), Globalconstant.shared_file_name);
+	                    
+	            	   	Log.d("Token Access", tok);
+	            	   	Log.d("Expire", expire);
+	            	   	Log.d("Refresh", refresh);
+	            	   
 	          } catch (JSONException e) {
-	            // TODO Auto-generated catch block
+	            
 	            e.printStackTrace();
 	          }
 	                    }else{
