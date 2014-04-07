@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    
+    <LinearLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:background="@drawable/gradient_bg_list">   
+    
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:paddingLeft="8dp"
+        android:textAlignment="center"
+        android:text="@string/my_library" />
+    
+    </LinearLayout>
+    
+    
+    
+    
+    <fragment android:name="com.android.mendeleypaperreader.MainMenuActivityFragmentList"
+        android:id="@+id/titles"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FF0000"
+        tools:layout="@layout/activity_main_menu_list" />
+
+   
+
+</LinearLayout>
