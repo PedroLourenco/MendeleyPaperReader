@@ -1,9 +1,14 @@
 package com.android.mendeleypaperreader.db;
 
+import com.android.mendeleypaperreader.MainMenuActivityFragmentDetails;
+import com.android.mendeleypaperreader.utl.Globalconstant;
+
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 
 /**
@@ -21,6 +26,8 @@ public class MendeleyDataSource {
 
 	
 
+
+	
 	public MendeleyDataSource(Context context) {
 		mendeley_library = new DatabaseOpenHelper(context);	
 	}
@@ -95,7 +102,17 @@ public class MendeleyDataSource {
 	public void delete_author_table_by_doc_id(String doc_id){
 		db.delete(DatabaseOpenHelper.TABLE_AUTHORS, "UPPER(" + DatabaseOpenHelper.DOC_DETAILS_ID + ") = UPPER(?)",
 				new String[] { doc_id });
+	}
+	
+	
+	public Cursor get_all_titles_doc(){
 		
+		Cursor cursor = this.db.rawQuery(
+				"select " + DatabaseOpenHelper.TITLE + " as _id, " + DatabaseOpenHelper.AUTHORS +", " + DatabaseOpenHelper.SOURCE + "|| " + DatabaseOpenHelper.YEAR + " as data from "
+						+ DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS + " order by " + DatabaseOpenHelper.TITLE + " ASC",
+				new String[] {});
+		
+		return cursor;
 		
 		
 	}

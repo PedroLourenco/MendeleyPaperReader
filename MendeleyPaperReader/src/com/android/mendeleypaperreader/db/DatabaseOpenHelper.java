@@ -22,9 +22,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final static String TITLE = "title";
 	final static String REVISION = "revision";
 	final static String IDENTIFIERS  = "identifiers";   //MAP
-	final static String PMID  = "pmid";   //MAP
-	final static String DOI  = "doi";   //MAP
-	final static String ISSN  = "issn";   //MAP
+	final static String PMID  = "pmid";   
+	final static String DOI  = "doi";   
+	final static String ISSN  = "issn";   
 	final static String ABSTRACT = "abstract";
 	final static String PROFILE_ID = "profile_id";
 	final static String AUTHORS = "authors";        //ARRAY
@@ -50,6 +50,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	
 	
 	final static String[] document_details_columns = { _ID, TYPE, MONTH, YEAR, LAST_MODIFIED, DAY, GROUP_ID, SOURCE, TITLE, REVISION, IDENTIFIERS, ABSTRACT, PROFILE_ID, AUTHORS, ADDED, PAGES, VOLUME, ISSUE, WEBSITE, PUBLISHER, CITY, EDITION, INSTITUTION, SERIES, CHAPTER, EDITORS, READ, STARRED, AUTHORED, CONFIRMED, HIDDEN};
+	final static String[] document_titles_columns = {TITLE, AUTHORS, SOURCE, YEAR};
 
 	final private static String CREATE_TABLE_AUTHORS = "CREATE TABLE authors (" + DOC_DETAILS_ID + " TEXT, "
 			+ AUTHOR_NAME + " TEXT, PRIMARY KEY (" + DOC_DETAILS_ID +","+ AUTHOR_NAME +" ) ) ";

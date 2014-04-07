@@ -4,24 +4,20 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="2dip" >
- 
-    <!--  ListRow Left sied Thumbnail image -->
-    <LinearLayout android:id="@+id/thumbnail"
+
+    <LinearLayout
+        android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="3dip"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dip">
- 
+        android:layout_marginRight="5dip"
+        android:padding="3dip" >
+
         <ImageView
             android:id="@+id/list_image"
             android:layout_width="30dip"
             android:layout_height="30dip"
-            android:src="@drawable/alldocuments"/>
- 
-   
- 
-    <!-- Title Of Song-->
+            android:src="@drawable/alldocuments" />
 
         <TextView
             android:id="@+id/title"
@@ -33,15 +29,14 @@
             android:textSize="15sp"
             android:textStyle="bold"
             android:typeface="sans" />
- 
-  </LinearLayout>
-     <!-- Rightend Arrow -->
-     <ImageView 
-         android:layout_width="30dip"
-         android:layout_height="30dip"
-        android:src="@drawable/arrow"
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="30dip"
+        android:layout_height="30dip"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:padding="8dp"/>
- 
+        android:padding="8dp"
+        android:src="@drawable/arrow" />
+
 </RelativeLayout>

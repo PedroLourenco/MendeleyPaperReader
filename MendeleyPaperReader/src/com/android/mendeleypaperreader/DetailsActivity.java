@@ -5,9 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 /**
- * This activity displays the details using a DetailsFragment. This activity is started
- * by a TitlesFragment when a title in the list is selected.
- * The activity is used only if a DetailsFragment is not on the screen.
+ * This activity displays the details using a MainMenuActivityFragmentDetails. This activity is started
+ * by a MainMenuActivityFragmentList when a title in the list is selected.
+ * The activity is used only if a MainMenuActivityFragmentDetails is not on the screen.
  */
 
 public class DetailsActivity extends FragmentActivity {
