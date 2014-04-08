@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
 	      @Override 
 	      public void onClick(View arg0) {
 
-	        auth_dialog = new Dialog(MainActivity.this);
+	    	  auth_dialog = new Dialog(MainActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 	        auth_dialog.setContentView(R.layout.webviewoauth);
 	        web = (WebView)auth_dialog.findViewById(R.id.webview);
 	        web.getSettings().setJavaScriptEnabled(true);

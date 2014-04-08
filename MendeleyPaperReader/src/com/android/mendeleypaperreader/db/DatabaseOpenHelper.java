@@ -10,6 +10,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	
 	final static String TABLE_DOCUMENT_DETAILS = "document_details";
 	final static String TABLE_AUTHORS = "authors";
+	final static String TABLE_FOLDERS = "folders";
 	
 	final static String _ID = "_id";
 	final static String TYPE = "type";
@@ -47,6 +48,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final static String HIDDEN = "hidden";	
 	final static String DOC_DETAILS_ID = "doc_details_id";
 	final static String AUTHOR_NAME = "author_name";
+	final static String FOLDER_ID = "folder_id";
+	final static String FOLDER_NAME = "folder_name";
 	
 	
 	final static String[] document_details_columns = { _ID, TYPE, MONTH, YEAR, LAST_MODIFIED, DAY, GROUP_ID, SOURCE, TITLE, REVISION, IDENTIFIERS, ABSTRACT, PROFILE_ID, AUTHORS, ADDED, PAGES, VOLUME, ISSUE, WEBSITE, PUBLISHER, CITY, EDITION, INSTITUTION, SERIES, CHAPTER, EDITORS, READ, STARRED, AUTHORED, CONFIRMED, HIDDEN};
@@ -55,6 +58,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final private static String CREATE_TABLE_AUTHORS = "CREATE TABLE authors (" + DOC_DETAILS_ID + " TEXT, "
 			+ AUTHOR_NAME + " TEXT, PRIMARY KEY (" + DOC_DETAILS_ID +","+ AUTHOR_NAME +" ) ) ";
 	
+	final private static String CREATE_TABLE_FOLDERS = "CREATE TABLE folders (" + FOLDER_ID + " TEXT, "
+			+ FOLDER_NAME + " TEXT, PRIMARY KEY (" + FOLDER_ID + ") ) ";
 	
 	final private static String CREATE_TABLE_DOCUMENT_DETAILS =
 
@@ -106,6 +111,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE_TABLE_DOCUMENT_DETAILS);
 		db.execSQL(CREATE_TABLE_AUTHORS);
+		db.execSQL(CREATE_TABLE_FOLDERS);
 	}
 
 	@Override

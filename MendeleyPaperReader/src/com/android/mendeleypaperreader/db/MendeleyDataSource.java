@@ -98,6 +98,17 @@ public class MendeleyDataSource {
 		db.insert(DatabaseOpenHelper.TABLE_AUTHORS, null, insert_author_value);
 	}
 	
+	public void insert_user_folders(String folder_id, String folder_name){
+		
+		ContentValues insert_author_value = new ContentValues();
+		
+		insert_author_value.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
+		insert_author_value.put(DatabaseOpenHelper.FOLDER_NAME, folder_name);
+		
+		db.insert(DatabaseOpenHelper.TABLE_AUTHORS, null, insert_author_value);
+	}
+	
+	
 	
 	public void delete_author_table_by_doc_id(String doc_id){
 		db.delete(DatabaseOpenHelper.TABLE_AUTHORS, "UPPER(" + DatabaseOpenHelper.DOC_DETAILS_ID + ") = UPPER(?)",
