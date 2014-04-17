@@ -4,11 +4,11 @@
     android:orientation="horizontal" >
 
     
-    <fragment class="com.android.mendeleypaperreader.MainMenuActivityFragmentList"
+     <fragment class="com.android.mendeleypaperreader.MainMenuActivityFragmentList"
             android:id="@+id/titles" android:layout_weight="1"
             android:layout_width="0dp" android:layout_height="match_parent" />
-
-    <FrameLayout android:id="@+id/details" android:layout_weight="1"
+    
+       <FrameLayout android:id="@+id/details" android:layout_weight="1"
             android:layout_width="0dp" android:layout_height="match_parent"
             />
 

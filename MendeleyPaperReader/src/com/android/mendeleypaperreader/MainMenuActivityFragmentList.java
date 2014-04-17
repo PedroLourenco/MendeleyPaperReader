@@ -5,14 +5,12 @@ package com.android.mendeleypaperreader;
 import java.util.Arrays;
 import java.util.List;
 
-
-import com.android.mendeleypaperreader.utl.Globalconstant;
-
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +18,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.mendeleypaperreader.utl.Globalconstant;
 
 
 
 public class MainMenuActivityFragmentList extends ListFragment
 {
-    boolean mDualPane;
+	
+	boolean mDualPane;
     int mCurCheckPosition = 0;
         
     ListView list;
@@ -45,12 +47,14 @@ public class MainMenuActivityFragmentList extends ListFragment
 public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+              
+        
         // Populate list with our static array of titles.
 
         // Use a custom adapter so we can have something more than the just the text view filled in.
-        setListAdapter (new CustomAdapter (getActivity (),  R.id.title, Arrays.asList (Globalconstant.MYLIBRARY)));
+        setListAdapter (new CustomAdapterLibrary (getActivity (),  R.id.title, Arrays.asList (Globalconstant.MYLIBRARY)));
         
-                
+        
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
         View detailsFrame = getActivity().findViewById(R.id.details);
@@ -67,6 +71,8 @@ public void onActivityCreated(Bundle savedInstanceState) {
             // Make sure our UI is in the correct state.
             showDetails(mCurCheckPosition);
         }
+        
+       
     }
 
 
@@ -78,9 +84,11 @@ public void onActivityCreated(Bundle savedInstanceState) {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        showDetails(position);
+    	showDetails(position);
+    	Toast.makeText(getActivity().getApplicationContext(), "Click on Library!!", Toast.LENGTH_SHORT).show();
     }
 
+    
     /**
      * Helper function to show the details of a selected item, either by
      * displaying a fragment in-place in the current UI, or starting a
@@ -118,8 +126,9 @@ public void onActivityCreated(Bundle savedInstanceState) {
             intent.putExtra("index", index);
             startActivity(intent);
         }
+    
     }
-
+    
 /**
  */
 // CustomAdapter
@@ -128,7 +137,7 @@ public void onActivityCreated(Bundle savedInstanceState) {
  * CustomAdapter
  *
  */
-    private class CustomAdapter extends ArrayAdapter<String> {
+    private class CustomAdapterLibrary extends ArrayAdapter<String> {
 
         private Context mContext;
         
@@ -136,7 +145,7 @@ public void onActivityCreated(Bundle savedInstanceState) {
      * Constructor
      */
 
-    public CustomAdapter(Context context, int textViewResourceId, List<String> items) 
+    public CustomAdapterLibrary(Context context, int textViewResourceId, List<String> items) 
     {
     	super(context, textViewResourceId, items);
        mContext = context;
@@ -170,4 +179,12 @@ public void onActivityCreated(Bundle savedInstanceState) {
 
     } // end class CustomAdapter
 
-    } // end class TitlesFragment
+   
+
+
+}
+
+
+
+
+

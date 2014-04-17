@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import com.android.mendeleypaperreader.utl.GetAccessToken;
 import com.android.mendeleypaperreader.utl.Globalconstant;
+import com.android.mendeleypaperreader.utl.LoadData;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -88,15 +89,7 @@ public class MainActivity extends Activity {
 	                      jParser.savePreferences(getApplicationContext(), "Code",authCode, Globalconstant.shared_file_name);
 	                      //auth_dialog.dismiss();
 	                      new TokenGet().execute();
-	                     
-	                      //TODO Fazer aqui o carregamento dos dados no primeiro acesso e validação 
-	                      //	 se a base de dados está atualizada
-	                      //     Talvez criar uma variavel na shared preferences para controlar a estado da bd
-	                      // 	Nova class que carega os dados do livraria
-	                      
-	                      Intent options = new Intent(getApplicationContext(), MainMenuActivity.class);
-	                      startActivity(options);
-	                      
+	                    
 	                      Toast.makeText(getApplicationContext(),"Authorization Code is: " +authCode, Toast.LENGTH_SHORT).show();
 	                  }else if(url.contains("error=access_denied")){
 	                      Log.i("", "ACCESS_DENIED_HERE");
@@ -164,6 +157,15 @@ public class MainActivity extends Activity {
 	            	   	Log.d("Token Access", tok);
 	            	   	Log.d("Expire", expire);
 	            	   	Log.d("Refresh", refresh);
+	            	   	
+	            	   	 //TODO - Se a autenticação tiver sucesso fazer o upload dos dados e abrir nova ativity
+	            	   	if(!tok.isEmpty()){
+	            	   		
+	            	   		Intent options = new Intent(getApplicationContext(), MainMenuActivity.class);
+	            	   		startActivity(options);	            	   		
+	            	   	}
+	            	   	
+	            	              	   	
 	            	   
 	          } catch (JSONException e) {
 	            

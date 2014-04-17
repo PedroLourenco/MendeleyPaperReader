@@ -5,7 +5,8 @@ public class Globalconstant {
 	 public static String TAG = "MendeleyPaperReader";
 	 
 	 public static String shared_file_name = "share_pref";
-	 
+	 public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&access_token=";
+	 public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";
 	 
 	 //Json variables
 	 public static String ID = "id";
@@ -43,6 +44,9 @@ public class Globalconstant {
 	 public static String AUTHORED = "authored";
 	 public static String CONFIRMED = "confirmed";
 	 public static String HIDDEN = "hidden";
+	 public static String NAME = "name";
+	 public static String PARENT = "parent";
+	 public static String GROUP = "group";
 	 
 	 
 	    public static final String[] MYLIBRARY = 
@@ -54,6 +58,18 @@ public class Globalconstant {
 	                "Trash",
 	        };
 	        
+	    
+	    public static final String[] MYLIBRARYs = 
+	        {
+	                "All Documentsw",   
+	                "Recently Addedw",
+	                "Favoritesw",       
+	                "My Publicationsw",
+	                "Trashw",
+	        };
+	    
+	    
+	    
 	        /**
 	         * Our data, part 2.
 	         */

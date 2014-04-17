@@ -8,6 +8,8 @@
     <string name="auth">Sing in</string>
     <string name="createaccount">Create account</string>
     <string name="my_library"><b>My Library</b></string>
+    <string name="my_folders"><b>My Folders</b></string>
+     <string name="exit_msg">Press again to exit.</string>
     
     <string-array name="Titles">
         <item>All Documents</item>
@@ -16,13 +18,6 @@
         <item>My Publications</item>
         <item>Trash</item>
     </string-array>
-    <string-array name="Quotes">
-        <item>Now cracks a noble heart. Good-night, sweet prince; And flights of angels sing thee to thy rest.</item>
-        <item>As flies to wanton boys, are we to the gods; they kill us for their sport.</item>
-        <item>There is a tide in the affairs of men, which taken at the flood, leads on to fortune. Omitted, all the voyage of their life is bound in shallows and in miseries.</item>
-        <item>There is a tide in the affairs of men, which taken at the flood, leads on to fortune. Omitted, all the voyage of their life is bound in shallows and in miseries.</item>
-        <item>There is a tide in the affairs of men, which taken at the flood, leads on to fortune. Omitted, all the voyage of their life is bound in shallows and in miseries.</item>
-        <item>There is a tide in the affairs of men, which taken at the flood, leads on to fortune. Omitted, all the voyage of their life is bound in shallows and in miseries.</item>
-    </string-array>
+   
 
 </resources>
