@@ -2,14 +2,13 @@ package com.android.mendeleypaperreader.db;
 
 
 
-import com.android.mendeleypaperreader.utl.Globalconstant;
-
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.android.mendeleypaperreader.utl.Globalconstant;
 
 public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	
@@ -109,13 +108,12 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final private static String DATABASE_NAME = "Mendeley_library.db";
 	final private static Integer VERSION = 1;
 	final private Context mContext;
-	private ContentResolver myCR;
 	
 	public DatabaseOpenHelper(Context context, String name, 
             CursorFactory factory, int version) {
 		super(context, DATABASE_NAME, factory, VERSION);
 		this.mContext = context;
-		myCR = context.getContentResolver();
+		
 	}
 	
 	
@@ -128,7 +126,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		
-		Log.e(Globalconstant.TAG, "DATABASE CREATE!!!!!!!");
+		if (Globalconstant.LOG)
+			Log.e(Globalconstant.TAG, "DATABASE CREATE!!!!!!!");
+		
 		db.execSQL(CREATE_TABLE_DOCUMENT_DETAILS);
 		db.execSQL(CREATE_TABLE_AUTHORS);
 		db.execSQL(CREATE_TABLE_FOLDERS);

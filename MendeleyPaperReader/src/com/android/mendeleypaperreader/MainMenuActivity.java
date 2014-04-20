@@ -3,6 +3,7 @@ package com.android.mendeleypaperreader;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -55,7 +56,19 @@ public class MainMenuActivity extends FragmentActivity
 	    		return false;
 	    	}
 	
-	}
+	
 
+@Override
+public void onDestroy() {
+    super.onDestroy();
+    
+    if (Globalconstant.LOG)
+		Log.d(Globalconstant.TAG,"onDestroy MAINMENUACTIVITY");
+    
+    if (mendeleyDataSource != null) {
+    	mendeleyDataSource.close();
+    }
 
+}
 
+}

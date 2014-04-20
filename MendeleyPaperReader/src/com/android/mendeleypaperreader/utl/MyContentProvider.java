@@ -1,8 +1,5 @@
 package com.android.mendeleypaperreader.utl;
 
-import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
-import com.android.mendeleypaperreader.db.MendeleyDataSource;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -12,11 +9,15 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
+
+import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
+import com.android.mendeleypaperreader.db.MendeleyDataSource;
 
 public class MyContentProvider extends ContentProvider {
 	
-	private DatabaseOpenHelper myDB;
-	private MendeleyDataSource mendeleyDataSource;
+	private DatabaseOpenHelper db_helper;
+	//private MendeleyDataSource mendeleyDataSource;
 	
 	
 	private static final String AUTHORITY = 
@@ -28,7 +29,7 @@ public class MyContentProvider extends ContentProvider {
 	public static final Uri CONTENT_URI_FOLDERS = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FOLDERS);
 	
 	public static final int ALLDOCS = 1;
-	public static final int DOC_ID = 2;
+	public static final int My_DOC = 2;  
 	public static final int ALL_DOC_AUTHORS = 3;
 	public static final int DOC_AUTHORS_ID = 4;
 	public static final int ALL_FOLDERS = 5;
@@ -39,7 +40,7 @@ public class MyContentProvider extends ContentProvider {
 
 	static {
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, ALLDOCS);
-		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS + "/#", DOC_ID);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS + "/true", My_DOC);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_AUTHORS, ALL_DOC_AUTHORS);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_AUTHORS + "/#", DOC_AUTHORS_ID);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS, ALL_FOLDERS);
@@ -47,6 +48,16 @@ public class MyContentProvider extends ContentProvider {
 }
 	
 
+	
+	// system calls onCreate() when it starts up the provider.
+	 @Override
+	 public boolean onCreate() {
+	  // get access to the database helper
+		 db_helper = new DatabaseOpenHelper(getContext());
+	  return false;
+	 }
+	
+	
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) {
 		// TODO Auto-generated method stub
@@ -54,22 +65,19 @@ public class MyContentProvider extends ContentProvider {
 		return 0;
 	}
 
-	@Override
-	public String getType(Uri arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		
-		mendeleyDataSource = new MendeleyDataSource(getContext());
-		mendeleyDataSource.open();
+		SQLiteDatabase db = db_helper.getWritableDatabase();
 		
 		 Uri _uri = null;
 		    switch (sURIMatcher.match(uri)){
 		    case ALLDOCS:
-		    	long row = mendeleyDataSource.insertDocument(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, values);
+		    	
+		    	long row = db.insert(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, null, values);
+		    	//long row = mendeleyDataSource.insertDocument(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, values);
 	
 		    	// If record is added successfully		 
 		           if(row > 0) {		 
@@ -82,7 +90,8 @@ public class MyContentProvider extends ContentProvider {
 		           
 		    case ALL_DOC_AUTHORS:
 		    
-		    long authors_row = mendeleyDataSource.insert_author(DatabaseOpenHelper.TABLE_AUTHORS, values);
+		    	long authors_row = db.insert(DatabaseOpenHelper.TABLE_AUTHORS, null, values);
+		    	//long authors_row = mendeleyDataSource.insert_author(DatabaseOpenHelper.TABLE_AUTHORS, values);
 		    
 		    // If record is added successfully		 
 	           if(authors_row > 0) {		 
@@ -93,7 +102,9 @@ public class MyContentProvider extends ContentProvider {
 		           
 		    
 		    case ALL_FOLDERS:
-		    	  long folders_row = mendeleyDataSource.insert_user_folders(DatabaseOpenHelper.TABLE_FOLDERS, values);
+		    	  
+		    	long folders_row = db.insert(DatabaseOpenHelper.TABLE_FOLDERS, null, values);
+		    	//long folders_row = mendeleyDataSource.insert_user_folders(DatabaseOpenHelper.TABLE_FOLDERS, values);
 		    	// If record is added successfully		 
 		           if(folders_row > 0) {		 
 		              Uri newUri = ContentUris.withAppendedId(CONTENT_URI_FOLDERS, folders_row);		 
@@ -113,18 +124,36 @@ public class MyContentProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 		        String[] selectionArgs, String sortOrder) {
-		mendeleyDataSource = new MendeleyDataSource(getContext());
-		mendeleyDataSource.open();
 		
-		if(sURIMatcher.match(uri)==ALLDOCS){
-            return mendeleyDataSource.get_all_titles_doc();
-            
-		}else if(sURIMatcher.match(uri)==ALL_FOLDERS){
-			 return mendeleyDataSource.get_all_folders();
-           
-		}else{
-            return null;
-        }
+		  SQLiteDatabase db = db_helper.getWritableDatabase();
+		  SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+		  
+		
+		  switch (sURIMatcher.match(uri)) {
+		  case ALLDOCS:
+			  queryBuilder.setTables(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS);
+		   break;
+		  case My_DOC:		   
+			  
+			  String id = uri.getPathSegments().get(1);
+			  queryBuilder.setTables(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS);
+		      queryBuilder.appendWhere(DatabaseOpenHelper.AUTHORED + "=  '" + id + "' ");
+		   break;
+		  case ALL_FOLDERS:
+			  
+			  queryBuilder.setTables(DatabaseOpenHelper.TABLE_FOLDERS);
+			  
+			  
+			   break;
+		  default:
+		   throw new IllegalArgumentException("Unsupported URI: " + uri);
+		  }
+		  
+		  Cursor cursor = queryBuilder.query(db, projection, selection,
+		    selectionArgs, null, null, sortOrder);
+		  cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		  return cursor;
+		  
 		
 	} 
 
@@ -134,10 +163,14 @@ public class MyContentProvider extends ContentProvider {
 		return 0;
 	}
 
+	
+
+
+
 	@Override
-	public boolean onCreate() {
-		myDB = new DatabaseOpenHelper(getContext(), null, null, 1);
-		return false;
+	public String getType(Uri arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

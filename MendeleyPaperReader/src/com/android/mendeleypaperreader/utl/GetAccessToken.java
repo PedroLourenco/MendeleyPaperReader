@@ -8,7 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,11 +18,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class GetAccessToken {
@@ -74,16 +71,19 @@ public class GetAccessToken {
 			}
 			is.close();
 			json = sb.toString();
-			Log.e("JSONStr", json);
+			if (Globalconstant.LOG)
+				Log.e(Globalconstant.TAG, json);
 		} catch (Exception e) {
 			e.getMessage();
-			Log.e("Buffer Error", "Error converting result " + e.toString());
+			if (Globalconstant.LOG)
+			Log.e(Globalconstant.TAG, "Error converting result " + e.toString());
 		}
 		// Parse the String to a JSON Object
 		try {
 			jObj = new JSONObject(json);
 		} catch (JSONException e) {
-			Log.e("JSON Parser", "Error parsing data " + e.toString());
+			if (Globalconstant.LOG)
+				Log.e(Globalconstant.TAG, "Error parsing data " + e.toString());
 		}
 		// Return JSON String
 		return jObj;

@@ -83,19 +83,22 @@ public class MendeleyDataSource {
 	public Cursor get_all_titles_doc(){
 		
 		Cursor cursor = db.rawQuery(
-				"select " + DatabaseOpenHelper.TITLE + " as _id, " + DatabaseOpenHelper.AUTHORS +", " + DatabaseOpenHelper.SOURCE + "|| " + DatabaseOpenHelper.YEAR + " as data from "
+				"select " + DatabaseOpenHelper.TITLE + " as _id, " + DatabaseOpenHelper.AUTHORS +", " + DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data from "
 						+ DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS + " order by " + DatabaseOpenHelper.TITLE + " ASC",
 				new String[] {});
 		
 		
-		Log.d(Globalconstant.TAG, "get_all_titles_doc");
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "get_all_titles_doc");
 		
-		return cursor;
-		
+		return cursor;		
 	}
 	
 	
-public Cursor get_all_folders(){
+	/*public Cursor get_all_folders(){
+		
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "get_all_folders");
 		
 		Cursor cursor = db.rawQuery(
 				"select " + DatabaseOpenHelper.FOLDER_NAME + " as _id from "
@@ -103,7 +106,23 @@ public Cursor get_all_folders(){
 				new String[] {});
 		
 		
-		Log.d(Globalconstant.TAG, "get_all_folders");
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "get_all_folders");
+		
+		return cursor;		
+	}
+	
+	*/
+public Cursor get_my_docs(){
+		
+		Cursor cursor = db.rawQuery(
+				"select " + DatabaseOpenHelper.TITLE + " as _id, " + DatabaseOpenHelper.AUTHORS +", " + DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data from "
+						+ DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS + " where " + Globalconstant.AUTHORED + "= ? order by " + DatabaseOpenHelper.TITLE + " ASC",
+				new String[] {"true"});
+		
+		
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "get_my_docs");
 		
 		return cursor;
 		

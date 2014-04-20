@@ -3,6 +3,7 @@ package com.android.mendeleypaperreader.utl;
 public class Globalconstant {
 	
 	 public static String TAG = "MendeleyPaperReader";
+	 public static final boolean LOG = true;
 	 
 	 public static String shared_file_name = "share_pref";
 	 public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&access_token=";

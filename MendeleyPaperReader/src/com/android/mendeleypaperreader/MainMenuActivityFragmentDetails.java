@@ -16,20 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.android.mendeleypaperreader.db.MendeleyDataSource;
-import com.android.mendeleypaperreader.utl.CustomCursorAdapter;
+import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
 import com.android.mendeleypaperreader.utl.Globalconstant;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
 
 public class MainMenuActivityFragmentDetails  extends Fragment  implements LoaderCallbacks<Cursor> {
-	/**
-     * Create a new instance of DetailsFragment, initialized to
-     * show the text at 'index'.
-     */
-	//private MendeleyDataSource mendeleyDataSource;
+	
+	
 	ListView mListView;
-	CustomCursorAdapter wla;
-	 SimpleCursorAdapter mAdapter;
+	SimpleCursorAdapter mAdapter;
 		
 	public static MainMenuActivityFragmentDetails newInstance(int index) {
     	MainMenuActivityFragmentDetails f = new MainMenuActivityFragmentDetails();
@@ -46,6 +41,10 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
         return getArguments().getInt("index", 0);
     }
 
+  
+    
+    
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -60,46 +59,94 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
             return null;
         }
 
-       
+        int index = getShownIndex();
+        Log.d(Globalconstant.TAG,"index: " + index );	
+        
+        
+        
         
         View view = inflater.inflate(R.layout.activity_main_menu_details, container, false);
-
-        //mendeleyDataSource = new MendeleyDataSource(getActivity().getApplicationContext());
-        //mendeleyDataSource.open();
       	
         ListView lv = (ListView) view.findViewById(R.id.listDetails);
-               
-        mAdapter = new SimpleCursorAdapter(getActivity(),
-        		R.layout.list_row_all_doc,
-                null,
-                new String[] {"_id", Globalconstant.AUTHORS, "data"},
-                new int[] { R.id.Doctitle , R.id.authors, R.id.data },0);
+  
         
+        String[] dataColumns = {"_id", Globalconstant.AUTHORS, "data"}; 
+        int[] viewIDs = { R.id.Doctitle ,R.id.authors, R.id.data };
+        mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.list_row_all_doc, null, dataColumns, viewIDs, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+      
         lv.setAdapter(mAdapter);
         
-        getActivity().getSupportLoaderManager().initLoader(0, null, this);
+    	if (Globalconstant.LOG)
+    		Log.d(Globalconstant.TAG,"onCreateView  Details");
         
+    	getActivity().getSupportLoaderManager().initLoader(0, null, this);
+    	
                 
         return view;
         
     }
+    
+    
+    public void onResume() {
+        super.onResume();
+        // Restart loader so that it refreshes displayed items according to database
+        if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG,"onResume");
+     
+        
+    } 
+    
+    
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		Uri uri = MyContentProvider.CONTENT_URI_DOC_DETAILS;
-		 return new CursorLoader(getActivity(), uri, null, null, null, null);
+		
+		String[] projection = null;
+		int index = getShownIndex();
+		if (Globalconstant.LOG){
+			Log.d(Globalconstant.TAG,"Loader  Details");
+			Log.d(Globalconstant.TAG,"index: " + index );			
+		}
+    	
+		 Uri uri = null;
+		 
+		if(getShownIndex() == 0) { //All doc
+			
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
+			uri = MyContentProvider.CONTENT_URI_DOC_DETAILS;
+		}
+		else if (getShownIndex() == 3){
+			
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
+			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/true");
+			
+		}
+		 
+		 return new CursorLoader(getActivity().getApplicationContext(), uri, projection, null, null, null);
 		
 	}
+	
+
+	
+	
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
-		mAdapter.swapCursor(cursor);
 		
+		if (Globalconstant.LOG)
+    		Log.d(Globalconstant.TAG,"onLoadFinished  Details - count: " + cursor.getCount());
+	
+			mAdapter.changeCursor(cursor);
+		if (Globalconstant.LOG)
+    		Log.d(Globalconstant.TAG,"onLoadFinished  Details");
+
 	}
+	
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
-		
+		if (Globalconstant.LOG)
+    		Log.d(Globalconstant.TAG,"onLoaderReset  Details");
 		if(isAdded()){
 			getLoaderManager().restartLoader(0, null, this);
 		}
@@ -107,11 +154,14 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
 			mAdapter.swapCursor(null);
 		}
 		
-		
+		if (Globalconstant.LOG)
+    		Log.d(Globalconstant.TAG,"onLoaderReset  Details");
 	}
 
 
  
+
+
    
     
 }

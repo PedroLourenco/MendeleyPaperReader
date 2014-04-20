@@ -4,12 +4,70 @@
     android:orientation="horizontal" >
 
     
-     <fragment class="com.android.mendeleypaperreader.MainMenuActivityFragmentList"
-            android:id="@+id/titles" android:layout_weight="1"
-            android:layout_width="0dp" android:layout_height="match_parent" />
+    <RelativeLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
     
-       <FrameLayout android:id="@+id/details" android:layout_weight="1"
-            android:layout_width="0dp" android:layout_height="match_parent"
-            />
+          <LinearLayout
+              android:id="@+id/textView13"
+    	android:layout_width="210dp"
+    	android:layout_height="wrap_content"
+    	android:background="@drawable/gradient_bg_list">   
+    
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:paddingLeft="8dp"
+        android:textAlignment="center"
+        android:text="@string/my_library" />
+    
+    </LinearLayout>
+     
+     <fragment
+         android:id="@+id/titles"
+         android:layout_width="210dp"
+         android:layout_height="200dp"
+         android:layout_below="@+id/textView13"
+         class="com.android.mendeleypaperreader.MainMenuActivityFragmentList" />
+
+     <LinearLayout
+              android:id="@+id/lfolders"
+    	android:layout_width="210dp"
+    	android:layout_height="wrap_content"
+    	 android:layout_below="@+id/titles"
+    	android:background="@drawable/gradient_bg_list">   
+    
+    <TextView
+        android:id="@+id/textfolders"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:paddingLeft="8dp"
+        android:textAlignment="center"
+        android:text="@string/my_folders" />
+    
+    </LinearLayout>
+     
+     
+     <fragment
+         android:id="@+id/folders"
+         android:layout_width="210dp"
+         android:layout_height="70dp"
+         
+         android:layout_below="@+id/lfolders"
+         class="com.android.mendeleypaperreader.MainMenuFragmentListFolders" />
+
+       <FrameLayout
+           android:id="@+id/details"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:layout_alignParentTop="true"
+           android:padding="8dp"
+           android:layout_toRightOf="@+id/folders" >
+
+       </FrameLayout>
+       
+       </RelativeLayout>
 
 </LinearLayout>

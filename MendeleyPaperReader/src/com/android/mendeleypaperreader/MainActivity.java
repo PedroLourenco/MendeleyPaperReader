@@ -1,11 +1,10 @@
 package com.android.mendeleypaperreader;
 
+
+
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.android.mendeleypaperreader.utl.GetAccessToken;
-import com.android.mendeleypaperreader.utl.Globalconstant;
-import com.android.mendeleypaperreader.utl.LoadData;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -19,11 +18,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.android.mendeleypaperreader.utl.GetAccessToken;
+import com.android.mendeleypaperreader.utl.Globalconstant;
 
 
 public class MainActivity extends Activity {
@@ -34,11 +35,13 @@ public class MainActivity extends Activity {
 	  private static String CLIENT_SECRET ="V!yw8[5_0ZliXK$0";
 	  //Use your own client secret
 	  private static String REDIRECT_URI="http://localhost";
+	 
 	  private static String GRANT_TYPE="authorization_code";
 	  private static String TOKEN_URL ="https://api-oauth2.mendeley.com/oauth/token";
 	  private static String OAUTH_URL ="https://api-oauth2.mendeley.com/oauth/authorize?";
 	  private static String OAUTH_SCOPE="all";
 	  private GetAccessToken jParser = new GetAccessToken();
+	  private Dialog auth_dialog;
 	  
 	 
 	  WebView web;
@@ -60,7 +63,7 @@ public class MainActivity extends Activity {
 	      @Override 
 	      public void onClick(View arg0) {
 
-	    	  auth_dialog = new Dialog(MainActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+	    	auth_dialog = new Dialog(MainActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 	        auth_dialog.setContentView(R.layout.webviewoauth);
 	        web = (WebView)auth_dialog.findViewById(R.id.webview);
 	        web.getSettings().setJavaScriptEnabled(true);
@@ -80,19 +83,23 @@ public class MainActivity extends Activity {
 	                  if (url.contains("?code=") && authComplete != true) {
 	                      Uri uri = Uri.parse(url);
 	                      authCode = uri.getQueryParameter("code");
-	                      Log.i("", "CODE : " + authCode);
+	                      
+	                      if (Globalconstant.LOG)
+	                    	  Log.i(Globalconstant.TAG, "CODE : " + authCode);
 	                      authComplete = true;
 	                      resultIntent.putExtra("code", authCode);
 	                      MainActivity.this.setResult(Activity.RESULT_OK, resultIntent);
 	                      setResult(Activity.RESULT_CANCELED, resultIntent);
 	                      //save access code in shared preferences
 	                      jParser.savePreferences(getApplicationContext(), "Code",authCode, Globalconstant.shared_file_name);
-	                      //auth_dialog.dismiss();
+	                      auth_dialog.dismiss();
 	                      new TokenGet().execute();
 	                    
 	                      Toast.makeText(getApplicationContext(),"Authorization Code is: " +authCode, Toast.LENGTH_SHORT).show();
 	                  }else if(url.contains("error=access_denied")){
-	                      Log.i("", "ACCESS_DENIED_HERE");
+	                      
+	                	  if (Globalconstant.LOG)
+	                		  Log.i(Globalconstant.TAG, "ACCESS_DENIED_HERE");
 	                      resultIntent.putExtra("code", authCode);
 	                      authComplete = true;
 	                      setResult(Activity.RESULT_CANCELED, resultIntent);
@@ -154,12 +161,14 @@ public class MainActivity extends Activity {
 	            	    //Save access token in shared preferences
 	            	   	jParser.savePreferences(getApplicationContext(), "access_token", json.getString("access_token"), Globalconstant.shared_file_name);
 	                    
-	            	   	Log.d("Token Access", tok);
-	            	   	Log.d("Expire", expire);
-	            	   	Log.d("Refresh", refresh);
-	            	   	
+	            	   	if (Globalconstant.LOG){
+	            	   		Log.d("Token Access", tok);
+	            	   		Log.d("Expire", expire);
+	            	   		Log.d("Refresh", refresh);
+	            	   	}
 	            	   	 //TODO - Se a autenticação tiver sucesso fazer o upload dos dados e abrir nova ativity
 	            	   	if(!tok.isEmpty()){
+	            	   		
 	            	   		
 	            	   		Intent options = new Intent(getApplicationContext(), MainMenuActivity.class);
 	            	   		startActivity(options);	            	   		
@@ -177,4 +186,21 @@ public class MainActivity extends Activity {
 	           }
 	          }
 	     }
+	   
+	   
+	   
+	   public void onDestroy() {
+		   super.onDestroy();
+		   Log.d(Globalconstant.TAG,"ON DESTROY MAIN ACTIVITY ");
+		   
+		   if (auth_dialog != null) {
+			   auth_dialog.dismiss();
+			   auth_dialog = null;
+		   }
+		   
+		   
+	   }
+	   
+	   
+	   
 	}

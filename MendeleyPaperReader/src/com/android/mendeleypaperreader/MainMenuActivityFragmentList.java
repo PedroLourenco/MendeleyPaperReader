@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +95,8 @@ public void onActivityCreated(Bundle savedInstanceState) {
      */
     void showDetails(int index) {
         mCurCheckPosition = index;
-
+        
+        
         if (mDualPane) {
             // We can display everything in-place with fragments, so update
             // the list to highlight the selected item and show the data.
@@ -129,9 +129,7 @@ public void onActivityCreated(Bundle savedInstanceState) {
     
     }
     
-/**
- */
-// CustomAdapter
+
 
 /**
  * CustomAdapter
