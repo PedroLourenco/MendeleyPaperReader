@@ -38,6 +38,8 @@ public class MendeleyDataSource {
 	}
 
 	public void close() {
+		
+		Log.d(Globalconstant.TAG, "DATABASE CLOSED!!!");
 		mendeley_library.close();
 	}
 	

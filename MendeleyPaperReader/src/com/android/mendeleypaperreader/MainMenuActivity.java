@@ -18,17 +18,14 @@ public class MainMenuActivity extends FragmentActivity
 	  private GetAccessToken jParser = new GetAccessToken();
 	  private long mLastPressedTime;
 	  private static final int PERIOD = 2000;
-	  private MendeleyDataSource mendeleyDataSource;	
+	  	
 	  
 	 @Override
 	    protected void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
 	        setContentView(R.layout.activity_main_menu);
 	        
-	        mendeleyDataSource = new MendeleyDataSource(getApplicationContext());
-			mendeleyDataSource.open();
-	        
-	        
+	      
 	    
 	 }
 	 
@@ -58,17 +55,6 @@ public class MainMenuActivity extends FragmentActivity
 	
 	
 
-@Override
-public void onDestroy() {
-    super.onDestroy();
-    
-    if (Globalconstant.LOG)
-		Log.d(Globalconstant.TAG,"onDestroy MAINMENUACTIVITY");
-    
-    if (mendeleyDataSource != null) {
-    	mendeleyDataSource.close();
-    }
 
-}
 
 }

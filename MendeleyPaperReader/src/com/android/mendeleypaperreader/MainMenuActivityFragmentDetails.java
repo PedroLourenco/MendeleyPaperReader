@@ -1,10 +1,12 @@
 package com.android.mendeleypaperreader;
 
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -22,9 +24,10 @@ import com.android.mendeleypaperreader.utl.MyContentProvider;
 
 public class MainMenuActivityFragmentDetails  extends Fragment  implements LoaderCallbacks<Cursor> {
 	
-	
+	boolean mDualPane;
 	ListView mListView;
 	SimpleCursorAdapter mAdapter;
+	private CursorLoader mcursor;
 		
 	public static MainMenuActivityFragmentDetails newInstance(int index) {
     	MainMenuActivityFragmentDetails f = new MainMenuActivityFragmentDetails();
@@ -43,7 +46,14 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
 
   
     
-    
+    @Override
+    public void onAttach(Activity activity) {
+        // TODO Auto-generated method stub
+        super.onAttach(activity);
+        
+        if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG,"onAttach - "+ isAdded());
+    }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,9 +89,10 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
     	if (Globalconstant.LOG)
     		Log.d(Globalconstant.TAG,"onCreateView  Details");
         
-    	getActivity().getSupportLoaderManager().initLoader(0, null, this);
+    	getActivity().getSupportLoaderManager().initLoader(1, null, this);
     	
-                
+    	if (Globalconstant.LOG)
+    		LoaderManager.enableDebugLogging(true);     
         return view;
         
     }
@@ -92,16 +103,28 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
         // Restart loader so that it refreshes displayed items according to database
         if (Globalconstant.LOG)
 			Log.d(Globalconstant.TAG,"onResume");
-     
         
-    } 
+        View detailsFrame = getActivity().findViewById(R.id.details);
+        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+        if (mDualPane) {
+        	if (Globalconstant.LOG)
+    			Log.d(Globalconstant.TAG,"mDualPane");
+        	getLoaderManager().restartLoader(1, null, this);
+        }
+        
+        if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG,"onResume - "+ isAdded());
+        
+    }
     
     
+   
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		
 		String[] projection = null;
+		String selection = null;
 		int index = getShownIndex();
 		if (Globalconstant.LOG){
 			Log.d(Globalconstant.TAG,"Loader  Details");
@@ -115,14 +138,31 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
 			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
 			uri = MyContentProvider.CONTENT_URI_DOC_DETAILS;
 		}
-		else if (getShownIndex() == 3){
+		else if (getShownIndex() == 1){ //Starred = true
 			
 			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
-			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/true");
+			selection = DatabaseOpenHelper.ADDED + " BETWEEN datetime('now', 'start of month') AND datetime('now', 'localtime')";
+			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 			
 		}
+		else if (getShownIndex() == 3){ //Authored = true
+			
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
+			selection = DatabaseOpenHelper.AUTHORED + " = 'true'";
+			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+			
+		}
+		else if (getShownIndex() == 2){ //Starred = true
+			
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
+			selection = DatabaseOpenHelper.STARRED + " = 'true'";
+			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+			
+		}
+		
+		mcursor = new CursorLoader(getActivity().getApplicationContext(), uri, projection, selection, null, null);
 		 
-		 return new CursorLoader(getActivity().getApplicationContext(), uri, projection, null, null, null);
+		 return mcursor;
 		
 	}
 	
@@ -133,10 +173,17 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
 		
+	    
 		if (Globalconstant.LOG)
-    		Log.d(Globalconstant.TAG,"onLoadFinished  Details - count: " + cursor.getCount());
-	
+    		Log.d(Globalconstant.TAG,"onLoadFinished  Details - count: " + cursor.getCount() +" - " + isAdded());
+		if(isAdded() && !cursor.isClosed()){
 			mAdapter.changeCursor(cursor);
+		}
+		else{
+			mAdapter.swapCursor(null);
+		}	
+			
+			
 		if (Globalconstant.LOG)
     		Log.d(Globalconstant.TAG,"onLoadFinished  Details");
 
@@ -148,7 +195,7 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
 		if (Globalconstant.LOG)
     		Log.d(Globalconstant.TAG,"onLoaderReset  Details");
 		if(isAdded()){
-			getLoaderManager().restartLoader(0, null, this);
+			getLoaderManager().restartLoader(1, null, this);
 		}
 		else{
 			mAdapter.swapCursor(null);

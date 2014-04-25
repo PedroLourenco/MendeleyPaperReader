@@ -29,18 +29,19 @@ public class MyContentProvider extends ContentProvider {
 	public static final Uri CONTENT_URI_FOLDERS = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FOLDERS);
 	
 	public static final int ALLDOCS = 1;
-	public static final int My_DOC = 2;  
+	public static final int ALL_DOCS_ID = 2;  
 	public static final int ALL_DOC_AUTHORS = 3;
 	public static final int DOC_AUTHORS_ID = 4;
 	public static final int ALL_FOLDERS = 5;
 	public static final int FOLDERS_ID = 6;
+	
 	
 	private static final UriMatcher sURIMatcher = 
             new UriMatcher(UriMatcher.NO_MATCH);
 
 	static {
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, ALLDOCS);
-		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS + "/true", My_DOC);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS + "/id", ALL_DOCS_ID);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_AUTHORS, ALL_DOC_AUTHORS);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_AUTHORS + "/#", DOC_AUTHORS_ID);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS, ALL_FOLDERS);
@@ -133,12 +134,12 @@ public class MyContentProvider extends ContentProvider {
 		  case ALLDOCS:
 			  queryBuilder.setTables(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS);
 		   break;
-		  case My_DOC:		   
+		  case ALL_DOCS_ID:		   
 			  
-			  String id = uri.getPathSegments().get(1);
 			  queryBuilder.setTables(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS);
-		      queryBuilder.appendWhere(DatabaseOpenHelper.AUTHORED + "=  '" + id + "' ");
+		      queryBuilder.appendWhere(selection);
 		   break;
+		  
 		  case ALL_FOLDERS:
 			  
 			  queryBuilder.setTables(DatabaseOpenHelper.TABLE_FOLDERS);
@@ -151,7 +152,7 @@ public class MyContentProvider extends ContentProvider {
 		  
 		  Cursor cursor = queryBuilder.query(db, projection, selection,
 		    selectionArgs, null, null, sortOrder);
-		  cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		  //cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		  return cursor;
 		  
 		
