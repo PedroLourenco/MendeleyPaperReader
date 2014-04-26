@@ -9,6 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
@@ -78,7 +79,6 @@ public class MyContentProvider extends ContentProvider {
 		    case ALLDOCS:
 		    	
 		    	long row = db.insert(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, null, values);
-		    	//long row = mendeleyDataSource.insertDocument(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, values);
 	
 		    	// If record is added successfully		 
 		           if(row > 0) {		 
@@ -92,7 +92,6 @@ public class MyContentProvider extends ContentProvider {
 		    case ALL_DOC_AUTHORS:
 		    
 		    	long authors_row = db.insert(DatabaseOpenHelper.TABLE_AUTHORS, null, values);
-		    	//long authors_row = mendeleyDataSource.insert_author(DatabaseOpenHelper.TABLE_AUTHORS, values);
 		    
 		    // If record is added successfully		 
 	           if(authors_row > 0) {		 
@@ -105,7 +104,7 @@ public class MyContentProvider extends ContentProvider {
 		    case ALL_FOLDERS:
 		    	  
 		    	long folders_row = db.insert(DatabaseOpenHelper.TABLE_FOLDERS, null, values);
-		    	//long folders_row = mendeleyDataSource.insert_user_folders(DatabaseOpenHelper.TABLE_FOLDERS, values);
+		    	
 		    	// If record is added successfully		 
 		           if(folders_row > 0) {		 
 		              Uri newUri = ContentUris.withAppendedId(CONTENT_URI_FOLDERS, folders_row);		 
@@ -152,16 +151,33 @@ public class MyContentProvider extends ContentProvider {
 		  
 		  Cursor cursor = queryBuilder.query(db, projection, selection,
 		    selectionArgs, null, null, sortOrder);
-		  //cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		  
 		  return cursor;
 		  
 		
 	} 
 
 	@Override
-	public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs){
+		
+		SQLiteDatabase db = db_helper.getWritableDatabase();
+		int rowsUpdated = 0;
+		    
+			Log.d(Globalconstant.TAG, "values: " + values);
+			
+			
+			  if(!TextUtils.isEmpty(selection)){
+				  
+				  rowsUpdated = 
+			    		  db.update(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, 
+			          values,
+			          selection, 
+			          selectionArgs); 
+			  }
+			 
+			  
+		  getContext().getContentResolver().notifyChange(uri, null);
+	      return rowsUpdated;
 	}
 
 	

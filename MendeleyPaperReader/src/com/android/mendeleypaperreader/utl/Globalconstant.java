@@ -7,6 +7,10 @@ public class Globalconstant {
 	 
 	 public static String shared_file_name = "share_pref";
 	 public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&access_token=";
+	 public static String get_docs_in_folders = "https://mix.mendeley.com/folders/id/documents?access_token=";
+	 
+	 
+	 //https://mix.mendeley.com//folders/7b0b8ca0-fb16-4365-86ab-29f9320debde/documents?access_token=MSwxMzk4NDY3NDA3OTg2LDMyNzA1NTkxLDQsYWxsLCxMVnF6MFdZN0VaY2RqQnczZkJiNkJhTnBlQTg#!
 	 public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";
 	 
 	 //Json variables
@@ -48,6 +52,7 @@ public class Globalconstant {
 	 public static String NAME = "name";
 	 public static String PARENT = "parent";
 	 public static String GROUP = "group";
+	 public static String  DOCUMENTS_ID = "document_ids";
 	 
 	 
 	    public static final String[] MYLIBRARY = 
@@ -60,31 +65,8 @@ public class Globalconstant {
 	        };
 	        
 	    
-	    public static final String[] MYLIBRARYs = 
-	        {
-	                "All Documentsw",   
-	                "Recently Addedw",
-	                "Favoritesw",       
-	                "My Publicationsw",
-	                "Trashw",
-	        };
 	    
 	    
-	    
-	        /**
-	         * Our data, part 2.
-	         */
-	        public static final String[] DETAILS =	        {
-	                "All Documents Details",
-	                
-	                "Recently Added Details",
-
-	                "Favorites Details",
-	                
-	                "My Publications Details",
-	                
-	                "Trash Details"
-	        };
-	
+	  
 
 }

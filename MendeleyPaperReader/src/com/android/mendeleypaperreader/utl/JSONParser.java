@@ -45,6 +45,7 @@ public class JSONParser {
 	                String line;
 	                while ((line = reader.readLine()) != null) {
 	                  builder.append(line);
+	                  
 	                }
 	              } else {
 	            	  if (Globalconstant.LOG)

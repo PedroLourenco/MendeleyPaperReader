@@ -25,8 +25,9 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
             android:textAlignment="center"
+            android:gravity="center"
             android:textColor="#040404"
-            android:textSize="15sp"
+            android:textSize="@dimen/folder_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>

@@ -7,8 +7,7 @@
     <LinearLayout
         android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-         >
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/list_image"
@@ -29,10 +28,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:lines="3"
+                android:lines="1"
                 android:maxLines="3"
                 android:text=""
-                android:textSize="15sp"
+                android:textSize="@dimen/doc_title_size"
                 android:textStyle="bold"
                 android:textColor="#000000" />
 

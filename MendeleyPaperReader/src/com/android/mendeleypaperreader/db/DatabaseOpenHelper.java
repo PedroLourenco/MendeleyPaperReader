@@ -101,6 +101,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			+ STARRED + " TEXT, "
 			+ AUTHORED + " TEXT, "
 			+ CONFIRMED + " TEXT, "
+			+ FOLDER_ID + " TEXT, "
 			+ HIDDEN + " TEXT )";
 			
 			

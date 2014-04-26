@@ -1,5 +1,6 @@
 package com.android.mendeleypaperreader;
 
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +18,17 @@ public class DetailsActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         
 
+      //verify orientation permissions
+        if(getResources().getBoolean(R.bool.portrait_only)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        else{
+        	
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+        
+        
+        
         if (getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
             // If the screen is now in landscape mode, we can show the

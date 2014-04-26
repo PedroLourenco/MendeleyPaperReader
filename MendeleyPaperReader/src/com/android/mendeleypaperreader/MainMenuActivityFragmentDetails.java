@@ -1,11 +1,12 @@
 package com.android.mendeleypaperreader;
 
 
-import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -17,43 +18,53 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
 import com.android.mendeleypaperreader.utl.Globalconstant;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
 
-public class MainMenuActivityFragmentDetails  extends Fragment  implements LoaderCallbacks<Cursor> {
+public class MainMenuActivityFragmentDetails  extends ListFragment  implements LoaderCallbacks<Cursor> {
 	
 	boolean mDualPane;
 	ListView mListView;
 	SimpleCursorAdapter mAdapter;
 	private CursorLoader mcursor;
+	private String description = null;
+	TextView title;
 		
-	public static MainMenuActivityFragmentDetails newInstance(int index) {
+	public static MainMenuActivityFragmentDetails newInstance(int index , String description) {
     	MainMenuActivityFragmentDetails f = new MainMenuActivityFragmentDetails();
 
         // Supply index input as an argument.
         Bundle args = new Bundle();
         args.putInt("index", index);
+        args.putString("description", description);
         f.setArguments(args);
 
         return f;
     }
 
+	
+	
     public int getShownIndex() {
-        return getArguments().getInt("index", 0);
+        
+		int position = getArguments().getInt("index", 1);
+			
+		if(position == 0){
+			
+			position = position+1;
+		}
+		
+		
+		return position;
     }
 
-  
-    
-    @Override
-    public void onAttach(Activity activity) {
-        // TODO Auto-generated method stub
-        super.onAttach(activity);
-        
-        if (Globalconstant.LOG)
-			Log.d(Globalconstant.TAG,"onAttach - "+ isAdded());
+
+    public String getShownDescription() {
+        return getArguments().getString("description", "All Documents");
     }
+    
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,15 +81,22 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
         }
 
         int index = getShownIndex();
-        Log.d(Globalconstant.TAG,"index: " + index );	
+       
         
+        description = getShownDescription();
         
+        if (Globalconstant.LOG){
+        	Log.d(Globalconstant.TAG,"Description Details: " + description );
+        	Log.d(Globalconstant.TAG,"index Details: " + index );	
+        }
         
-        
+       
         View view = inflater.inflate(R.layout.activity_main_menu_details, container, false);
       	
-        ListView lv = (ListView) view.findViewById(R.id.listDetails);
+        ListView lv = (ListView) view.findViewById(android.R.id.list);
   
+        title = (TextView) view.findViewById(R.id.detailTitle);
+        title.setTypeface(null, Typeface.BOLD);
         
         String[] dataColumns = {"_id", Globalconstant.AUTHORS, "data"}; 
         int[] viewIDs = { R.id.Doctitle ,R.id.authors, R.id.data };
@@ -96,6 +114,55 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
         return view;
         
     }
+    
+    
+    
+    
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "position: " + position);
+
+		Cursor c = mAdapter.getCursor();
+		c.moveToPosition(position);
+		String title = c.getString(c.getColumnIndex("_id"));
+
+		Cursor c1 = getDocId(title);
+		c1.moveToPosition(0);
+		String doc_id = c1.getString(c1.getColumnIndex(DatabaseOpenHelper._ID));
+
+		if (Globalconstant.LOG) {
+			Log.d(Globalconstant.TAG, "doc_id: " + doc_id);
+			Log.d(Globalconstant.TAG, "title_description: " + title);
+		}
+		
+		Intent doc_details = new Intent(getActivity().getApplicationContext(), DocumentsDetailsActivity.class);
+		doc_details.putExtra("doc_id", doc_id);
+		startActivity(doc_details);
+
+	}
+    
+    
+    
+    private Cursor getDocId (String doc_title){
+    	
+    	String[] projection = null;
+		String selection = null;
+		
+		
+		projection = new String[] {DatabaseOpenHelper._ID };
+		selection = DatabaseOpenHelper.TITLE + " = '" + doc_title +"'";
+		Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+		 
+		return getActivity().getApplicationContext().getContentResolver().query(uri, projection, selection, null, null);
+	
+    }
+    
+    
+    
+    
+    
     
     
     public void onResume() {
@@ -133,31 +200,63 @@ public class MainMenuActivityFragmentDetails  extends Fragment  implements Loade
     	
 		 Uri uri = null;
 		 
-		if(getShownIndex() == 0) { //All doc
+		if(getShownIndex() == 1) { //All doc
+			
+			
+			title.setText(Globalconstant.MYLIBRARY[0]);
 			
 			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
 			uri = MyContentProvider.CONTENT_URI_DOC_DETAILS;
 		}
-		else if (getShownIndex() == 1){ //Starred = true
+		else if (getShownIndex() == 2){ //Starred = true
+			
+			
+			title.setText(Globalconstant.MYLIBRARY[1]);
 			
 			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
 			selection = DatabaseOpenHelper.ADDED + " BETWEEN datetime('now', 'start of month') AND datetime('now', 'localtime')";
 			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 			
 		}
-		else if (getShownIndex() == 3){ //Authored = true
+		else if (getShownIndex() == 3){ //Starred = true
+			
+			
+			title.setText(Globalconstant.MYLIBRARY[2]);
+			
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
+			selection = DatabaseOpenHelper.STARRED + " = 'true'";
+			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+			
+		}
+		else if (getShownIndex() == 4){ //Authored = true
+			
+			
+			title.setText(Globalconstant.MYLIBRARY[3]);
+			
 			
 			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
 			selection = DatabaseOpenHelper.AUTHORED + " = 'true'";
 			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 			
 		}
-		else if (getShownIndex() == 2){ //Starred = true
+		
+		else if (getShownIndex() == 5){ //Trash
 			
-			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
-			selection = DatabaseOpenHelper.STARRED + " = 'true'";
-			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 			
+			title.setText(Globalconstant.MYLIBRARY[4]);
+		
+			
+		}
+		
+		else if (getShownIndex() > 5){
+		
+			title.setText(getShownDescription());
+			
+		projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
+		 selection = DatabaseOpenHelper.FOLDER_ID + " = (select folder_id from " + DatabaseOpenHelper.TABLE_FOLDERS +  " where " + DatabaseOpenHelper.FOLDER_NAME + " = '" + getShownDescription() + "')";
+		 Log.d(Globalconstant.TAG, "selection: " + selection );
+		 
+		 uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 		}
 		
 		mcursor = new CursorLoader(getActivity().getApplicationContext(), uri, projection, selection, null, null);

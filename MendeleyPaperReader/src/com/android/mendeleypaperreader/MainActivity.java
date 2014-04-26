@@ -3,14 +3,18 @@ package com.android.mendeleypaperreader;
 
 
 
+import java.util.Arrays;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R.array;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,6 +29,7 @@ import android.widget.Toast;
 
 import com.android.mendeleypaperreader.utl.GetAccessToken;
 import com.android.mendeleypaperreader.utl.Globalconstant;
+import com.android.mendeleypaperreader.utl.LoadData;
 
 
 public class MainActivity extends Activity {
@@ -53,6 +58,13 @@ public class MainActivity extends Activity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.activity_main);
 	   
+	    //verify orientation permissions
+	    if(getResources().getBoolean(R.bool.portrait_only)){
+	        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+	    }
+	   
+	    
+	    
 	    pref = getSharedPreferences("AppPref", MODE_PRIVATE);
 
 	    
@@ -147,6 +159,10 @@ public class MainActivity extends Activity {
 	         protected JSONObject doInBackground(String... args) {
 	             GetAccessToken jParser = new GetAccessToken();
 	             JSONObject json = jParser.gettoken(TOKEN_URL,Code,CLIENT_ID,CLIENT_SECRET,REDIRECT_URI,GRANT_TYPE);
+	             
+	            
+	             
+	             
 	             return json;
 	         }
 	          @Override
@@ -167,6 +183,8 @@ public class MainActivity extends Activity {
 	            	   		Log.d("Refresh", refresh);
 	            	   	}
 	            	   	 //TODO - Se a autenticação tiver sucesso fazer o upload dos dados e abrir nova ativity
+	            	   	
+	            	   
 	            	   	if(!tok.isEmpty()){
 	            	   		
 	            	   		
@@ -200,7 +218,6 @@ public class MainActivity extends Activity {
 		   
 		   
 	   }
-	   
-	   
-	   
 	}
+	   
+	   

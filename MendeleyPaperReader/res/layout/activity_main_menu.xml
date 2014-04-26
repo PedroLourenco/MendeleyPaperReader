@@ -2,56 +2,21 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical">
 
     
-    <LinearLayout
-    	android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-    	android:background="@drawable/gradient_bg_list">   
+  
     
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:paddingLeft="8dp"
-        android:textAlignment="center"
-        android:text="@string/my_library" />
     
-    </LinearLayout>
-    
-    <fragment
-        android:id="@+id/titles"
-        android:name="com.android.mendeleypaperreader.MainMenuActivityFragmentList"
-        android:layout_width="match_parent"
-        android:layout_height="212dp"
-        android:background="#27a1b4"
-        tools:layout="@layout/activity_main_menu_list" />
-
-     <LinearLayout
-    	android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-    	android:background="@drawable/gradient_bg_list">   
-    
-     <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:paddingLeft="8dp"
-        android:textAlignment="center"
-        android:text="@string/my_folders" />
-    
-    </LinearLayout>
-
       <fragment
-        android:id="@+id/folder"
-        android:name="com.android.mendeleypaperreader.MainMenuFragmentListFolders"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#27a1b4"
-        tools:layout="@layout/activity_main_menu_list" />
+          android:id="@+id/folder"
+          android:name="com.android.mendeleypaperreader.MainMenuFragmentList"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="#27a1b4"
+          tools:layout="@layout/activity_main_menu_list" />
     
-
+    
 </LinearLayout>

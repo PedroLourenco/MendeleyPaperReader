@@ -2,19 +2,23 @@ package com.android.mendeleypaperreader.utl;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
 
 public class LoadData {
 
 	private Context mcontext;
+	private String mtoken;
 	private String doc_detail_id;
 
-	public LoadData(Context context) {
+	public LoadData(Context context, String token) {
 		mcontext = context;
+		mtoken = token;
 	}
 
 	public void GetUserLibrary(String url) {
@@ -145,6 +149,10 @@ public class LoadData {
 				values.put(DatabaseOpenHelper.FOLDER_ADDED,	lib.optString(Globalconstant.ADDED));
 
 				Uri uri = mcontext.getContentResolver().insert(MyContentProvider.CONTENT_URI_FOLDERS, values);
+				
+				
+				get_docs_in_folders(lib.optString(Globalconstant.ID));
+				
 
 			}
 
@@ -157,5 +165,48 @@ public class LoadData {
 		}
 
 	}
+	
+	
+	public void get_docs_in_folders(String folder_id){
+		
+		ContentValues values = new ContentValues();
+		String auxurl = Globalconstant.get_docs_in_folders;
+		String where= null;
+		//String [] selectionArgs = {};
+		String url = auxurl.replace("id", folder_id) + mtoken; 
+		
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, url);
+		JSONParser jParser = new JSONParser();
+		// get JSON data from URL
+		String strResponse = jParser.getJSONFromUrl(url);
 
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - Docs in Folders:::::");
+		
+		try {
+
+			JSONObject jcols = new JSONObject(strResponse);
+			JSONArray docs_ids = (JSONArray) jcols.get(Globalconstant.DOCUMENTS_ID);
+			Log.d(Globalconstant.TAG, "jcols.length(): " + docs_ids.length());
+
+			
+			for (int i = 0; i < docs_ids.length(); i++) {
+
+				String doc_id = docs_ids.get(i).toString();
+				values.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
+				Log.d(Globalconstant.TAG, "DOCUMENTS_ID: " + doc_id);
+				
+				where = DatabaseOpenHelper._ID + " = '" + doc_id + "'";
+				
+			    Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+			    mcontext.getContentResolver().update(uri, values, where, null);
+	}
+		
+		} catch (Exception e) {
+			if (Globalconstant.LOG) {
+				Log.e(Globalconstant.TAG, "Got exception when parsing online data");
+				Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
+			}
+		}
+}
 }
