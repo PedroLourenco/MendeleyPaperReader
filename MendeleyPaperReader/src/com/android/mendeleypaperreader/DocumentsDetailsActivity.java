@@ -65,7 +65,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		String[] projection = null;
 		String selection = null;
 		
-		projection = new String[] {DatabaseOpenHelper.TYPE + " as _id",  DatabaseOpenHelper.TITLE, DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE , DatabaseOpenHelper.YEAR, DatabaseOpenHelper.VOLUME, DatabaseOpenHelper.PAGES,  DatabaseOpenHelper.ABSTRACT, DatabaseOpenHelper.WEBSITE };
+		projection = new String[] {DatabaseOpenHelper.TYPE + " as _id",  DatabaseOpenHelper.TITLE, DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE , DatabaseOpenHelper.YEAR, DatabaseOpenHelper.VOLUME, DatabaseOpenHelper.PAGES,DatabaseOpenHelper.ISSUE,  DatabaseOpenHelper.ABSTRACT, DatabaseOpenHelper.WEBSITE };
 		selection = DatabaseOpenHelper._ID + " = '" + doc_id +"'";
 		Uri  uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 		
@@ -98,7 +98,8 @@ public class DocumentsDetailsActivity extends Activity  {
 			String aux_year = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.YEAR));
 			String aux_volume = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.VOLUME));
 			String aux_pages = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PAGES));
-			year.setText("Vol." + aux_volume + " pp("+ aux_pages + ") " + aux_year);
+			String aux_issue = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSUE));
+			year.setText(aux_year +" vol." + aux_volume + " ("+ aux_issue +") pp."+ aux_pages);
 			
 			TextView abstracts = (TextView) findViewById(R.id.abstracts);
 			abstracts.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ABSTRACT)));
