@@ -9,6 +9,9 @@ public class Globalconstant {
 	 public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&access_token=";
 	 public static String get_docs_in_folders = "https://mix.mendeley.com/folders/id/documents?access_token=";
 	 
+	 //https://mix.mendeley.com//annotations/?document_id=7529d2a9-e1c3-34c5-aa9c-1377870211a8&access_token=MSwxMzk5NzQ1OTY4MT
+	 public static String get_docs_ann = "https://mix.mendeley.com//annotations/?document_id=doc_id&access_token=";
+	 
 	 
 	 //https://mix.mendeley.com//folders/7b0b8ca0-fb16-4365-86ab-29f9320debde/documents?access_token=MSwxMzk4NDY3NDA3OTg2LDMyNzA1NTkxLDQsYWxsLCxMVnF6MFdZN0VaY2RqQnczZkJiNkJhTnBlQTg#!
 	 public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";

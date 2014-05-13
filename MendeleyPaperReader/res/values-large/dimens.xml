@@ -20,6 +20,10 @@
 <!-- list_row_with_image.xml -->
   	<dimen name="folder_text_size">10sp</dimen>
   	
+  		<!-- Activity Documents details domensions -->
+  	<dimen name="image_size">30dp</dimen>
+  	<dimen name="pading">8dp</dimen>
+  	
   	
   	
   	<!-- list_row_all_doc.xml -->

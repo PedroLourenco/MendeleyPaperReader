@@ -56,12 +56,26 @@ public class LoadData {
 				values.put(DatabaseOpenHelper.TITLE,lib.optString(Globalconstant.TITLE));
 				values.put(DatabaseOpenHelper.REVISION,	lib.optString(Globalconstant.REVISION));
 				
+				
+				Log.d(Globalconstant.TAG, "title: " + lib.optString(Globalconstant.TITLE));
+				
 				if (!lib.isNull(Globalconstant.IDENTIFIERS)) {
 					JSONObject structure = (JSONObject) lib.get(Globalconstant.IDENTIFIERS);
+					Log.d(Globalconstant.TAG, "IDENTIFIERS: " + lib.get(Globalconstant.IDENTIFIERS));
 
-					values.put(DatabaseOpenHelper.PMID,	lib.optString(Globalconstant.PMID));
-					values.put(DatabaseOpenHelper.DOI,lib.optString(Globalconstant.DOI));
-					values.put(DatabaseOpenHelper.ISSN,	lib.optString(Globalconstant.ISSN));
+					values.put(DatabaseOpenHelper.PMID,	structure.optString(Globalconstant.PMID));
+					values.put(DatabaseOpenHelper.DOI,structure.optString(Globalconstant.DOI));
+					values.put(DatabaseOpenHelper.ISSN,	structure.optString(Globalconstant.ISSN));
+					Log.d(Globalconstant.TAG, "PMID: " + structure.optString(Globalconstant.PMID));
+					Log.d(Globalconstant.TAG, "DOI: " + structure.optString(Globalconstant.DOI));
+					Log.d(Globalconstant.TAG, "ISSN: " + structure.optString(Globalconstant.ISSN));
+				}
+				else{
+					
+					values.put(DatabaseOpenHelper.PMID,	"");
+					values.put(DatabaseOpenHelper.DOI,"");
+					values.put(DatabaseOpenHelper.ISSN,	"");
+					
 				}
 
 				values.put(DatabaseOpenHelper.ABSTRACT,	lib.optString(Globalconstant.ABSTRACT));

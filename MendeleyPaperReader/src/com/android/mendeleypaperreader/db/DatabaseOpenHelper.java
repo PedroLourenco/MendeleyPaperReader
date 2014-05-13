@@ -2,7 +2,10 @@ package com.android.mendeleypaperreader.db;
 
 
 
+import java.io.File;
+
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -57,8 +60,19 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String FOLDER_ADDED = "folder_added";
 	public final static String FOLDER_PARENT = "folder_parent";
 	public final static String FOLDER_GROUP = "folder_group";
+	public final static String ANNOTATION_COLOR = "color";
+	public final static String ANNOTATION_POSITIONS = "positions";
+	public final static String ANNOTATION_PRIVACY_LEVEL = "privacy_level";
+	public final static String ANNOTATION_FILEHASH = "filehash";
 	
-	
+	public final static String ANNOTATION_LAST_MODIFIED = "last_modified";
+	public final static String ANNOTATION_CREATED = "created";
+	public final static String ANNOTATION_TEXT = "text";
+	public final static String ANNOTATION_AUTHOR_OBJECT = "author_object";
+	public final static String ANNOTATION_PREVIOUS_ID = "previous_id";
+	public final static String ANNOTATION_DOCUMENT_ID = "document_id";
+
+
 	final static String[] document_details_columns = { _ID, TYPE, MONTH, YEAR, LAST_MODIFIED, DAY, GROUP_ID, SOURCE, TITLE, REVISION, IDENTIFIERS, ABSTRACT, PROFILE_ID, AUTHORS, ADDED, PAGES, VOLUME, ISSUE, WEBSITE, PUBLISHER, CITY, EDITION, INSTITUTION, SERIES, CHAPTER, EDITORS, READ, STARRED, AUTHORED, CONFIRMED, HIDDEN};
 	final static String[] document_titles_columns = {TITLE, AUTHORS, SOURCE, YEAR};
 
@@ -68,6 +82,11 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final private static String CREATE_TABLE_FOLDERS = "CREATE TABLE folders (" + FOLDER_ID + " TEXT, " + FOLDER_ADDED + " TEXT, " + FOLDER_PARENT + " TEXT, " + FOLDER_GROUP + " TEXT, "
 			+ FOLDER_NAME + " TEXT, PRIMARY KEY (" + FOLDER_ID + ") ) ";
 	
+	
+	final private static String CREATE_TABLE_ANNOTATIONS = "CREATE TABLE folders (" + _ID + " TEXT, " + ANNOTATION_COLOR + " TEXT, " + ANNOTATION_POSITIONS + " TEXT, " + ANNOTATION_PRIVACY_LEVEL + " TEXT, "
+			+ ANNOTATION_FILEHASH + " TEXT" + ANNOTATION_LAST_MODIFIED + " TEXT " + ANNOTATION_CREATED + " TEXT " + ANNOTATION_TEXT + " TEXT " +  ANNOTATION_AUTHOR_OBJECT + " TEXT " +  ANNOTATION_PREVIOUS_ID + " TEXT " + ANNOTATION_DOCUMENT_ID + " TEXT, PRIMARY KEY (" + _ID + ") ) ";
+	
+
 	final private static String CREATE_TABLE_DOCUMENT_DETAILS =
 
 	"CREATE TABLE document_details (" + _ID + " TEXT PRIMARY KEY, "
@@ -127,12 +146,22 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		
-		if (Globalconstant.LOG)
-			Log.e(Globalconstant.TAG, "DATABASE CREATE!!!!!!!");
 		
-		db.execSQL(CREATE_TABLE_DOCUMENT_DETAILS);
-		db.execSQL(CREATE_TABLE_AUTHORS);
-		db.execSQL(CREATE_TABLE_FOLDERS);
+		
+		//if (!doesDatabaseExist(mContext,DATABASE_NAME)){
+			
+			if (Globalconstant.LOG)
+				Log.e(Globalconstant.TAG, "DATABASE CREATE!!!!!!!");
+			
+			db.execSQL(CREATE_TABLE_DOCUMENT_DETAILS);
+			db.execSQL(CREATE_TABLE_AUTHORS);
+			db.execSQL(CREATE_TABLE_FOLDERS);
+			//db.execSQL(CREATE_TABLE_ANNOTATIONS);
+			
+			
+		//}
+		
+		
 	}
 
 	@Override
@@ -143,5 +172,14 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	void deleteDatabase() {
 		mContext.deleteDatabase(DATABASE_NAME);
 	}
+	
+	
+	
+	private static boolean doesDatabaseExist(Context context, String dbName) {
+	    File dbFile = context.getDatabasePath(dbName);
+	    return dbFile.exists();
+	}
+	
+	
 }
 

@@ -3,12 +3,9 @@ package com.android.mendeleypaperreader;
 
 
 
-import java.util.Arrays;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R.array;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -29,7 +26,6 @@ import android.widget.Toast;
 
 import com.android.mendeleypaperreader.utl.GetAccessToken;
 import com.android.mendeleypaperreader.utl.Globalconstant;
-import com.android.mendeleypaperreader.utl.LoadData;
 
 
 public class MainActivity extends Activity {

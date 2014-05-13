@@ -25,5 +25,9 @@
   	<dimen name="doc_title_size">17sp</dimen>
   	<dimen name="authors_size">15sp</dimen>
   	<dimen name="source_size">14sp</dimen>
+  	
+  		<!-- Activity Documents details domensions -->
+  	<dimen name="image_size">30dip</dimen>
+  	<dimen name="pading">8dp</dimen>
 
 </resources>

@@ -22,6 +22,28 @@
   	<dimen name="doc_title_size">15sp</dimen>
   	<dimen name="authors_size">13sp</dimen>
   	<dimen name="source_size">12sp</dimen>
+  	<dimen name="other_size">10sp</dimen>
+  	
+  	 <!-- Activity Documents details domensions -->
+  	<dimen name="image_size">30dip</dimen>
+  	<dimen name="arrow_size">15dip</dimen>
+  	<dimen name="pading">8dp</dimen>
+  	
+  	<dimen name="d_button_text_size">7sp</dimen>
+  	<dimen name="d_button_margin_left">50dp</dimen>
+  	<dimen name="d_button_margin_top">9dp</dimen>
+  	<dimen name="doc_type_paddingLeft">5dp</dimen>
+  	<dimen name="doc_type_paddingBottom">2dp</dimen>
+  	<dimen name="doc_type_paddingTop">2dp</dimen>
+  	<dimen name="doc_title_paddingRight">5dp</dimen>
+  	
+  	<dimen name="line_height">2dp</dimen>
+  
+  	
+  	
+  	
+  	
+  	
   	
   	
   	
