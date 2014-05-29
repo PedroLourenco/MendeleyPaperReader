@@ -1,196 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent" >
+  
+    <!-- Footer aligned to bottom -->
+  
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent">
+  <RelativeLayout
+    android:id="@+id/footer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@drawable/texttopline"
+    android:gravity="center" >
+    
+    
+    <ImageView
+        android:id="@+id/share"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_action_share" />
+   
+   <ImageView
+        android:id="@+id/favorite_star"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:src="@drawable/ic_action_star" />
+       
+  </RelativeLayout>
+    
+    
+
+
+<ScrollView
+    android:id="@+id/scrollableContents"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_above="@+id/footer"
+    android:background="#e5e5e5">
 
 
 <RelativeLayout 
+    android:id = "@+id/relativedoc"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="#e5e5e5" >
 
-    <ImageView
-        android:id="@+id/download_image"
-        android:layout_width="30dip"
-        android:layout_height="30dip"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/download" />
-
-    <TextView
-        android:id="@+id/detailTitle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="9dp"
-        android:text="Download Article" />
 
     <TextView
         android:id="@+id/docype"
         style="?android:attr/windowTitleStyle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/download_image"
         android:background="@drawable/gradient_bg_list"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:paddingTop="2dip"/>
+        android:paddingBottom="@dimen/doc_type_paddingBottom"
+        android:paddingLeft="@dimen/doc_type_paddingLeft"
+        android:paddingTop="@dimen/doc_type_paddingTop"
+        android:maxLines="1"
+        android:ellipsize="end"/>
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/docype"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:paddingRight="5dip"
-        android:paddingTop="2dip"
-        android:textStyle="bold"
-        android:textSize="@dimen/doc_title_size"/>
-
-    <TextView
-        android:id="@+id/authors"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:paddingTop="2dip"
-        android:textColor="#000080"
-        android:text="authors" />
-
-    <TextView
-        android:id="@+id/source"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/authors"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:paddingTop="2dip"
-        android:textStyle="bold"
-        android:text="Genome biology and evolution" />
-
-    <TextView
-        android:id="@+id/year"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/source"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:paddingTop="2dip"
-        android:text="2013 vol. 5 (3) pp. 559-71" />
-
-    <RelativeLayout 
-    android:layout_width="fill_parent"
-    android:id = "@+id/relative_abstract"
-    android:layout_height="1dp"
-	android:background="#cccccc"
-	android:layout_below="@+id/year"
-    android:orientation="horizontal" >
-    
-    </RelativeLayout> 
-    <TextView
-        android:id="@+id/abstracts"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/imgarrow"
-        android:layout_below="@+id/relative_abstract"
-        android:minLines="1"
-        android:maxLines="5"
-        android:ellipsize="end"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:paddingTop="2dip"
-        android:text="wwwwwwwwwwwwwwwwwqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqddddddddddddddddddddddddddddddddddddddddddddddddddddddddhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" />
-
-    <ImageView
-        android:id="@+id/imgarrow"
-        android:layout_width="30dip"
-        android:layout_height="30dip"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/abstracts"
-        android:layout_marginTop="30dp"
-        android:padding="8dp"
-        android:src="@drawable/arrow" />
-    
-    <RelativeLayout 
-    android:layout_width="fill_parent"
-    android:id = "@+id/relative_abstract2"
-    android:layout_height="1dp"
-	android:background="#cccccc"
-	android:layout_below="@+id/abstracts"
-    android:orientation="horizontal" >
-    
-    </RelativeLayout> 
-    
-    
-    <TextView
-        android:id="@+id/tagtitle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:text="Tag"
-        android:paddingTop="2dip"
-        android:layout_below="@+id/relative_abstract2" />
-
-    <EditText
-        android:id="@+id/editTag"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tagtitle"
-        android:ems="10"
-        android:clickable="true"
-        android:editable="false"
-        android:background="#ffffff" >
-    </EditText>
-    
-    <TextView
-        android:id="@+id/notestitle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:text="Notes"
-        android:paddingTop="2dip"
-        android:layout_below="@+id/editTag" />
-
-    <EditText
-        android:id="@+id/editNotes"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/notestitle"
-        android:ems="10"
-        android:clickable="true"
-        android:editable="false"
-        android:background="#ffffff" >
-    </EditText>
-    
-    <TextView
-        android:id="@+id/urlTitle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:text="Url"
-        android:paddingTop="2dip"
-        android:layout_below="@+id/editNotes" />
-
-        <TextView
-        android:id="@+id/url"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/urlTitle"
-        android:paddingBottom="2dip"
-        android:paddingLeft="5dip"
-        android:paddingTop="2dip"
-        android:text="www.google.com" />
 </RelativeLayout>
 
 
 </ScrollView>
 
+
+
+
+</RelativeLayout>

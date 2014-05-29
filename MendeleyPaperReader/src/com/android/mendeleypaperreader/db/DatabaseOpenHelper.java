@@ -18,6 +18,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String TABLE_DOCUMENT_DETAILS = "document_details";
 	public final static String TABLE_AUTHORS = "authors";
 	public final static String TABLE_FOLDERS = "folders";
+	public final static String TABLE_FILES = "files";
+	
 	
 	public final static String _ID = "_id";
 	public final static String TYPE = "type";
@@ -52,7 +54,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String STARRED = "starred";
 	public final static String AUTHORED = "authored";
 	public final static String CONFIRMED = "confirmed";
-	public final static String HIDDEN = "hidden";	
+	public final static String HIDDEN = "hidden";
+	public final static String IS_DOWNLOAD = "is_download";
 	public final static String DOC_DETAILS_ID = "doc_details_id";
 	public final static String AUTHOR_NAME = "author_name";
 	public final static String FOLDER_ID = "folder_id";
@@ -68,10 +71,12 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String ANNOTATION_LAST_MODIFIED = "last_modified";
 	public final static String ANNOTATION_CREATED = "created";
 	public final static String ANNOTATION_TEXT = "text";
-	public final static String ANNOTATION_AUTHOR_OBJECT = "author_object";
-	public final static String ANNOTATION_PREVIOUS_ID = "previous_id";
-	public final static String ANNOTATION_DOCUMENT_ID = "document_id";
-
+	public final static String FILE_ID = "file_id";
+	public final static String FILE_NAME = "file_name";
+	public final static String FILE_MIME_TYPE = "mime_type";
+	public final static String FILE_DOC_ID = "document_id";
+	public final static String FILE_FILEHASH = "filehash"; 
+	
 
 	final static String[] document_details_columns = { _ID, TYPE, MONTH, YEAR, LAST_MODIFIED, DAY, GROUP_ID, SOURCE, TITLE, REVISION, IDENTIFIERS, ABSTRACT, PROFILE_ID, AUTHORS, ADDED, PAGES, VOLUME, ISSUE, WEBSITE, PUBLISHER, CITY, EDITION, INSTITUTION, SERIES, CHAPTER, EDITORS, READ, STARRED, AUTHORED, CONFIRMED, HIDDEN};
 	final static String[] document_titles_columns = {TITLE, AUTHORS, SOURCE, YEAR};
@@ -79,12 +84,12 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final private static String CREATE_TABLE_AUTHORS = "CREATE TABLE authors (" + DOC_DETAILS_ID + " TEXT, "
 			+ AUTHOR_NAME + " TEXT, PRIMARY KEY (" + DOC_DETAILS_ID +","+ AUTHOR_NAME +" ) ) ";
 	
+	final private static String CREATE_TABLE_FILE = "CREATE TABLE files (" + FILE_ID + " TEXT, "
+			+ FILE_NAME + " TEXT, " + FILE_MIME_TYPE + " TEXT, " + FILE_DOC_ID + " TEXT, " + FILE_FILEHASH + " TEXT, PRIMARY KEY (" + FILE_ID +") ) ";
+	
+	
 	final private static String CREATE_TABLE_FOLDERS = "CREATE TABLE folders (" + FOLDER_ID + " TEXT, " + FOLDER_ADDED + " TEXT, " + FOLDER_PARENT + " TEXT, " + FOLDER_GROUP + " TEXT, "
 			+ FOLDER_NAME + " TEXT, PRIMARY KEY (" + FOLDER_ID + ") ) ";
-	
-	
-	final private static String CREATE_TABLE_ANNOTATIONS = "CREATE TABLE folders (" + _ID + " TEXT, " + ANNOTATION_COLOR + " TEXT, " + ANNOTATION_POSITIONS + " TEXT, " + ANNOTATION_PRIVACY_LEVEL + " TEXT, "
-			+ ANNOTATION_FILEHASH + " TEXT" + ANNOTATION_LAST_MODIFIED + " TEXT " + ANNOTATION_CREATED + " TEXT " + ANNOTATION_TEXT + " TEXT " +  ANNOTATION_AUTHOR_OBJECT + " TEXT " +  ANNOTATION_PREVIOUS_ID + " TEXT " + ANNOTATION_DOCUMENT_ID + " TEXT, PRIMARY KEY (" + _ID + ") ) ";
 	
 
 	final private static String CREATE_TABLE_DOCUMENT_DETAILS =
@@ -146,9 +151,6 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		
-		
-		
-		//if (!doesDatabaseExist(mContext,DATABASE_NAME)){
 			
 			if (Globalconstant.LOG)
 				Log.e(Globalconstant.TAG, "DATABASE CREATE!!!!!!!");
@@ -156,10 +158,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			db.execSQL(CREATE_TABLE_DOCUMENT_DETAILS);
 			db.execSQL(CREATE_TABLE_AUTHORS);
 			db.execSQL(CREATE_TABLE_FOLDERS);
-			//db.execSQL(CREATE_TABLE_ANNOTATIONS);
-			
-			
-		//}
+			db.execSQL(CREATE_TABLE_FILE);
 		
 		
 	}
@@ -174,11 +173,6 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	}
 	
 	
-	
-	private static boolean doesDatabaseExist(Context context, String dbName) {
-	    File dbFile = context.getDatabasePath(dbName);
-	    return dbFile.exists();
-	}
 	
 	
 }

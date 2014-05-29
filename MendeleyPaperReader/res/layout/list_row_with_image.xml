@@ -3,20 +3,20 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="2dip" >
+    android:padding="@dimen/doc_type_paddingTop" >
 
     <LinearLayout
         android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dip"
+        android:layout_marginRight="@dimen/doc_title_paddingRight"
         android:padding="3dip" >
 
         <ImageView
             android:id="@+id/list_image"
-            android:layout_width="30dip"
-            android:layout_height="30dip"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
             android:src="@drawable/document_folder_blue" />
 
         <TextView
@@ -33,11 +33,11 @@
     </LinearLayout>
 
     <ImageView
-        android:layout_width="30dip"
-        android:layout_height="30dip"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:padding="8dp"
+        android:padding="@dimen/pading"
         android:src="@drawable/arrow" />
 
 </RelativeLayout>

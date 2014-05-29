@@ -11,17 +11,17 @@
 
         <ImageView
             android:id="@+id/list_image"
-            android:layout_width="20dip"
-            android:layout_height="20dip"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/alldocuments" />
+            android:layout_width="@dimen/image_size2"
+            android:layout_height="@dimen/image_size2"
+            android:layout_marginTop="@dimen/pading" />
+            <!--  android:src="@drawable/alldocuments" />-->
 
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="30dp"
+            android:layout_marginRight="@dimen/image_size"
             android:orientation="horizontal"
-            android:padding="8dp" >
+            android:padding="@dimen/pading" >
 
             <TextView
                 android:id="@+id/Doctitle"
@@ -44,7 +44,7 @@
                 android:lines="1"
                 android:maxLines="1"
                 android:text=""
-                android:textSize="12sp" 
+                android:textSize="@dimen/authors_size" 
                 android:textColor="#000080" />
 
             <TextView
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/authors"
                 android:text=""
-                android:textSize="12sp" 
+                android:textSize="@dimen/authors_size" 
  				android:textColor="#5d5d5d" />
             
         </RelativeLayout>
@@ -62,11 +62,11 @@
    
 
     <ImageView
-        android:layout_width="30dip"
-        android:layout_height="30dip"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:padding="8dp"
+        android:padding="@dimen/pading"
         android:src="@drawable/arrow" />
 
 </RelativeLayout>

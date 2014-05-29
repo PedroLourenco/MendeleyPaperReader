@@ -8,9 +8,9 @@
         android:id="@+id/detailTitle"
     	android:layout_width="fill_parent"   
     	android:layout_height="wrap_content"  
-    	android:paddingTop="2dip"  
-    	android:paddingBottom="2dip"  
-    	android:paddingLeft="5dip" 
+    	android:paddingTop="@dimen/doc_type_paddingTop"  
+    	android:paddingBottom="@dimen/doc_type_paddingBottom"  
+    	android:paddingLeft="@dimen/doc_type_paddingLeft" 
     	android:background="@drawable/gradient_bg_list"
     	style="?android:attr/windowTitleStyle" /> 
     

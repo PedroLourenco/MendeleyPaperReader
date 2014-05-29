@@ -8,7 +8,7 @@
     <string name="auth">Sing in</string>
     <string name="createaccount">Create account</string>
     <string name="my_library"><b>My Library</b></string>
-    <string name="my_folders"><b>My Folders</b></string>
+    <string name="my_folders"><b>Folders</b></string>
      <string name="exit_msg">Press again to exit.</string>
     
     <string-array name="Titles">
@@ -18,6 +18,12 @@
         <item>My Publications</item>
         <item>Trash</item>
     </string-array>
-   
+    
+    
+    <string name="catalog_ids">Catalog IDS</string>
+    <string name="doi">DOI:</string>
+    <string name="pmid">PMID:</string>
+    <string name="issn">ISSN:</string>
+    <string name="urls">URLS</string>
 
 </resources>

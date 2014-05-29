@@ -1,4 +1,4 @@
-package com.android.mendeleypaperreader.utl;
+package com.android.mendeleypaperreader.adapter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 
-public class SeparatedListAdapter extends BaseAdapter {
+ public class SeparatedListAdapter extends BaseAdapter {
 	
 	public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();
 	public final ArrayAdapter<String> headers;

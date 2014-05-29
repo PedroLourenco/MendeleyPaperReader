@@ -21,6 +21,8 @@ public class LoadData {
 		mtoken = token;
 	}
 
+	
+	
 	public void GetUserLibrary(String url) {
 
 		ContentValues values = new ContentValues();
@@ -98,7 +100,9 @@ public class LoadData {
 
 				}
 
-				values.put(DatabaseOpenHelper.AUTHORS, authors);
+				
+				
+				values.put(DatabaseOpenHelper.AUTHORS, authors.substring(0,authors.length()-1));
 				values.put(DatabaseOpenHelper.ADDED,lib.optString(Globalconstant.ADDED));
 				values.put(DatabaseOpenHelper.PAGES,lib.optString(Globalconstant.PAGES));
 				values.put(DatabaseOpenHelper.VOLUME,lib.optString(Globalconstant.VOLUME));
@@ -122,6 +126,8 @@ public class LoadData {
 
 				Uri uri = mcontext.getContentResolver().insert(MyContentProvider.CONTENT_URI_DOC_DETAILS, values);
 
+				get_files_doc_id(doc_detail_id);
+				
 			}
 
 		} catch (Exception e) {
@@ -181,14 +187,14 @@ public class LoadData {
 	}
 	
 	
-	public void get_docs_in_folders(String folder_id){
-		
+	private void get_docs_in_folders(String folder_id){
+
 		ContentValues values = new ContentValues();
 		String auxurl = Globalconstant.get_docs_in_folders;
 		String where= null;
 		//String [] selectionArgs = {};
 		String url = auxurl.replace("id", folder_id) + mtoken; 
-		
+
 		if (Globalconstant.LOG)
 			Log.d(Globalconstant.TAG, url);
 		JSONParser jParser = new JSONParser();
@@ -196,31 +202,88 @@ public class LoadData {
 		String strResponse = jParser.getJSONFromUrl(url);
 
 		Log.d(Globalconstant.TAG, ":::::::LoadData  - Docs in Folders:::::");
-		
+
 		try {
 
 			JSONObject jcols = new JSONObject(strResponse);
 			JSONArray docs_ids = (JSONArray) jcols.get(Globalconstant.DOCUMENTS_ID);
 			Log.d(Globalconstant.TAG, "jcols.length(): " + docs_ids.length());
 
-			
+
 			for (int i = 0; i < docs_ids.length(); i++) {
 
 				String doc_id = docs_ids.get(i).toString();
 				values.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
 				Log.d(Globalconstant.TAG, "DOCUMENTS_ID: " + doc_id);
-				
+
 				where = DatabaseOpenHelper._ID + " = '" + doc_id + "'";
-				
-			    Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
-			    mcontext.getContentResolver().update(uri, values, where, null);
-	}
-		
+
+				Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+				mcontext.getContentResolver().update(uri, values, where, null);
+			}
+
 		} catch (Exception e) {
 			if (Globalconstant.LOG) {
 				Log.e(Globalconstant.TAG, "Got exception when parsing online data");
 				Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
 			}
 		}
-}
+		
+	}
+		
+	
+	
+	
+private void get_files_doc_id(String doc_id){	
+		
+		ContentValues values = new ContentValues();
+		
+		String auxurl = Globalconstant.get_files_by_doc_id;
+		String url = auxurl.replace("doc_id", doc_id) + mtoken; 
+		
+		Log.d(Globalconstant.TAG, "doc_id: " + doc_id);
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, url);
+		JSONParser jParser = new JSONParser();
+		// get JSON data from URL
+		String strResponse = jParser.getJSONFromUrl(url);
+
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES:::::");
+		
+		try {
+
+			JSONArray jcols = new JSONArray(strResponse);
+			
+			Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES:::::" + jcols.length());
+
+			for (int i = 0; i < jcols.length(); i++) {
+
+				JSONObject lib = jcols.getJSONObject(i);
+
+				values.put(DatabaseOpenHelper.FILE_ID,lib.optString(Globalconstant.FILE_ID));
+				Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES:::::" + lib.optString(Globalconstant.FILE_ID));
+				values.put(DatabaseOpenHelper.FILE_DOC_ID,	lib.optString(Globalconstant.FILE_DOC_ID));
+				Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES:::::" + lib.optString(Globalconstant.FILE_DOC_ID));
+				values.put(DatabaseOpenHelper.FILE_MIME_TYPE,lib.optString(Globalconstant.FILE_MIME_TYPE));
+				Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES:::::" + lib.optString(Globalconstant.FILE_MIME_TYPE));
+				values.put(DatabaseOpenHelper.FILE_NAME,	lib.optString(Globalconstant.FILE_NAME));
+				Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES:::::" + lib.optString(Globalconstant.FILE_NAME));
+				values.put(DatabaseOpenHelper.FILE_FILEHASH,lib.optString(Globalconstant.FILE_FILEHASH));
+				
+			}
+			} catch (Exception e) {
+				if (Globalconstant.LOG) {
+					Log.e(Globalconstant.TAG, "Got exception when parsing online data");
+					Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
+				}
+			}
+
+		Uri uri = mcontext.getContentResolver().insert(MyContentProvider.CONTENT_URI_FILES, values);
+
+	}
+	
+	
+
+
+	
 }

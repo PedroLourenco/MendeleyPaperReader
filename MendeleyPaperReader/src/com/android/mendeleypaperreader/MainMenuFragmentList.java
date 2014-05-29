@@ -2,14 +2,11 @@ package com.android.mendeleypaperreader;
 
 import java.util.Arrays;
 import java.util.List;
-
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -22,353 +19,264 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.android.mendeleypaperreader.adapter.ListTitleAdapter;
+import com.android.mendeleypaperreader.adapter.MergeAdapter;
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
-import com.android.mendeleypaperreader.utl.GetAccessToken;
 import com.android.mendeleypaperreader.utl.Globalconstant;
-import com.android.mendeleypaperreader.utl.LoadData;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
-import com.android.mendeleypaperreader.utl.SeparatedListAdapter;
-
 
 
 public class MainMenuFragmentList extends ListFragment implements LoaderCallbacks<Cursor>{
 
-	
+
 	boolean mDualPane;
-    int mCurCheckPosition = 0;
-        
-    //ListView list;
-    SimpleCursorAdapter mAdapter;
-    private GetAccessToken jParser = new GetAccessToken();
-    private String description;  
-    CustomAdapterLibrary  lAdapter;
-   
-   
-    
-    Integer[] imageId = {
-            R.drawable.alldocuments,
-            R.drawable.clock,
-            R.drawable.starim,
-            R.drawable.person,
-            R.drawable.empty_trash
-        };
+	int mCurCheckPosition = 0;
 
-@Override 
-public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+	//ListView list;
+	SimpleCursorAdapter mAdapter;
+	private String description;  
+	CustomAdapterLibrary  lAdapter;
 
-      
-       
-        
-        
-        SeparatedListAdapter adapter = new SeparatedListAdapter(this.getActivity());
-        
-        
-        // Use a custom adapter so we can have something more than the just the text view filled in.
-        lAdapter =  new CustomAdapterLibrary (getActivity (),  R.id.title, Arrays.asList (Globalconstant.MYLIBRARY));
-        
-        adapter.addSection("My Library", lAdapter);
-        
-        
-            String[] dataColumns = {"_id"}; //column DatabaseOpenHelper.FOLDER_NAME
-            int[] viewIDs = { R.id.title };
-            
-            
-            mAdapter = new SimpleCursorAdapter(getActivity().getApplicationContext(), R.layout.list_row_with_image, null, dataColumns, viewIDs, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-            
-            adapter.addSection("My Folders", mAdapter);
-            
-            setListAdapter(adapter);
 
-            getActivity().getSupportLoaderManager().initLoader(0, null, this);
-         	
-         	if (Globalconstant.LOG)
-         		LoaderManager.enableDebugLogging(true);     
-             
-           
-            
-         // Check to see if we have a frame in which to embed the details
-            // fragment directly in the containing UI.
-            View detailsFrame = getActivity().findViewById(R.id.details);
-            mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+	Integer[] imageId = {
+			R.drawable.alldocuments,
+			R.drawable.clock,
+			R.drawable.starim,
+			R.drawable.person,
+			R.drawable.empty_trash
+	};
 
-            if (savedInstanceState != null) {
-                // Restore last state for checked position.
-                mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
-            }
-
-            if (mDualPane) {
-                // In dual-pane mode, the list view highlights the selected item.
-                getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-                // Make sure our UI is in the correct state.
-                showDetails(mCurCheckPosition, description);
-            }
-      
-    }
+	@Override 
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
 
 
+		// Use a custom adapter so we can have something more than the just the text view filled in.
+		lAdapter =  new CustomAdapterLibrary (getActivity (),  R.id.title, Arrays.asList (Globalconstant.MYLIBRARY));
 
-@Override 
-public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-    	
-    	int aux_position;
-    	if (Globalconstant.LOG)
-     		Log.d(Globalconstant.TAG, "mDualPane  FOLDERS:" + mDualPane);  
-    	
-    	// position <= 5 - fixed folders
-    	if( position <= 5){
-    		aux_position = position - 1;
-    		description = lAdapter.getItem(aux_position);
-    		
-    	}
-    	else{
-    		//get position from folders cursor
-    		aux_position = position - 7;
-    		
-    		Cursor c = mAdapter.getCursor();
-    		c.moveToPosition(aux_position);
-    		description = c.getString(c.getColumnIndex("_id"));
-    	}
-    	
-    	showDetails(position, description);
-    	
-    	Toast.makeText(getActivity().getApplicationContext(), "Click on folder!!", Toast.LENGTH_SHORT).show();
-       
-    }
-
-    /**
-     * Helper function to show the details of a selected item, either by
-     * displaying a fragment in-place in the current UI, or starting a
-     * whole new activity in which it is displayed.
-     */
-    void showDetails(int index, String description ) {
-        mCurCheckPosition = index;
+		String[] dataColumns = {"_id"}; //column DatabaseOpenHelper.FOLDER_NAME
+		int[] viewIDs = { R.id.title };
 
 
-    	if (Globalconstant.LOG) 
-    	Log.d(Globalconstant.TAG, "ITEM SELECTED: " + description);
-        
-    	
-        
-        if (mDualPane) {
-            
-        	
-        	if (Globalconstant.LOG) 
-            	Log.d(Globalconstant.TAG, "mDualPane: " + mDualPane);
-        	
-        	// We can display everything in-place with fragments, so update
-            // the list to highlight the selected item and show the data.
-            getListView().setItemChecked(index, true);
+		mAdapter = new SimpleCursorAdapter(getActivity().getApplicationContext(), R.layout.list_row_with_image, null, dataColumns, viewIDs, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-            // Check what fragment is currently shown, replace if needed.
-            MainMenuActivityFragmentDetails details = (MainMenuActivityFragmentDetails)
-                    getFragmentManager().findFragmentById(R.id.details);
-            
-           
-            
-            if (details == null || details.getShownIndex() != index) {
-                // Make new fragment to show this selection.
-                details = MainMenuActivityFragmentDetails.newInstance(index, description);
+		// Add section to list and merge two adatpers
+		MergeAdapter mergeAdapter = new MergeAdapter();
+		mergeAdapter.addAdapter(new ListTitleAdapter(getActivity().getApplicationContext(), getResources().getString(R.string.my_library), lAdapter));
+		mergeAdapter.addAdapter(lAdapter);
+		mergeAdapter.addAdapter(new ListTitleAdapter(getActivity().getApplicationContext(), getResources().getString(R.string.my_folders), mAdapter));
+		mergeAdapter.addAdapter(mAdapter);
 
-                // Execute a transaction, replacing any existing fragment
-                // with this one inside the frame.
-                android.support.v4.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.details, details);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
-            }
+		//setListAdapter(adapter);
+		mergeAdapter.setNoItemsText("Nothing to display. This list is empty.");
 
-        } else {
-            // Otherwise we need to launch a new activity to display
-            // the dialog fragment with selected text.
-        	
-            Intent intent = new Intent();
-            intent.setClass(getActivity(), DetailsActivity.class);
-            intent.putExtra("index", index);
-            intent.putExtra("description", description);
-            startActivity(intent);
-        }
-    }
+		setListAdapter(mergeAdapter);
 
+		getActivity().getSupportLoaderManager().initLoader(0, null, this);
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-	
-	 
-	String[] projection = {DatabaseOpenHelper.FOLDER_NAME + " as _id"}; 
-	
-	
-	if (Globalconstant.LOG)
-		Log.d(Globalconstant.TAG,"onCreateLoader  Folders");
-	Uri uri = MyContentProvider.CONTENT_URI_FOLDERS;
-    return new CursorLoader(getActivity().getApplicationContext(), uri, projection, null, null, null);
-}
-
-
-
-@Override
-public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-	mAdapter.swapCursor(cursor);
-	if (Globalconstant.LOG)
-		Log.d(Globalconstant.TAG,"onLoadFinished Folders");
-	
-  
-}
-
-
-
-@Override
-public void onLoaderReset(Loader<Cursor> cursor) {
-	
-	if (Globalconstant.LOG)
-		Log.d(Globalconstant.TAG,"onLoaderReset  Folders");
-	
-	if(isAdded()){
-		getLoaderManager().restartLoader(0, null, this);
-	}
-	else{
-		mAdapter.swapCursor(null);
-	}	
-	
-}
-
-public void onResume() {
-    super.onResume();
-    // Restart loader so that it refreshes displayed items according to database
-    if (Globalconstant.LOG)
-    	Log.d(Globalconstant.TAG,"onResume()   Folders");
-    getLoaderManager().restartLoader(0, null, this);
-} 
-
-
-/**
- * CustomAdapter
- *
- */
-    private class CustomAdapterLibrary extends ArrayAdapter<String> {
-
-        private Context mContext;
-        
-    /**
-     * Constructor
-     */
-
-    public CustomAdapterLibrary(Context context, int textViewResourceId, List<String> items) 
-    {
-    	super(context, textViewResourceId, items);
-       mContext = context;
-    }
-
-    /**
-     * getView
-     *
-     * Return a view that displays an item in the array.
-     *
-     */
-
-    public View getView (int position, View convertView, ViewGroup parent) 
-    {
-       View v = convertView;
-    	if (v == null) {
-    		LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    		 v = vi.inflate (R.layout.list_row_with_image, null, true);
-    	}
-
-       View itemView = v;
-
-       TextView txtTitle = (TextView) itemView.findViewById(R.id.title);
-		ImageView imageView = (ImageView) itemView.findViewById(R.id.list_image);
-		txtTitle.setText(Globalconstant.MYLIBRARY[position]);
-		
-		imageView.setImageResource(imageId[position]);
-
-       return itemView;
-    }
-
-    } // end class CustomAdapter
-
-   
-
-
-
-private class ProgressTask extends AsyncTask<String, Void, Boolean> {
-    private ProgressDialog dialog;
-   
-   
-
-    
-    public ProgressTask() {
-        
-    	
-    	dialog = new ProgressDialog(getActivity());
-    }
-
-  
-    protected void onPreExecute() {
-    	dialog.setMessage("Sync data");
-    	dialog.show();
-        
-       
-        
-    }
-
-    
-    protected void onPostExecute(final Boolean success) {
-    	if (dialog.isShowing()) {
-    	   dialog.dismiss();
-    	}
-    	
-    	//Save Flag to control data upload
-    	 //Save access token in shared preferences
-    	jParser.savePreferences(getActivity().getApplicationContext(), "BD_Uploded", "YES", Globalconstant.shared_file_name);
-	   	
-    	//update listview with folders name
-    	//onLoaderReset(null);
-    	//startloader();
-    	
-    }
-
-    protected Boolean doInBackground(final String... args) {
-
-       
-    	GetAccessToken token = new GetAccessToken();
-		
-		String tokens = token.LoadPreference(getActivity().getApplicationContext(), "access_token", Globalconstant.shared_file_name);
-		LoadData load = new LoadData(getActivity().getApplicationContext(), tokens);
-		load.GetUserLibrary(Globalconstant.get_user_library_url+tokens);
-		load.getFolders(Globalconstant.get_user_folders_url+tokens);
-		
 		if (Globalconstant.LOG)
-			Log.d(Globalconstant.TAG, "Fim do Load Data");
-		return true;
-       
-    }
-}	 
+			LoaderManager.enableDebugLogging(true);     
+
+
+
+		// Check to see if we have a frame in which to embed the details
+		// fragment directly in the containing UI.
+		View detailsFrame = getActivity().findViewById(R.id.details);
+
+		mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+
+		if (savedInstanceState != null) {
+			// Restore last state for checked position.
+			mCurCheckPosition = savedInstanceState.getInt("curChoice", 1);
+		}
+
+		if (mDualPane) {
+			// In dual-pane mode, the list view highlights the selected item.
+			getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+			// Make sure our UI is in the correct state.
+			showDetails(mCurCheckPosition, description);
+		}
+	}
 
 
 
 
+	@Override 
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+	}
+
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+
+		int aux_position;
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "mDualPane  FOLDERS:" + mDualPane);  
+		Log.d(Globalconstant.TAG, "mDualPane  position:" + position);
+
+		// position <= 5 - fixed folders
+		if( position > 0 && position < 5){
+			aux_position = position - 1;
+			description = lAdapter.getItem(aux_position);
+			showDetails(position, description);
+
+		}
+		else if(position > 6){
+			//get position from folders cursor
+			aux_position = position - 7;
+
+			Cursor c = mAdapter.getCursor();
+			c.moveToPosition(aux_position);
+			description = c.getString(c.getColumnIndex("_id"));
+			showDetails(position, description);
+		}
+
+	}
+
+	/**
+	 * Helper function to show the details of a selected item, either by
+	 * displaying a fragment in-place in the current UI, or starting a
+	 * whole new activity in which it is displayed.
+	 */
+	void showDetails(int index, String description ) {
+		mCurCheckPosition = index;
+
+
+		if (Globalconstant.LOG) 
+			Log.d(Globalconstant.TAG, "ITEM SELECTED: " + description);
+
+
+		if (mDualPane) {
+
+			if (Globalconstant.LOG) 
+				Log.d(Globalconstant.TAG, "mDualPane: " + mDualPane);
+
+			// We can display everything in-place with fragments, so update
+			// the list to highlight the selected item and show the data.
+			getListView().setItemChecked(index, true);
+
+			// Check what fragment is currently shown, replace if needed.
+			MainMenuActivityFragmentDetails details = (MainMenuActivityFragmentDetails)
+					getFragmentManager().findFragmentById(R.id.details);
+
+			if (details == null || details.getShownIndex() != index) {
+				// Make new fragment to show this selection.
+				details = MainMenuActivityFragmentDetails.newInstance(index, description);
+
+				// Execute a transaction, replacing any existing fragment
+				// with this one inside the frame.
+				android.support.v4.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
+				ft.replace(R.id.details, details);
+				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				ft.commit();
+			}
+
+		} else {
+			// Otherwise we need to launch a new activity to display
+			// the dialog fragment with selected text.
+
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), DetailsActivity.class);
+			intent.putExtra("index", index);
+			intent.putExtra("description", description);
+			startActivity(intent);
+		}
+	}
+
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+
+
+		String[] projection = {DatabaseOpenHelper.FOLDER_NAME + " as _id"};
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG,"onCreateLoader  Folders");
+		Uri uri = MyContentProvider.CONTENT_URI_FOLDERS;
+		return new CursorLoader(getActivity().getApplicationContext(), uri, projection, null, null, null);
+	}
 
 
 
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		mAdapter.swapCursor(cursor);
+	}
 
 
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> cursor) {
+
+		if(isAdded()){
+			getLoaderManager().restartLoader(0, null, this);
+		}
+		else{
+			mAdapter.swapCursor(null);
+		}	
+
+	}
+
+	public void onResume() {
+		super.onResume();
+		// Restart loader so that it refreshes displayed items according to database
+
+		getLoaderManager().restartLoader(0, null, this);
+	} 
+
+
+	/**
+	 * CustomAdapter
+	 *
+	 */
+	private class CustomAdapterLibrary extends ArrayAdapter<String> {
+
+		private Context mContext;
+
+		/**
+		 * Constructor
+		 */
+
+		public CustomAdapterLibrary(Context context, int textViewResourceId, List<String> items) 
+		{
+			super(context, textViewResourceId, items);
+			mContext = context;
+		}
+
+		/**
+		 * getView
+		 *
+		 * Return a view that displays an item in the array.
+		 *
+		 */
+
+		public View getView (int position, View convertView, ViewGroup parent) 
+		{
+
+			View v = convertView;
+			if (v == null) {
+				LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				v = vi.inflate (R.layout.list_row_with_image, null, true);
+			}
+
+			View itemView = v;
+
+			TextView txtTitle = (TextView) itemView.findViewById(R.id.title);
+			ImageView imageView = (ImageView) itemView.findViewById(R.id.list_image);
+			txtTitle.setText(Globalconstant.MYLIBRARY[position]);
+
+			imageView.setImageResource(imageId[position]);
+
+			return itemView;
+		}
+
+	} 
 }
 
 

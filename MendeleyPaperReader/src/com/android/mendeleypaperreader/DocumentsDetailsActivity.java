@@ -1,176 +1,229 @@
 package com.android.mendeleypaperreader;
 
-import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
-import com.android.mendeleypaperreader.utl.Globalconstant;
-import com.android.mendeleypaperreader.utl.MyContentProvider;
-
-import android.annotation.SuppressLint;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
-import android.app.ListActivity;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
+import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
+import com.android.mendeleypaperreader.utl.Globalconstant;
+import com.android.mendeleypaperreader.utl.MyContentProvider;
 
-@SuppressLint("NewApi")
+
 public class DocumentsDetailsActivity extends Activity  {
-	
+
 	Cursor mAdapter;
-	TextView doc_abstract; 
+	TextView doc_abstract;
+	TextView doc_url;
+	TextView doc_pmid;
+	TextView doc_issn;
+	TextView doc_catalog;
+	String mAbstract;
+	String t_doc_url;
+	String issn;
+	String doi;
+	String pmid;
 
 	@Override
-	  protected void onCreate(Bundle savedInstanceState) {
-	    super.onCreate(savedInstanceState);
-	   
-	    doc_abstract = new TextView(this);
-	   
-	    Log.d(Globalconstant.TAG, "DOC_DETAILS - doc_id: " + getDocId());
-	   
-	    
-	    fillData(getdocDetails());
-	    
-	    
-	    
-	    
-	    OnClickListener Click_on_abstract = new OnClickListener() {
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_documents_details);
 
-	        public void onClick(View v) {
-	            // TODO Open new activity with abstract
-	            
-	            Log.d(Globalconstant.TAG, "CLick on abstract");
-	            
-	            
-	        }
-	    };
-	    
-	    doc_abstract.setOnClickListener(Click_on_abstract);
+		doc_abstract = new TextView(this);
+		doc_url = new TextView(this);
+		doc_pmid = new TextView(this);
+		doc_issn = new TextView(this);
+		doc_catalog = new TextView(this);
+
+		if(Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "DOC_DETAILS - doc_id: " + getDocId());
+
+
+		//Get to populate activity
+		fillData(getdocDetails());
+
+
+
+		//Onlcick on abstract
+		OnClickListener click_on_abstract = new OnClickListener() {
+
+			public void onClick(View v) {
+				Intent abstract_intent = new Intent(getApplicationContext(), AbstractDescriptionActivity.class);
+				abstract_intent.putExtra("abstract", mAbstract);
+				startActivity(abstract_intent);
+			}
+		};
+
+		doc_abstract.setOnClickListener(click_on_abstract);
+
+		//onclick on url link
+		OnClickListener click_on_url = new OnClickListener() {
+
+			public void onClick(View v) {
+				Intent internetIntent = new Intent(Intent.ACTION_VIEW,
+						Uri.parse(t_doc_url));
+				internetIntent.setComponent(new ComponentName("com.android.browser","com.android.browser.BrowserActivity"));
+				internetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				getApplicationContext().startActivity(internetIntent);   
+			}
+		};
+
+		doc_url.setOnClickListener(click_on_url);
+
+
+		//onclick on PMID link
+		OnClickListener click_on_pmid = new OnClickListener() {
+
+			public void onClick(View v) {
+				String url = Globalconstant.PMID_URL+pmid; 
+				Intent internetIntent = new Intent(Intent.ACTION_VIEW,
+
+						Uri.parse(url));
+				internetIntent.setComponent(new ComponentName("com.android.browser","com.android.browser.BrowserActivity"));
+				internetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				getApplicationContext().startActivity(internetIntent);   
+			}
+		};
+
+
+
+
+		doc_pmid.setOnClickListener(click_on_pmid);
+
+
+		//onclick on ISSN link
+		OnClickListener click_on_issn = new OnClickListener() {
+
+			public void onClick(View v) {
+				String url = Globalconstant.ISSN_URL+issn; 
+				Intent internetIntent = new Intent(Intent.ACTION_VIEW,
+						Uri.parse(url));
+				internetIntent.setComponent(new ComponentName("com.android.browser","com.android.browser.BrowserActivity"));
+				internetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				getApplicationContext().startActivity(internetIntent);   
+			}
+		};
+
+
+		doc_issn.setOnClickListener(click_on_issn);
+
+		//onclick on DOI link
+		OnClickListener click_on_doi = new OnClickListener() {
+
+			public void onClick(View v) {
+				String url = Globalconstant.DOI_URL+doi; 
+				Intent internetIntent = new Intent(Intent.ACTION_VIEW,
+						Uri.parse(url));
+				internetIntent.setComponent(new ComponentName("com.android.browser","com.android.browser.BrowserActivity"));
+				internetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				getApplicationContext().startActivity(internetIntent);
+			}
+		};
+		doc_catalog.setOnClickListener(click_on_doi);
+
+
+		ImageView share = (ImageView) findViewById(R.id.share);
+
+		//onclick on Share button link
+		OnClickListener click_on_share_icon = new OnClickListener() {
+
+			public void onClick(View v) {
+				Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND); 
+				sharingIntent.setType("text/plain");
+				String shareBody = "Here is the share content body";
+				sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+				startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+			}
+		};
+		share.setOnClickListener(click_on_share_icon);
+
 	}
-	
-	
-	
-	
+
+
+
+
 	private String getDocId(){
-		
-	
+
 		Bundle bundle = getIntent().getExtras();
-		
-		String doc_id = bundle.getString("doc_id");
-		
-		return doc_id;
+		return bundle.getString("doc_id");
 	}
 
 
 
-	
+
 	private Cursor getdocDetails(){
-		
-		Log.d(Globalconstant.TAG, "getdocDetails - DOC_DETAILS");
+
+		if(Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "getdocDetails - DOC_DETAILS");
+
 		String doc_id = getDocId();
-		
 		String[] projection = null;
 		String selection = null;
-		
-		projection = new String[] {DatabaseOpenHelper.TYPE + " as _id",  DatabaseOpenHelper.TITLE, DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE , DatabaseOpenHelper.YEAR, DatabaseOpenHelper.VOLUME, DatabaseOpenHelper.PAGES,DatabaseOpenHelper.ISSUE,  DatabaseOpenHelper.ABSTRACT, DatabaseOpenHelper.WEBSITE, DatabaseOpenHelper.DOI, DatabaseOpenHelper.PMID, DatabaseOpenHelper.ISSN };
+
+		projection = new String[] {DatabaseOpenHelper.TYPE + " as _id",  DatabaseOpenHelper.TITLE, DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE , DatabaseOpenHelper.YEAR, DatabaseOpenHelper.VOLUME, DatabaseOpenHelper.PAGES,DatabaseOpenHelper.ISSUE,  DatabaseOpenHelper.ABSTRACT, DatabaseOpenHelper.WEBSITE, DatabaseOpenHelper.DOI, DatabaseOpenHelper.PMID, DatabaseOpenHelper.ISSN, DatabaseOpenHelper.STARRED };
 		selection = DatabaseOpenHelper._ID + " = '" + doc_id +"'";
 		Uri  uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
-		
-		 Log.d(Globalconstant.TAG, "onCreateLoader - DOC_DETAILS");
-		 
-		  return getApplicationContext().getContentResolver().query(uri, projection, selection, null, null);
-		
-	}
-	
-	
-	private void fillData(Cursor cursor){
-		
-		 Log.d(Globalconstant.TAG, "fillData - DOC_DETAILS - " + cursor.getCount());
-		
-		 cursor.moveToPosition(0);
-		 
-		 ScrollView scrollView = new ScrollView(this);
-		 RelativeLayout relativeLayout = new RelativeLayout(this);
-		 relativeLayout.setBackgroundColor(Color.parseColor("#e5e5e5"));
 
-		 //Download button
-		ImageView downloadButton = new ImageView(this);
-		downloadButton.setId(1);
-		downloadButton.setImageResource(R.drawable.download);
-		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.image_size), getResources().getDimensionPixelSize(R.dimen.image_size));
-		lp.setMargins(getResources().getDimensionPixelOffset(R.dimen.pading), getResources().getDimensionPixelOffset(R.dimen.pading), 0, 0);
-		downloadButton.setLayoutParams(lp);
-		relativeLayout.addView(downloadButton); 
-		
-		
-		//Text for button
-		TextView button_title = new TextView(this);
-		
-		button_title.setText("Download Article");
-		button_title.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.d_button_text_size));
-		RelativeLayout.LayoutParams layout_button_title = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-		layout_button_title.setMargins(getResources().getDimensionPixelOffset(R.dimen.d_button_margin_left), getResources().getDimensionPixelOffset(R.dimen.d_button_margin_top), 0, 0);
-		button_title.setLayoutParams(layout_button_title);
-		relativeLayout.addView(button_title); 
-		
-		
-		//Doc Type
-		TextView doc_type = new TextView(this);
-		
-		doc_type.setId(2);
-		doc_type.setText(cursor.getString(cursor.getColumnIndex("_id")));
-		doc_type.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.d_button_text_size));
-		doc_type.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
-		int sdk = android.os.Build.VERSION.SDK_INT;
-		if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-			doc_type.setBackgroundDrawable(getResources().getDrawable(R.drawable.gradient_bg_list));
-		} else {
-			doc_type.setBackground(getResources().getDrawable(R.drawable.gradient_bg_list));
-		}
-		
-		RelativeLayout.LayoutParams layout_doc_type = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-		layout_doc_type.addRule(RelativeLayout.BELOW, downloadButton.getId());
-		layout_doc_type.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
-		doc_type.setLayoutParams(layout_doc_type);
-		relativeLayout.addView(doc_type); 
-		
-		
+		return getApplicationContext().getContentResolver().query(uri, projection, selection, null, null);
+
+	}
+
+
+	private void fillData(Cursor cursor){
+
+		cursor.moveToPosition(0);
+
+		RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativedoc);
+		relativeLayout.setBackgroundColor(Color.parseColor("#e5e5e5"));
+
+
+		TextView doc_type = (TextView) findViewById(R.id.docype);
+		doc_type.setText(cursor.getString(cursor.getColumnIndex("_id")).substring(0, 1).toUpperCase() + cursor.getString(cursor.getColumnIndex("_id")).substring(1)); 
+
+
+		//Starred icon
+		ImageView starred = (ImageView) findViewById(R.id.favorite_star);
+		String aux_starred = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.STARRED)); 
+
+		if(aux_starred.equals("true"))
+			starred.setImageResource(R.drawable.favorite_star);
+
+
+
 		//Document Title
 		TextView doc_tilte = new TextView(this);
 		doc_tilte.setId(3);
 		doc_tilte.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.TITLE)));
-		doc_tilte.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_title_size));
+		doc_tilte.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 		doc_tilte.setTypeface(null, Typeface.BOLD);
 		doc_tilte.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
-		
+
 		RelativeLayout.LayoutParams layout_doc_tilte = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-		layout_doc_tilte.addRule(RelativeLayout.BELOW, doc_type.getId());
+		layout_doc_tilte.addRule(RelativeLayout.BELOW, R.id.docype);
 		layout_doc_tilte.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 		doc_tilte.setLayoutParams(layout_doc_tilte);
 		relativeLayout.addView(doc_tilte); 
-		
+
 		//Document Authors
 		TextView doc_authors = new TextView(this);
 		doc_authors.setId(4);
 		doc_authors.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.AUTHORS)));
-		doc_authors.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.authors_size));
+		doc_authors.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 		doc_authors.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 		doc_authors.setTextColor(Color.parseColor("#000080"));
 		RelativeLayout.LayoutParams layout_doc_authors = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
@@ -178,40 +231,60 @@ public class DocumentsDetailsActivity extends Activity  {
 		layout_doc_authors.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 		doc_authors.setLayoutParams(layout_doc_authors);
 		relativeLayout.addView(doc_authors); 
-		
-		
-		
+
 		//Document Source
 		TextView doc_source = new TextView(this);
 		doc_source.setId(5);
 		doc_source.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.SOURCE)));
 		doc_source.setTypeface(null, Typeface.BOLD);
-		doc_source.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.source_size));
+		doc_source.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 		doc_source.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 		RelativeLayout.LayoutParams layout_doc_source = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 		layout_doc_source.addRule(RelativeLayout.BELOW, doc_authors.getId());
 		layout_doc_source.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 		doc_source.setLayoutParams(layout_doc_source);
 		relativeLayout.addView(doc_source); 
-		
+
 		//Document Year
 		TextView doc_year = new TextView(this);
 		doc_year.setId(6);
-		
+
 		String aux_year = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.YEAR));
 		String aux_volume = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.VOLUME));
 		String aux_pages = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PAGES));
 		String aux_issue = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSUE));
-		doc_year.setText(aux_year +" vol." + aux_volume + " ("+ aux_issue +") pp."+ aux_pages);
-		doc_year.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.source_size));
+		String aux_line = null;
+
+
+		if(!aux_year.isEmpty() && !aux_volume.isEmpty() && aux_pages.isEmpty() && !aux_issue.isEmpty()){
+			aux_line = aux_year +" vol." + aux_volume + " ("+ aux_issue +")";
+
+		}else if (!aux_year.isEmpty() && !aux_volume.isEmpty() && !aux_pages.isEmpty() && aux_issue.isEmpty()){
+			aux_line = aux_year +" vol." + aux_volume + " pp."+ aux_pages;
+
+		}else if(!aux_year.isEmpty() && aux_volume.isEmpty() && !aux_pages.isEmpty() && !aux_issue.isEmpty()){
+			aux_line = aux_year + " ("+ aux_issue +") pp."+ aux_pages;
+
+		}else if(aux_year.isEmpty() && !aux_volume.isEmpty() && !aux_pages.isEmpty() && !aux_issue.isEmpty()){
+			aux_line = "vol." + aux_volume + " ("+ aux_issue +") pp."+ aux_pages;
+
+		}else {
+			aux_line = aux_year +" vol." + aux_volume + " ("+ aux_issue +") pp."+ aux_pages;
+		}
+
+
+		doc_year.setText(aux_line);
+		doc_year.setMaxLines(1);
+		doc_year.setEllipsize(TruncateAt.END);
+		doc_year.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 		doc_year.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 		RelativeLayout.LayoutParams layout_doc_year = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 		layout_doc_year.addRule(RelativeLayout.BELOW, doc_source.getId());
 		layout_doc_year.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 		doc_year.setLayoutParams(layout_doc_year);
 		relativeLayout.addView(doc_year); 
-		
-		
+
+
 		//Line
 		RelativeLayout relativeLayout_line = new RelativeLayout(this);
 		relativeLayout_line.setId(7);
@@ -220,42 +293,28 @@ public class DocumentsDetailsActivity extends Activity  {
 		relativeLayout_lines.addRule(RelativeLayout.BELOW, doc_year.getId());
 		relativeLayout_line.setLayoutParams(relativeLayout_lines);
 		relativeLayout.addView(relativeLayout_line); 
-		
-		
-		//Image arrow
-		ImageView arrowButton = new ImageView(this);
-		
-		doc_abstract.setId(8);
-		
-		arrowButton.setId(9);
-		arrowButton.setImageResource(R.drawable.arrow);
-		
-		RelativeLayout.LayoutParams layout_arrowButton = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.image_size), getResources().getDimensionPixelSize(R.dimen.image_size));
-		layout_arrowButton.setMargins(getResources().getDimensionPixelOffset(R.dimen.pading), getResources().getDimensionPixelOffset(R.dimen.pading), 0, 0);
-		layout_arrowButton.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,doc_abstract.getId() );
-		layout_arrowButton.addRule(RelativeLayout.BELOW,relativeLayout_line.getId());
-		layout_arrowButton.addRule(RelativeLayout.CENTER_IN_PARENT, doc_abstract.getId());
-		
-		arrowButton.setLayoutParams(layout_arrowButton);
-		
-		relativeLayout.addView(arrowButton); 
-		
+
+
 		//Document Abstract
-		
-		doc_abstract.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ABSTRACT)));
+		mAbstract = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ABSTRACT));
+		doc_abstract.setId(8);
+		doc_abstract.setText(mAbstract);
 		doc_abstract.setMaxLines(5);
 		doc_abstract.setMinLines(1);
 		doc_abstract.setEllipsize(TruncateAt.END);
-		doc_abstract.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.source_size));
-		doc_abstract.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
+		doc_abstract.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
+		doc_abstract.setPadding(0, 0, 0, 0);
+		//Resize arraw
+		Drawable image = getApplicationContext().getResources().getDrawable(R.drawable.arrow);
+		image.setBounds(0, 0, 20, 20);
+		doc_abstract.setCompoundDrawables(null, null, image, null);
 		RelativeLayout.LayoutParams layout_doc_abstract = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 		layout_doc_abstract.addRule(RelativeLayout.BELOW, relativeLayout_line.getId());
-		layout_doc_abstract.addRule(RelativeLayout.LEFT_OF, arrowButton.getId());
 		layout_doc_abstract.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 		doc_abstract.setLayoutParams(layout_doc_abstract);
 		relativeLayout.addView(doc_abstract); 
 
-		
+
 		//Line
 		RelativeLayout relativeLayout_line_f = new RelativeLayout(this);
 		relativeLayout_line_f.setId(10);
@@ -265,8 +324,8 @@ public class DocumentsDetailsActivity extends Activity  {
 		relativeLayout_line_f.setLayoutParams(relativeLayout_lines_f);
 		relativeLayout.addView(relativeLayout_line_f); 
 
-		
-		
+
+		/*
 		//Document Tags
 		TextView doc_tag_title = new TextView(this);
 		doc_tag_title.setId(11);
@@ -278,8 +337,8 @@ public class DocumentsDetailsActivity extends Activity  {
 		layout_doc_tag_title.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 		doc_tag_title.setLayoutParams(layout_doc_tag_title);
 		relativeLayout.addView(doc_tag_title); 
-		
-		
+
+
 		EditText doc_tags = new EditText(this);
 		doc_tags.setId(12);
 		doc_tags.setBackgroundColor(Color.WHITE);
@@ -296,7 +355,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		layout_doc_tags.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 		doc_tags.setLayoutParams(layout_doc_tags);
 		relativeLayout.addView(doc_tags); 
-		
+
 		//Document Notes
 		TextView doc_note_title = new TextView(this);
 		doc_note_title.setId(13);
@@ -326,29 +385,23 @@ public class DocumentsDetailsActivity extends Activity  {
 		layout_doc_notes.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 		doc_notes.setLayoutParams(layout_doc_notes);
 		relativeLayout.addView(doc_notes); 
-		
-		
+
+		 */	
 		String aux_doi = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.DOI));
 		String aux_pmid = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PMID));
 		String aux_issn = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSN));
-		TextView doc_issn = new TextView(this);
+
 		TextView doc_catalog_title = new TextView(this);
-		TextView doc_catalog = new TextView(this);
-		TextView doc_pmid = new TextView(this);
-		
-		
+
 		if(!aux_issn.isEmpty() || !aux_doi.isEmpty() || !aux_pmid.isEmpty()){
 
-
-
 			//Document Catalog IDS
-
 			doc_catalog_title.setId(15);
-			doc_catalog_title.setText("CATALOG IDS");
-			doc_catalog_title.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.other_size));
+			doc_catalog_title.setText(getResources().getString(R.string.catalog_ids));
+			doc_catalog_title.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 			doc_catalog_title.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 			RelativeLayout.LayoutParams layout_doc_catalog_title = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-			layout_doc_catalog_title.addRule(RelativeLayout.BELOW, doc_notes.getId());
+			layout_doc_catalog_title.addRule(RelativeLayout.BELOW, relativeLayout_line_f.getId());
 			layout_doc_catalog_title.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 			doc_catalog_title.setLayoutParams(layout_doc_catalog_title);
 			relativeLayout.addView(doc_catalog_title);
@@ -357,80 +410,44 @@ public class DocumentsDetailsActivity extends Activity  {
 			//Document Catalog DOI
 			doc_catalog.setId(16);
 			doc_catalog.setBackgroundColor(Color.WHITE);
-
-			doc_catalog.setText("DOI:	" + cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.DOI)));
-
-			doc_catalog.setMaxLines(2);
+			doi = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.DOI));
+			doc_catalog.setText(getResources().getString(R.string.doi) + "\t\t" + doi);
+			doc_catalog.setMaxLines(1);
 			doc_catalog.setEllipsize(TruncateAt.END);
-			doc_catalog.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.other_size));
+			doc_catalog.setCompoundDrawables(null, null, image, null);
+			doc_catalog.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 			doc_catalog.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 			RelativeLayout.LayoutParams layout_doc_catalog = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 			layout_doc_catalog.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 			doc_catalog.setLayoutParams(layout_doc_catalog);
 
-
-
-			//Image arrow -- DOI
-			ImageView linkButton_doi = new ImageView(this);
-			linkButton_doi.setId(17);
-			linkButton_doi.setImageResource(R.drawable.arrow);
-			RelativeLayout.LayoutParams layout_linkButton_doi = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.arrow_size), getResources().getDimensionPixelSize(R.dimen.arrow_size));
-			layout_linkButton_doi.setMargins(0, 6, 0, 0);
-
-			layout_linkButton_doi.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,doc_catalog.getId() );
-
-			layout_linkButton_doi.addRule(RelativeLayout.CENTER_IN_PARENT, doc_catalog.getId());
-			linkButton_doi.setLayoutParams(layout_linkButton_doi);
-
-
-
 			//Document Catalog PMID
-
 			doc_pmid.setId(18);
 			doc_pmid.setBackgroundColor(Color.WHITE);
-			doc_pmid.setText("PMID:		" + cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PMID)));
-
-			doc_pmid.setMaxLines(2);
+			pmid = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PMID));
+			doc_pmid.setText(getResources().getString(R.string.pmid) + "\t\t" + pmid);
+			doc_pmid.setMaxLines(1);
 			doc_pmid.setEllipsize(TruncateAt.END);
-			doc_pmid.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.other_size));
+			doc_pmid.setCompoundDrawables(null, null, image, null);
+			doc_pmid.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 			doc_pmid.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 			RelativeLayout.LayoutParams layout_doc_pmid = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 			layout_doc_pmid.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 			doc_pmid.setLayoutParams(layout_doc_pmid);
 
-
-			//Image arrow -- PMID
-			ImageView linkButton_pmid = new ImageView(this);
-			linkButton_pmid.setId(19);
-			linkButton_pmid.setImageResource(R.drawable.arrow);
-			RelativeLayout.LayoutParams layout_linkButton_pmid = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.arrow_size), getResources().getDimensionPixelSize(R.dimen.arrow_size));
-			layout_linkButton_pmid.setMargins(0, 6, 0, 0);
-			layout_linkButton_pmid.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,doc_pmid.getId() );
-			layout_linkButton_pmid.addRule(RelativeLayout.CENTER_IN_PARENT, doc_pmid.getId());
-			linkButton_pmid.setLayoutParams(layout_linkButton_pmid);
-
-
 			//Document Catalog ISSN
 			doc_issn.setId(20);
 			doc_issn.setBackgroundColor(Color.WHITE);
-			doc_issn.setText("ISSN: 	" + cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSN)));
-			doc_issn.setMaxLines(2);
+			issn = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSN));
+			doc_issn.setText(getResources().getString(R.string.issn) + "\t\t" + issn);
+			doc_issn.setMaxLines(1);
 			doc_issn.setEllipsize(TruncateAt.END);
-			doc_issn.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.other_size));
+			doc_issn.setCompoundDrawables(null, null, image, null);
+			doc_issn.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 			doc_issn.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 			RelativeLayout.LayoutParams layout_doc_issn = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 			layout_doc_issn.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 			doc_issn.setLayoutParams(layout_doc_issn);
-
-
-			//Image arrow -- ISSN
-			ImageView linkButton_issn = new ImageView(this);
-			linkButton_issn.setId(21);
-			linkButton_issn.setImageResource(R.drawable.arrow);
-
-			RelativeLayout.LayoutParams layout_linkButton_issn = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.arrow_size), getResources().getDimensionPixelSize(R.dimen.arrow_size));
-			layout_linkButton_issn.setMargins(0, 6, 0, 0);
-			layout_linkButton_issn.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,doc_issn.getId() );
 
 
 			if(!aux_issn.isEmpty() && !aux_doi.isEmpty() && !aux_pmid.isEmpty()){
@@ -438,57 +455,37 @@ public class DocumentsDetailsActivity extends Activity  {
 				//DOI
 				relativeLayout.addView(doc_catalog);
 				layout_doc_catalog.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
-				layout_linkButton_doi.addRule(RelativeLayout.BELOW,doc_catalog_title.getId());
-				relativeLayout.addView(linkButton_doi); 
+
 				//PMID
 				relativeLayout.addView(doc_pmid);
 				layout_doc_pmid.addRule(RelativeLayout.BELOW, doc_catalog.getId());
-				layout_linkButton_pmid.addRule(RelativeLayout.BELOW,doc_catalog.getId());
-				relativeLayout.addView(linkButton_pmid); 
+
 				//ISSN
 				layout_doc_issn.addRule(RelativeLayout.BELOW, doc_pmid.getId());
 				relativeLayout.addView(doc_issn);
-				layout_linkButton_issn.addRule(RelativeLayout.BELOW,doc_pmid.getId());
-				layout_linkButton_issn.addRule(RelativeLayout.CENTER_IN_PARENT, doc_issn.getId());
-				linkButton_issn.setLayoutParams(layout_linkButton_issn);
-				relativeLayout.addView(linkButton_issn); 
 			}
 
 
 			else if(!aux_issn.isEmpty() && !aux_doi.isEmpty() && aux_pmid.isEmpty()){
 
-
 				//DOI
 				relativeLayout.addView(doc_catalog);
 				layout_doc_catalog.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
-				layout_linkButton_doi.addRule(RelativeLayout.BELOW,doc_catalog_title.getId());
-				relativeLayout.addView(linkButton_doi); 
-
 
 				//Document Catalog ISSN
 				layout_doc_issn.addRule(RelativeLayout.BELOW, doc_catalog.getId());
 				relativeLayout.addView(doc_issn);
-				layout_linkButton_issn.addRule(RelativeLayout.BELOW,doc_catalog.getId());
-				linkButton_issn.setLayoutParams(layout_linkButton_issn);
-				relativeLayout.addView(linkButton_issn); 
-
 			}
 
 			else if(aux_issn.isEmpty() && !aux_doi.isEmpty() && !aux_pmid.isEmpty()){
 
-
 				//DOI
 				relativeLayout.addView(doc_catalog);
 				layout_doc_catalog.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
-				layout_linkButton_doi.addRule(RelativeLayout.BELOW,doc_catalog_title.getId());
-				relativeLayout.addView(linkButton_doi); 
 
 				//PMID
 				relativeLayout.addView(doc_pmid);
 				layout_doc_pmid.addRule(RelativeLayout.BELOW, doc_catalog.getId());
-				layout_linkButton_pmid.addRule(RelativeLayout.BELOW,doc_catalog.getId());
-				relativeLayout.addView(linkButton_pmid); 
-
 			}
 
 			else if(!aux_issn.isEmpty() && aux_doi.isEmpty() && !aux_pmid.isEmpty()){
@@ -496,25 +493,17 @@ public class DocumentsDetailsActivity extends Activity  {
 				//PMID
 				relativeLayout.addView(doc_pmid);
 				layout_doc_pmid.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
-				layout_linkButton_pmid.addRule(RelativeLayout.BELOW,doc_catalog_title.getId());
-				relativeLayout.addView(linkButton_pmid);
-				
+
 				//Document Catalog ISSN
 				layout_doc_issn.addRule(RelativeLayout.BELOW, doc_pmid.getId());
 				relativeLayout.addView(doc_issn);
-				layout_linkButton_issn.addRule(RelativeLayout.BELOW,doc_pmid.getId());
-				linkButton_issn.setLayoutParams(layout_linkButton_issn);
-				relativeLayout.addView(linkButton_issn); 
 			}
 
 			else if(aux_issn.isEmpty() && !aux_doi.isEmpty() && aux_pmid.isEmpty()){
 
-
 				//DOI
 				relativeLayout.addView(doc_catalog);
 				layout_doc_catalog.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
-				layout_linkButton_doi.addRule(RelativeLayout.BELOW,doc_catalog_title.getId());
-				relativeLayout.addView(linkButton_doi); 
 			}
 
 			else if(aux_issn.isEmpty() && aux_doi.isEmpty() && !aux_pmid.isEmpty()){
@@ -522,8 +511,6 @@ public class DocumentsDetailsActivity extends Activity  {
 				//PMID
 				relativeLayout.addView(doc_pmid);
 				layout_doc_pmid.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
-				layout_linkButton_pmid.addRule(RelativeLayout.BELOW,doc_catalog_title.getId());
-				relativeLayout.addView(linkButton_pmid); 
 			}
 
 			else if(!aux_issn.isEmpty() && aux_doi.isEmpty() && aux_pmid.isEmpty()){
@@ -531,11 +518,6 @@ public class DocumentsDetailsActivity extends Activity  {
 				//Document Catalog ISSN
 				layout_doc_issn.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
 				relativeLayout.addView(doc_issn);
-
-				layout_linkButton_issn.addRule(RelativeLayout.BELOW,doc_catalog_title.getId());
-				linkButton_issn.setLayoutParams(layout_linkButton_issn);
-
-				relativeLayout.addView(linkButton_issn); 
 			}
 
 		}
@@ -543,19 +525,19 @@ public class DocumentsDetailsActivity extends Activity  {
 
 		String aux_url = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.WEBSITE));
 		TextView doc_url_title = new TextView(this);
-		TextView doc_url = new TextView(this);
+
 		RelativeLayout.LayoutParams layout_doc_url_title;
 		RelativeLayout.LayoutParams layout_doc_url;
-		ImageView linkButton3 = new ImageView(this);
-		RelativeLayout.LayoutParams layout_linkButton4;
+		//ImageView linkButton3 = new ImageView(this);
+		//RelativeLayout.LayoutParams layout_linkButton4;
 
 
 		if(!aux_url.isEmpty()){
 
 			//Document URL Title
 			doc_url_title.setId(22);
-			doc_url_title.setText("URLS");
-			doc_url_title.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.other_size));
+			doc_url_title.setText(getResources().getString(R.string.urls));
+			doc_url_title.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 			doc_url_title.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 			layout_doc_url_title = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 			doc_url_title.setLayoutParams(layout_doc_url_title);
@@ -564,27 +546,19 @@ public class DocumentsDetailsActivity extends Activity  {
 			//Document URL
 			doc_url.setId(23);
 			doc_url.setBackgroundColor(Color.WHITE);
-			doc_url.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.WEBSITE)));
+			t_doc_url = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.WEBSITE));
+			doc_url.setText(t_doc_url);
 			doc_url.setMaxLines(1);
 			doc_url.setEllipsize(TruncateAt.END);
-			doc_url.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.other_size));
+			doc_url.setCompoundDrawables(null, null, image, null);
+			doc_url.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 			doc_url.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 			layout_doc_url = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 			layout_doc_url.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
 			doc_url.setLayoutParams(layout_doc_url);
 			layout_doc_url.addRule(RelativeLayout.BELOW, doc_url_title.getId());
 			relativeLayout.addView(doc_url);
-
-			//Image arrow
-			linkButton3.setId(24);
-			linkButton3.setImageResource(R.drawable.arrow);
-			layout_linkButton4 = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.arrow_size), getResources().getDimensionPixelSize(R.dimen.arrow_size));
-			layout_linkButton4.setMargins(0, 4, 0, 0);
-			layout_linkButton4.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,doc_url.getId() );
-			layout_linkButton4.addRule(RelativeLayout.BELOW,doc_url_title.getId());
-			layout_linkButton4.addRule(RelativeLayout.CENTER_IN_PARENT, doc_url.getId());
-			linkButton3.setLayoutParams(layout_linkButton4);
-			relativeLayout.addView(linkButton3); 
+ 
 
 
 			if(!aux_issn.isEmpty()){
@@ -604,20 +578,12 @@ public class DocumentsDetailsActivity extends Activity  {
 				//Document URL
 				layout_doc_url_title.addRule(RelativeLayout.BELOW, doc_catalog.getId());
 			}
+			else{
+				//Document URL
+				layout_doc_url_title.addRule(RelativeLayout.BELOW, relativeLayout_line_f.getId());
+			}
 		}
-		
-		
-	
-		scrollView.addView(relativeLayout); 
-		setContentView(scrollView);
-		 
-		}
-		
-		
-	
-	
-	
-	
-	
+	}
+
 
 }

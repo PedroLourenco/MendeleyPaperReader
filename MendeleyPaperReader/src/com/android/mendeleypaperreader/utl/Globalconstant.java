@@ -9,12 +9,19 @@ public class Globalconstant {
 	 public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&access_token=";
 	 public static String get_docs_in_folders = "https://mix.mendeley.com/folders/id/documents?access_token=";
 	 
-	 //https://mix.mendeley.com//annotations/?document_id=7529d2a9-e1c3-34c5-aa9c-1377870211a8&access_token=MSwxMzk5NzQ1OTY4MT
-	 public static String get_docs_ann = "https://mix.mendeley.com//annotations/?document_id=doc_id&access_token=";
-	 
-	 
-	 //https://mix.mendeley.com//folders/7b0b8ca0-fb16-4365-86ab-29f9320debde/documents?access_token=MSwxMzk4NDY3NDA3OTg2LDMyNzA1NTkxLDQsYWxsLCxMVnF6MFdZN0VaY2RqQnczZkJiNkJhTnBlQTg#!
+
+	 public static String get_docs_ann = "https://mix.mendeley.com/annotations/?document_id=doc_id&access_token=";
 	 public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";
+	 
+	 public static String get_files = "https://mix.mendeley.com/files?access_token=";
+	 public static String get_files_by_doc_id = "https://mix.mendeley.com/files?document_id=doc_id&access_token=";
+	
+	 
+	 
+	 public static String ISSN_URL = "http://www.worldcat.org/issn/"; //gene-an-international-journal-focusing-on-gene-cloning-and-gene-structure-and-function/oclc/776694941"
+	 public static String DOI_URL = "http://dx.doi.org/";
+	 public static String PMID_URL = "http://www.ncbi.nlm.nih.gov/m/pubmed/";
+	 
 	 
 	 //Json variables
 	 public static String ID = "id";
@@ -55,7 +62,14 @@ public class Globalconstant {
 	 public static String NAME = "name";
 	 public static String PARENT = "parent";
 	 public static String GROUP = "group";
-	 public static String  DOCUMENTS_ID = "document_ids";
+	 public static String DOCUMENTS_ID = "document_ids";
+	 public static String DOCUMENTS = "documents";
+	 public static String FILE_ID =  "id";
+	 public static String FILE_NAME = "file_name";
+	 public static String FILE_MIME_TYPE = "mime_type";
+	 public static String FILE_DOC_ID = "document_id";
+	 public static String FILE_FILEHASH = "filehash"; 
+		
 	 
 	 
 	    public static final String[] MYLIBRARY = 

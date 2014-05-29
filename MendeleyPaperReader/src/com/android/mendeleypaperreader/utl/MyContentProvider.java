@@ -28,6 +28,7 @@ public class MyContentProvider extends ContentProvider {
 	public static final Uri CONTENT_URI_DOC_DETAILS = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS);
 	public static final Uri CONTENT_URI_AUTHORS = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_AUTHORS);
 	public static final Uri CONTENT_URI_FOLDERS = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FOLDERS);
+	public static final Uri CONTENT_URI_FILES = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FILES);
 	
 	public static final int ALLDOCS = 1;
 	public static final int ALL_DOCS_ID = 2;  
@@ -35,6 +36,7 @@ public class MyContentProvider extends ContentProvider {
 	public static final int DOC_AUTHORS_ID = 4;
 	public static final int ALL_FOLDERS = 5;
 	public static final int FOLDERS_ID = 6;
+	public static final int ALL_FILES = 7;
 	
 	
 	private static final UriMatcher sURIMatcher = 
@@ -47,6 +49,7 @@ public class MyContentProvider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_AUTHORS + "/#", DOC_AUTHORS_ID);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS, ALL_FOLDERS);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS + "/#", FOLDERS_ID);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FILES, ALL_FILES);
 }
 	
 
@@ -99,7 +102,7 @@ public class MyContentProvider extends ContentProvider {
 	              getContext().getContentResolver().notifyChange(newUri, null);		 
 	              return newUri;	
 	           }
-		           
+	           break; 
 		    
 		    case ALL_FOLDERS:
 		    	  
@@ -111,7 +114,18 @@ public class MyContentProvider extends ContentProvider {
 		              getContext().getContentResolver().notifyChange(newUri, null);		 
 		              return newUri;	
 		           }
-		    
+		           break;
+		    case ALL_FILES:
+		    	  
+		    	long files_row = db.insert(DatabaseOpenHelper.TABLE_FILES, null, values);
+		    	
+		    	// If record is added successfully		 
+		           if(files_row > 0) {		 
+		              Uri newUri = ContentUris.withAppendedId(CONTENT_URI_FILES, files_row);		 
+		              getContext().getContentResolver().notifyChange(newUri, null);		 
+		              return newUri;	
+		           }
+		           break;
 		    
 		    default: throw new SQLException("Failed to insert row into " + uri);
 		    }
@@ -166,17 +180,31 @@ public class MyContentProvider extends ContentProvider {
 			Log.d(Globalconstant.TAG, "values: " + values);
 			
 			
-			  if(!TextUtils.isEmpty(selection)){
-				  
-				  rowsUpdated = 
-			    		  db.update(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, 
-			          values,
-			          selection, 
-			          selectionArgs); 
-			  }
 			 
 			  
-		  getContext().getContentResolver().notifyChange(uri, null);
+			  switch (sURIMatcher.match(uri)) {
+			  case ALL_DOCS_ID:
+				  
+				  if(!TextUtils.isEmpty(selection)){
+					  
+					  rowsUpdated = 
+				    		  db.update(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, 
+				          values,
+				          selection, 
+				          selectionArgs); 
+				  }
+				  
+				  
+			   break;
+			  default:
+			   throw new IllegalArgumentException("Unsupported URI: " + uri);
+			  }
+			  
+			  
+			  
+			  
+			  
+			  getContext().getContentResolver().notifyChange(uri, null);
 	      return rowsUpdated;
 	}
 
