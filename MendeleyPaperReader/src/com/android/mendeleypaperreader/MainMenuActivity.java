@@ -2,34 +2,43 @@ package com.android.mendeleypaperreader;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
+
 import com.android.mendeleypaperreader.utl.GetAccessToken;
 import com.android.mendeleypaperreader.utl.Globalconstant;
 import com.android.mendeleypaperreader.utl.LoadData;
+import com.android.mendeleypaperreader.utl.SessionManager;
 
 
 public class MainMenuActivity extends FragmentActivity
 {
 
-	private static GetAccessToken jParser = new GetAccessToken();
+	//private static GetAccessToken jParser = new GetAccessToken();
 	private long mLastPressedTime;
 	private static final int PERIOD = 2000;
 	private ProgressTask task=null;
-	private static ProgressDialog dialog;;
+	private static ProgressDialog dialog;
+	// Session Manager Class
+	private static SessionManager session;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-
+		session = new SessionManager(getApplicationContext()); 
 		//Start upload data from server	       
-		String db_uploded_flag = jParser.LoadPreference(getApplicationContext(), "BD_Uploded", Globalconstant.shared_file_name);
-
+		
+		String db_uploded_flag = session.LoadPreference("IS_DB_CREATED");
 		if(!db_uploded_flag.equals("YES")){
 			if (task==null) {
 				task=new ProgressTask(this);
@@ -81,8 +90,6 @@ public class MainMenuActivity extends FragmentActivity
 			switch (event.getAction()) {
 			case KeyEvent.ACTION_DOWN:
 				if (event.getDownTime() - mLastPressedTime < PERIOD) {
-
-					//jParser.deletePreferences(MainMenuActivity.this, "BD_Uploded", Globalconstant.shared_file_name);
 					finish();
 
 				} else {
@@ -97,9 +104,40 @@ public class MainMenuActivity extends FragmentActivity
 		return false;
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    // Inflate the menu items for use in the action bar
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.main_menu_activity_actions, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
 
-
-
+	//ActionBar Menu Options 
+		public boolean onOptionsItemSelected(MenuItem item) {
+			// Handle item selection
+			switch (item.getItemId()) {
+			case R.id. menu_About:
+				Intent i_about = new Intent(getApplicationContext(), AboutActivity.class);
+				startActivity(i_about);
+				return true;
+				
+			case R.id. menu_logout:
+				session.deletePreferences();
+				getApplicationContext().deleteDatabase("mendeley_library");
+				finish();
+				return true;		
+			default:
+				return super.onOptionsItemSelected(item);
+			}
+		}
+	
+	
+	
+	
+	
+	
+	
+//AsyncTask to download DATA from server
 
 	static class ProgressTask extends AsyncTask<String, Integer, String> {
 		MainMenuActivity activity=null;
@@ -124,7 +162,7 @@ public class MainMenuActivity extends FragmentActivity
 			}
 			else {
 				//Save Flag to control data upload
-				jParser.savePreferences(activity, "BD_Uploded", "YES", Globalconstant.shared_file_name);
+				session.savePreferences("IS_DB_CREATED", "YES");
 				activity.markAsDone();
 			}
 		} 
@@ -150,10 +188,7 @@ public class MainMenuActivity extends FragmentActivity
 
 		protected String doInBackground(final String... args) {
 
-
-			GetAccessToken token = new GetAccessToken();
-
-			String tokens = token.LoadPreference(activity, "access_token", Globalconstant.shared_file_name);
+			String tokens = session.LoadPreference("access_token");
 			LoadData load = new LoadData(activity, tokens);
 			publishProgress((int) (1 / ((float) 3) * 100));
 			load.GetUserLibrary(Globalconstant.get_user_library_url+tokens);

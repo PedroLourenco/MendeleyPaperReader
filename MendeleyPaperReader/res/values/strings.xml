@@ -9,7 +9,19 @@
     <string name="createaccount">Create account</string>
     <string name="my_library"><b>My Library</b></string>
     <string name="my_folders"><b>Folders</b></string>
-     <string name="exit_msg">Press again to exit.</string>
+    <string name="exit_msg">Press again to exit.</string>
+    <string name="app_logo">App logo</string>
+    
+    
+    
+    <!-- About activity -->
+    
+    <string name="msg_about">Get access to Mendeley database papers in any Galaxy.</string>
+    <string name="bugfix"><b>Version 0.0.1 (July, 2014)</b> \n Initial Version.</string>
+    <string name="web_link"></string>
+    <string name="msg_current_version">Version 1.0.0</string>
+    <string name="email">pdrolourenco@gmail.com</string>
+    <string name="msg_email">"Contact: "</string>
     
     <string-array name="Titles">
         <item>All Documents</item>
@@ -25,5 +37,9 @@
     <string name="pmid">PMID:</string>
     <string name="issn">ISSN:</string>
     <string name="urls">URLS</string>
+    
+    
+     <string name="menu_logout">Logout</string>
+     <string name="menu_about">About</string>
 
 </resources>

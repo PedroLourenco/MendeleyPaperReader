@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -18,6 +18,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -32,7 +33,6 @@ public class GetAccessToken {
 	}
 
 	List<NameValuePair> params = new ArrayList<NameValuePair>();
-	Map<String, String> mapn;
 	DefaultHttpClient httpClient;
 	HttpPost httpPost;
 

@@ -1,15 +1,23 @@
 package com.android.mendeleypaperreader;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.LabeledIntent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.util.TypedValue;
@@ -36,6 +44,9 @@ public class DocumentsDetailsActivity extends Activity  {
 	String issn;
 	String doi;
 	String pmid;
+	String doc_title;
+	String doc_authors_text;
+	String doc_source_text;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -141,14 +152,19 @@ public class DocumentsDetailsActivity extends Activity  {
 		OnClickListener click_on_share_icon = new OnClickListener() {
 
 			public void onClick(View v) {
-				Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND); 
+				
+				onShareClick(v);
+				
+				/*Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND); 
 				sharingIntent.setType("text/plain");
-				String shareBody = "Here is the share content body";
+				String shared_sms = doc_title;
 				sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
-				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shared_sms);
 				startActivity(Intent.createChooser(sharingIntent, "Share via"));
-
+*/
 			}
+			
+			
 		};
 		share.setOnClickListener(click_on_share_icon);
 
@@ -201,14 +217,15 @@ public class DocumentsDetailsActivity extends Activity  {
 		String aux_starred = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.STARRED)); 
 
 		if(aux_starred.equals("true"))
-			starred.setImageResource(R.drawable.favorite_star);
+			starred.setImageResource(R.drawable.ic_action_star_blue);
 
 
 
 		//Document Title
 		TextView doc_tilte = new TextView(this);
 		doc_tilte.setId(3);
-		doc_tilte.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.TITLE)));
+		doc_title = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.TITLE));
+		doc_tilte.setText(doc_title);
 		doc_tilte.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 		doc_tilte.setTypeface(null, Typeface.BOLD);
 		doc_tilte.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
@@ -222,7 +239,8 @@ public class DocumentsDetailsActivity extends Activity  {
 		//Document Authors
 		TextView doc_authors = new TextView(this);
 		doc_authors.setId(4);
-		doc_authors.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.AUTHORS)));
+		doc_authors_text = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.AUTHORS));
+		doc_authors.setText(doc_authors_text);
 		doc_authors.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 		doc_authors.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
 		doc_authors.setTextColor(Color.parseColor("#000080"));
@@ -235,7 +253,8 @@ public class DocumentsDetailsActivity extends Activity  {
 		//Document Source
 		TextView doc_source = new TextView(this);
 		doc_source.setId(5);
-		doc_source.setText(cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.SOURCE)));
+		doc_source_text = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.SOURCE));
+		doc_source.setText(doc_source_text);
 		doc_source.setTypeface(null, Typeface.BOLD);
 		doc_source.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 		doc_source.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
@@ -303,7 +322,8 @@ public class DocumentsDetailsActivity extends Activity  {
 		doc_abstract.setMinLines(1);
 		doc_abstract.setEllipsize(TruncateAt.END);
 		doc_abstract.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
-		doc_abstract.setPadding(0, 0, 0, 0);
+		doc_abstract.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
+		
 		//Resize arraw
 		Drawable image = getApplicationContext().getResources().getDrawable(R.drawable.arrow);
 		image.setBounds(0, 0, 20, 20);
@@ -582,8 +602,154 @@ public class DocumentsDetailsActivity extends Activity  {
 				//Document URL
 				layout_doc_url_title.addRule(RelativeLayout.BELOW, relativeLayout_line_f.getId());
 			}
+		
+		
+		
 		}
+	}
+	
+	
+	
+	
+	
+	public void onShareClick2(View v) {
+	    Resources resources = getResources();
+
+	    Intent emailIntent = new Intent();
+	    emailIntent.setAction(Intent.ACTION_SEND);
+	    // Native email client doesn't currently support HTML, but it doesn't hurt to try in case they fix it
+	    String email_text = "The following document was shared from Paper Reader Android app: \n" + doc_title + "\n " + doc_authors_text + "/n" + doc_source_text;
+	    String email_subject_text = "Shared document by Paper Reader";
+	    
+	   
+	    
+	    emailIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(email_text));
+	    emailIntent.putExtra(Intent.EXTRA_SUBJECT, email_subject_text);
+	    //emailIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(resources.getString(R.string.share_email_native)));
+	    //emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.share_email_subject));
+	    emailIntent.setType("message/rfc822");
+
+	    PackageManager pm = getPackageManager();
+	    Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);     
+	    sendIntent.setType("text/plain");
+
+	    Intent openInChooser = Intent.createChooser(emailIntent, "CHOOSER OPTIONS");
+	    //Intent openInChooser = Intent.createChooser(emailIntent, resources.getString(R.string.share_chooser_text));
+
+	    List<ResolveInfo> resInfo = pm.queryIntentActivities(sendIntent, 0);
+	    List<LabeledIntent> intentList = new ArrayList<LabeledIntent>();        
+	    for (int i = 0; i < resInfo.size(); i++) {
+	        // Extract the label, append it, and repackage it in a LabeledIntent
+	        ResolveInfo ri = resInfo.get(i);
+	        String packageName = ri.activityInfo.packageName;
+	        if(packageName.contains("android.email")) {
+	            emailIntent.setPackage(packageName);
+	        } else if(packageName.contains("twitter") || packageName.contains("facebook") || packageName.contains("mms") || packageName.contains("android.gm")) {
+	            Intent intent = new Intent();
+	            intent.setComponent(new ComponentName(packageName, ri.activityInfo.name));
+	            intent.setAction(Intent.ACTION_SEND);
+	            intent.setType("text/plain");
+	            String sms_text = doc_title; 
+    			
+				sms_text = sms_text.substring(0, Math.min(sms_text.length(), 85));
+            	intent.putExtra(Intent.EXTRA_TEXT, sms_text +" ... " + t_doc_url);
+	            if(packageName.contains("twitter")) {
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text);
+	            } else if(packageName.contains("facebook")) {
+	                // Warning: Facebook IGNORES our text. They say "These fields are intended for users to express themselves. Pre-filling these fields erodes the authenticity of the user voice."
+	                // One workaround is to use the Facebook SDK to post, but that doesn't allow the user to choose how they want to share. We can also make a custom landing page, and the link
+	                // will show the <meta content ="..."> text from that page with our link in Facebook.
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text);
+	            } else if(packageName.contains("mms")) {
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text);
+	            } else if(packageName.contains("android.gm")) {
+	            	intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(email_text));
+	            	intent.putExtra(Intent.EXTRA_SUBJECT, email_subject_text);
+	            	intent.setType("message/rfc822");
+	            
+	            } else 
+
+	            intentList.add(new LabeledIntent(intent, packageName, ri.loadLabel(pm), ri.icon));
+	        }
+	    }
+
+	    // convert intentList to array
+	    LabeledIntent[] extraIntents = intentList.toArray( new LabeledIntent[ intentList.size() ]);
+
+	    openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents);
+	    startActivity(openInChooser);       
 	}
 
 
+	
+	public void onShareClick(View v) {
+	    Resources resources = getResources();
+	    String separador = System.getProperty("line.separator"); 
+	    String email_text = "Hello,<br/><br/>this is a test message!";
+	    String email_text3 = String.format("The following document was shared %nfrom Paper Reader Android app:" );
+	    String email_text2 = "The following document was shared from Paper Reader Android app: " + separador + doc_title + separador + doc_authors_text + separador + doc_source_text;
+	    
+	    String email_subject_text = "Shared document by Paper Reader";
+	    
+	    
+	    
+	    String sms_text = doc_title; 
+		
+		sms_text = sms_text.substring(0, Math.min(sms_text.length(), 85));
+	    
+	    
+	    Intent emailIntent = new Intent();
+	    emailIntent.setAction(Intent.ACTION_SEND);
+	    // Native email client doesn't currently support HTML, but it doesn't hurt to try in case they fix it
+	    emailIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(email_text));
+	    emailIntent.putExtra(Intent.EXTRA_SUBJECT, email_subject_text);
+	    emailIntent.setType("message/rfc822");
+
+	    PackageManager pm = getPackageManager();
+	    Intent sendIntent = new Intent(Intent.ACTION_SEND);     
+	    sendIntent.setType("text/plain");
+
+
+	    Intent openInChooser = Intent.createChooser(emailIntent, "Chooser Options");
+
+	    List<ResolveInfo> resInfo = pm.queryIntentActivities(sendIntent, 0);
+	    List<LabeledIntent> intentList = new ArrayList<LabeledIntent>();        
+	    for (int i = 0; i < resInfo.size(); i++) {
+	        // Extract the label, append it, and repackage it in a LabeledIntent
+	        ResolveInfo ri = resInfo.get(i);
+	        String packageName = ri.activityInfo.packageName;
+	        if(packageName.contains("android.email")) {
+	            emailIntent.setPackage(packageName);
+	        } else if(packageName.contains("twitter") || packageName.contains("facebook") || packageName.contains("mms") || packageName.contains("android.gm")) {
+	            Intent intent = new Intent();
+	            intent.setComponent(new ComponentName(packageName, ri.activityInfo.name));
+	            intent.setAction(Intent.ACTION_SEND);
+	            intent.setType("text/plain");
+	            if(packageName.contains("twitter")) {
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text +" ... " + t_doc_url);
+	            } else if(packageName.contains("facebook")) {
+	                // Warning: Facebook IGNORES our text. They say "These fields are intended for users to express themselves. Pre-filling these fields erodes the authenticity of the user voice."
+	                // One workaround is to use the Facebook SDK to post, but that doesn't allow the user to choose how they want to share. We can also make a custom landing page, and the link
+	                // will show the <meta content ="..."> text from that page with our link in Facebook.
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text +" ... " + t_doc_url);
+	            } else if(packageName.contains("mms")) {
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text +" ... " + t_doc_url);
+	            } else if(packageName.contains("android.gm")) {
+	                intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(email_text));
+	                intent.putExtra(Intent.EXTRA_SUBJECT, email_subject_text);               
+	                intent.setType("message/rfc822");
+	            }
+
+	            intentList.add(new LabeledIntent(intent, packageName, ri.loadLabel(pm), ri.icon));
+	        }
+	    }
+
+	    // convert intentList to array
+	    LabeledIntent[] extraIntents = intentList.toArray( new LabeledIntent[ intentList.size() ]);
+
+	    openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents);
+	    startActivity(openInChooser);       
+	}
+	
+	
 }

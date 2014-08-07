@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.android.mendeleypaperreader.utl.ConnectionDetector;
 import com.android.mendeleypaperreader.utl.GetAccessToken;
 import com.android.mendeleypaperreader.utl.Globalconstant;
+import com.android.mendeleypaperreader.utl.SessionManager;
 
 
 public class MainActivity extends Activity {
@@ -46,10 +47,11 @@ public class MainActivity extends Activity {
 	  private static String TOKEN_URL ="https://api-oauth2.mendeley.com/oauth/token";
 	  private static String OAUTH_URL ="https://api-oauth2.mendeley.com/oauth/authorize?";
 	  private static String OAUTH_SCOPE="all";
-	  private GetAccessToken jParser = new GetAccessToken();
+	  //private GetAccessToken jParser = new GetAccessToken();
 	  private Dialog auth_dialog;
 	  private Boolean isInternetPresent = false;
-	  
+	  // Session Manager Class
+	  SessionManager session;
 	 
 	  WebView web;
 	  Button auth;
@@ -68,7 +70,8 @@ public class MainActivity extends Activity {
 			  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		  }
 
-		  pref = getSharedPreferences("AppPref", MODE_PRIVATE);
+		  	// Session Manager
+	        session = new SessionManager(MainActivity.this); 
 
 		  //check internet connection
 		  ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
@@ -113,9 +116,11 @@ public class MainActivity extends Activity {
 								  resultIntent.putExtra("code", authCode);
 								  MainActivity.this.setResult(Activity.RESULT_OK, resultIntent);
 								  setResult(Activity.RESULT_CANCELED, resultIntent);
+								  
 								  //save access code in shared preferences
-								  jParser.savePreferences(getApplicationContext(), "Code",authCode, Globalconstant.shared_file_name);
+								  session.savePreferences("Code",authCode);
 								  auth_dialog.dismiss();
+								  
 								  new TokenGet().execute();
 
 								  Toast.makeText(getApplicationContext(),"Authorization Code is: " +authCode, Toast.LENGTH_SHORT).show();
@@ -171,7 +176,7 @@ public class MainActivity extends Activity {
 	  }
 	   private class TokenGet extends AsyncTask<String, String, JSONObject> {
 	          private ProgressDialog pDialog;
-	          String Code;
+	          String code;
 	         @Override
 	         protected void onPreExecute() {
 	             super.onPreExecute();
@@ -179,17 +184,16 @@ public class MainActivity extends Activity {
 	             pDialog.setMessage("Contacting Mendeley ...");
 	             pDialog.setIndeterminate(false);
 	             pDialog.setCancelable(true);
-	             Code =  jParser.LoadPreference(getApplicationContext(), "Code", Globalconstant.shared_file_name);
+	             
+	             code = session.LoadPreference("Code");  
 	             pDialog.show();
 	         }
 	         @Override
 	         protected JSONObject doInBackground(String... args) {
 	             GetAccessToken jParser = new GetAccessToken();
-	             JSONObject json = jParser.gettoken(TOKEN_URL,Code,CLIENT_ID,CLIENT_SECRET,REDIRECT_URI,GRANT_TYPE);
+	             JSONObject json = jParser.gettoken(TOKEN_URL,code,CLIENT_ID,CLIENT_SECRET,REDIRECT_URI,GRANT_TYPE);
 	             
 	            
-	             
-	             
 	             return json;
 	         }
 	          @Override
@@ -202,8 +206,9 @@ public class MainActivity extends Activity {
 	            	   	String refresh = json.getString("refresh_token");
 	            	   	
 	            	    //Save access token in shared preferences
-	            	   	jParser.savePreferences(getApplicationContext(), "access_token", json.getString("access_token"), Globalconstant.shared_file_name);
-	                    
+	            	   	//jParser.savePreferences(getApplicationContext(), "access_token", json.getString("access_token"), Globalconstant.shared_file_name);
+	                    session.savePreferences("access_token", json.getString("access_token"));
+	            	   	
 	            	   	if (Globalconstant.LOG){
 	            	   		Log.d("Token Access", tok);
 	            	   		Log.d("Expire", expire);
@@ -258,7 +263,7 @@ public class MainActivity extends Activity {
 	            	   public void onClick(DialogInterface dialog, int which) {
 							
 	            		   // Activity transfer to wifi settings
-	                       startActivityForResult(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS), 0);
+	                       startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), 0);
 	                   
 	            		   }
 	               });
@@ -267,7 +272,9 @@ public class MainActivity extends Activity {
          	   public void onClick(DialogInterface dialog, int which) {
 						
          		// Activity transfer to wifi settings
-                   startActivityForResult(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS), 0);
+                   //startActivityForResult(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS), 0);
+         		  Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+					MainActivity.this.startActivity(intent);
                }
             });
 	               // on pressing cancel button

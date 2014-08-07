@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:yourapp="http://schemas.android.com/apk/res-auto" > 
+       
+  
+  <item
+    	android:title="@string/app_name"
+    	android:icon="@drawable/ic_action_overflow"
+    	android:showAsAction="ifRoom|withText">
+    <menu>
+       
+         <item
+            android:id="@+id/menu_logout"
+            android:title="@string/menu_logout" />
+         <item
+            android:id="@+id/menu_About"
+            android:title="@string/menu_about" />
+          
+    </menu>
+</item>
+
+</menu>

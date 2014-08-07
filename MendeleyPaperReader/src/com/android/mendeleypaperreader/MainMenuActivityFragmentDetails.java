@@ -195,13 +195,13 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 		if(getShownIndex() == 1) { //All doc
 
 			title.setText(Globalconstant.MYLIBRARY[0]);
-			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + "' '" + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
 			uri = MyContentProvider.CONTENT_URI_DOC_DETAILS;
 		}
 		else if (getShownIndex() == 2){ //Starred = true
 
 			title.setText(Globalconstant.MYLIBRARY[1]);
-			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + "' '" + "||" + DatabaseOpenHelper.YEAR + " as data"};
 			selection = DatabaseOpenHelper.ADDED + " BETWEEN datetime('now', 'start of month') AND datetime('now', 'localtime')";
 			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 
@@ -209,7 +209,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 		else if (getShownIndex() == 3){ //Starred = true
 
 			title.setText(Globalconstant.MYLIBRARY[2]);
-			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + "' '" + "||" + DatabaseOpenHelper.YEAR + " as data"};
 			selection = DatabaseOpenHelper.STARRED + " = 'true'";
 			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 
@@ -217,7 +217,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 		else if (getShownIndex() == 4){ //Authored = true
 
 			title.setText(Globalconstant.MYLIBRARY[3]);
-			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"};
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + "' '" + "||" + DatabaseOpenHelper.YEAR + " as data"};
 			selection = DatabaseOpenHelper.AUTHORED + " = 'true'";
 			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 
@@ -230,7 +230,8 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 
 		else if (getShownIndex() > 5){
 
-			title.setText(getShownDescription());			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
+			title.setText(getShownDescription());			
+			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + "' '" + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
 			selection = DatabaseOpenHelper.FOLDER_ID + " = (select folder_id from " + DatabaseOpenHelper.TABLE_FOLDERS +  " where " + DatabaseOpenHelper.FOLDER_NAME + " = '" + getShownDescription() + "')";
 			Log.d(Globalconstant.TAG, "selection: " + selection );
 

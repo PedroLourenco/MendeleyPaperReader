@@ -196,36 +196,37 @@ public class LoadData {
 		String url = auxurl.replace("id", folder_id) + mtoken; 
 
 		if (Globalconstant.LOG)
-			Log.d(Globalconstant.TAG, url);
+			Log.d(Globalconstant.TAG, ":::::::LoadData  - Docs in Folders:::::");
 		JSONParser jParser = new JSONParser();
 		// get JSON data from URL
 		String strResponse = jParser.getJSONFromUrl(url);
 
-		Log.d(Globalconstant.TAG, ":::::::LoadData  - Docs in Folders:::::");
+		if (!strResponse.isEmpty()) {
 
-		try {
+			try {
 
-			JSONObject jcols = new JSONObject(strResponse);
-			JSONArray docs_ids = (JSONArray) jcols.get(Globalconstant.DOCUMENTS_ID);
-			Log.d(Globalconstant.TAG, "jcols.length(): " + docs_ids.length());
+				JSONArray docs_ids = new JSONArray(strResponse);
+				Log.d(Globalconstant.TAG, "jcols.length(): " + docs_ids.length());
 
 
-			for (int i = 0; i < docs_ids.length(); i++) {
+				for (int i = 0; i < docs_ids.length(); i++) {
 
-				String doc_id = docs_ids.get(i).toString();
-				values.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
-				Log.d(Globalconstant.TAG, "DOCUMENTS_ID: " + doc_id);
+					JSONObject lib = docs_ids.getJSONObject(i);
 
-				where = DatabaseOpenHelper._ID + " = '" + doc_id + "'";
+					String doc_id = lib.optString(Globalconstant.ID);
 
-				Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
-				mcontext.getContentResolver().update(uri, values, where, null);
-			}
+					values.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
+					where = DatabaseOpenHelper._ID + " = '" + doc_id + "'";
 
-		} catch (Exception e) {
-			if (Globalconstant.LOG) {
-				Log.e(Globalconstant.TAG, "Got exception when parsing online data");
-				Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
+					Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+					mcontext.getContentResolver().update(uri, values, where, null);
+				}
+
+			} catch (Exception e) {
+				if (Globalconstant.LOG) {
+					Log.e(Globalconstant.TAG, "Got exception when parsing online data");
+					Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
+				}
 			}
 		}
 		
