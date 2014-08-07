@@ -15,7 +15,7 @@ public class Globalconstant {
 	 
 	 public static String get_files = "https://mix.mendeley.com/files?access_token=";
 	 public static String get_files_by_doc_id = "https://mix.mendeley.com/files?document_id=doc_id&access_token=";
-	
+	 public static String get_profile = "https://mix.mendeley.com/profiles/me?access_token=";
 	 
 	 
 	 public static String ISSN_URL = "http://www.worldcat.org/issn/"; //gene-an-international-journal-focusing-on-gene-cloning-and-gene-structure-and-function/oclc/776694941"
@@ -41,8 +41,8 @@ public class Globalconstant {
 	 public static String ABSTRACT = "abstract";
 	 public static String PROFILE_ID = "profile_id";
 	 public static String AUTHORS = "authors";
-	 public static String FORENAME = "forename";
-	 public static String SURNAME = "surname";
+	 public static String FORENAME = "first_name";
+	 public static String SURNAME = "last_name";
 	 public static String ADDED = "added";
 	 public static String PAGES = "pages";
 	 public static String VOLUME = "volume";
@@ -69,7 +69,8 @@ public class Globalconstant {
 	 public static String FILE_MIME_TYPE = "mime_type";
 	 public static String FILE_DOC_ID = "document_id";
 	 public static String FILE_FILEHASH = "filehash"; 
-		
+	 public static String PROFILE_DISPLAY_NAME = "display_name";
+	 public static String PROFILE_LINK = "link";
 	 
 	 
 	    public static final String[] MYLIBRARY = 

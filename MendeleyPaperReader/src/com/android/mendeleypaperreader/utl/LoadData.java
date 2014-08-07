@@ -284,7 +284,44 @@ private void get_files_doc_id(String doc_id){
 	}
 	
 	
+public void getProfileInformation(String url) {
+	ContentValues values = new ContentValues();
+	
 
+	Log.d(Globalconstant.TAG, url);
+	JSONParser jParser = new JSONParser();
+
+	// get JSON data from URL
+	String strResponse = jParser.getJSONFromUrl(url);
+
+	if (Globalconstant.LOG)
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - PROFILE:::::123" + strResponse);
+	try {
 
 	
+		JSONObject jcols = new JSONObject(new String(strResponse));
+		values.put(DatabaseOpenHelper.PROFILE_ID, jcols.optString(Globalconstant.ID));
+		
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - PROFILE:::::" + jcols.optString(Globalconstant.ID));
+		values.put(DatabaseOpenHelper.PROFILE_FIRST_NAME, jcols.optString(Globalconstant.FORENAME));
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - PROFILE:::::" + jcols.optString(Globalconstant.FORENAME));
+		values.put(DatabaseOpenHelper.PROFILE_LAST_NAME, jcols.optString(Globalconstant.SURNAME));
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - PROFILE:::::" + jcols.optString(Globalconstant.SURNAME));
+		values.put(DatabaseOpenHelper.PROFILE_DISPLAY_NAME,	jcols.optString(Globalconstant.PROFILE_DISPLAY_NAME));
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - PROFILE:::::" + jcols.optString(Globalconstant.PROFILE_DISPLAY_NAME));
+		values.put(DatabaseOpenHelper.PROFILE_LINK,jcols.optString(Globalconstant.PROFILE_LINK));
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - PROFILE:::::" + jcols.optString(Globalconstant.PROFILE_LINK));
+		
+	
+	} catch (Exception e) {
+		if (Globalconstant.LOG) {
+			Log.e(Globalconstant.TAG, "Got exception when parsing online data");
+			Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+	}
+	
+	Uri uri = mcontext.getContentResolver().insert(MyContentProvider.CONTENT_URI_PROFILE, values);
+
 }
+}
+

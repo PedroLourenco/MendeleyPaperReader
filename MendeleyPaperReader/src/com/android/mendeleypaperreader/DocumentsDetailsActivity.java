@@ -31,6 +31,7 @@ import com.android.mendeleypaperreader.utl.Globalconstant;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
 
 
+
 public class DocumentsDetailsActivity extends Activity  {
 
 	Cursor mAdapter;
@@ -153,6 +154,7 @@ public class DocumentsDetailsActivity extends Activity  {
 
 			public void onClick(View v) {
 				
+				
 				onShareClick(v);
 				
 				/*Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND); 
@@ -199,6 +201,26 @@ public class DocumentsDetailsActivity extends Activity  {
 
 	}
 
+	
+	private String getProfileSettings(String setting_name){
+		
+		String[] projection = null;
+		String selection = null;
+
+		projection = new String[] {setting_name + " as _id"};
+		Uri uri = MyContentProvider.CONTENT_URI_PROFILE;
+
+		
+		Cursor cursor = getApplicationContext().getContentResolver().query(uri, projection, selection, null, null); 
+		
+		cursor.moveToPosition(0);
+		
+		
+		return cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper._ID));
+
+	}
+	
+	
 
 	private void fillData(Cursor cursor){
 
@@ -611,91 +633,24 @@ public class DocumentsDetailsActivity extends Activity  {
 	
 	
 	
-	
-	public void onShareClick2(View v) {
-	    Resources resources = getResources();
-
-	    Intent emailIntent = new Intent();
-	    emailIntent.setAction(Intent.ACTION_SEND);
-	    // Native email client doesn't currently support HTML, but it doesn't hurt to try in case they fix it
-	    String email_text = "The following document was shared from Paper Reader Android app: \n" + doc_title + "\n " + doc_authors_text + "/n" + doc_source_text;
-	    String email_subject_text = "Shared document by Paper Reader";
-	    
-	   
-	    
-	    emailIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(email_text));
-	    emailIntent.putExtra(Intent.EXTRA_SUBJECT, email_subject_text);
-	    //emailIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(resources.getString(R.string.share_email_native)));
-	    //emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.share_email_subject));
-	    emailIntent.setType("message/rfc822");
-
-	    PackageManager pm = getPackageManager();
-	    Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);     
-	    sendIntent.setType("text/plain");
-
-	    Intent openInChooser = Intent.createChooser(emailIntent, "CHOOSER OPTIONS");
-	    //Intent openInChooser = Intent.createChooser(emailIntent, resources.getString(R.string.share_chooser_text));
-
-	    List<ResolveInfo> resInfo = pm.queryIntentActivities(sendIntent, 0);
-	    List<LabeledIntent> intentList = new ArrayList<LabeledIntent>();        
-	    for (int i = 0; i < resInfo.size(); i++) {
-	        // Extract the label, append it, and repackage it in a LabeledIntent
-	        ResolveInfo ri = resInfo.get(i);
-	        String packageName = ri.activityInfo.packageName;
-	        if(packageName.contains("android.email")) {
-	            emailIntent.setPackage(packageName);
-	        } else if(packageName.contains("twitter") || packageName.contains("facebook") || packageName.contains("mms") || packageName.contains("android.gm")) {
-	            Intent intent = new Intent();
-	            intent.setComponent(new ComponentName(packageName, ri.activityInfo.name));
-	            intent.setAction(Intent.ACTION_SEND);
-	            intent.setType("text/plain");
-	            String sms_text = doc_title; 
-    			
-				sms_text = sms_text.substring(0, Math.min(sms_text.length(), 85));
-            	intent.putExtra(Intent.EXTRA_TEXT, sms_text +" ... " + t_doc_url);
-	            if(packageName.contains("twitter")) {
-	                intent.putExtra(Intent.EXTRA_TEXT, sms_text);
-	            } else if(packageName.contains("facebook")) {
-	                // Warning: Facebook IGNORES our text. They say "These fields are intended for users to express themselves. Pre-filling these fields erodes the authenticity of the user voice."
-	                // One workaround is to use the Facebook SDK to post, but that doesn't allow the user to choose how they want to share. We can also make a custom landing page, and the link
-	                // will show the <meta content ="..."> text from that page with our link in Facebook.
-	                intent.putExtra(Intent.EXTRA_TEXT, sms_text);
-	            } else if(packageName.contains("mms")) {
-	                intent.putExtra(Intent.EXTRA_TEXT, sms_text);
-	            } else if(packageName.contains("android.gm")) {
-	            	intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(email_text));
-	            	intent.putExtra(Intent.EXTRA_SUBJECT, email_subject_text);
-	            	intent.setType("message/rfc822");
-	            
-	            } else 
-
-	            intentList.add(new LabeledIntent(intent, packageName, ri.loadLabel(pm), ri.icon));
-	        }
-	    }
-
-	    // convert intentList to array
-	    LabeledIntent[] extraIntents = intentList.toArray( new LabeledIntent[ intentList.size() ]);
-
-	    openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents);
-	    startActivity(openInChooser);       
-	}
-
-
+	/*
+	 * onShareClick - Click on shared icon 
+	 * 
+	 */
 	
 	public void onShareClick(View v) {
 	    Resources resources = getResources();
-	    String separador = System.getProperty("line.separator"); 
-	    String email_text = "Hello,<br/><br/>this is a test message!";
-	    String email_text3 = String.format("The following document was shared %nfrom Paper Reader Android app:" );
-	    String email_text2 = "The following document was shared from Paper Reader Android app: " + separador + doc_title + separador + doc_authors_text + separador + doc_source_text;
-	    
-	    String email_subject_text = "Shared document by Paper Reader";
-	    
-	    
-	    
-	    String sms_text = doc_title; 
+	   	   
+	    String email_text = resources.getString(R.string.email_text) + "<b>" + doc_title + "</b>" + resources.getString(R.string.email_authors) + doc_authors_text + resources.getString(R.string.email_publication) + doc_source_text + resources.getString(R.string.email_mendeley_profile) + getProfileSettings(DatabaseOpenHelper.PROFILE_LINK) + resources.getString(R.string.email_play_store) ;
+	    String email_subject_text = getProfileSettings(DatabaseOpenHelper.PROFILE_DISPLAY_NAME)  + resources.getString(R.string.email_subject);
+	  	String sms_text = doc_title; 
 		
-		sms_text = sms_text.substring(0, Math.min(sms_text.length(), 85));
+		if(sms_text.length() > 85){
+			
+			sms_text = sms_text.substring(0, Math.min(sms_text.length(), 85)) + "...";
+		}
+	    
+		
 	    
 	    
 	    Intent emailIntent = new Intent();
@@ -726,14 +681,14 @@ public class DocumentsDetailsActivity extends Activity  {
 	            intent.setAction(Intent.ACTION_SEND);
 	            intent.setType("text/plain");
 	            if(packageName.contains("twitter")) {
-	                intent.putExtra(Intent.EXTRA_TEXT, sms_text +" ... " + t_doc_url);
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text + t_doc_url);
 	            } else if(packageName.contains("facebook")) {
 	                // Warning: Facebook IGNORES our text. They say "These fields are intended for users to express themselves. Pre-filling these fields erodes the authenticity of the user voice."
 	                // One workaround is to use the Facebook SDK to post, but that doesn't allow the user to choose how they want to share. We can also make a custom landing page, and the link
 	                // will show the <meta content ="..."> text from that page with our link in Facebook.
-	                intent.putExtra(Intent.EXTRA_TEXT, sms_text +" ... " + t_doc_url);
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text + t_doc_url);
 	            } else if(packageName.contains("mms")) {
-	                intent.putExtra(Intent.EXTRA_TEXT, sms_text +" ... " + t_doc_url);
+	                intent.putExtra(Intent.EXTRA_TEXT, sms_text + t_doc_url);
 	            } else if(packageName.contains("android.gm")) {
 	                intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(email_text));
 	                intent.putExtra(Intent.EXTRA_SUBJECT, email_subject_text);               

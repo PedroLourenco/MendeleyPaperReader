@@ -190,11 +190,15 @@ public class MainMenuActivity extends FragmentActivity
 
 			String tokens = session.LoadPreference("access_token");
 			LoadData load = new LoadData(activity, tokens);
+			
+			load.getProfileInformation(Globalconstant.get_profile+tokens);
+			
 			publishProgress((int) (1 / ((float) 3) * 100));
 			load.GetUserLibrary(Globalconstant.get_user_library_url+tokens);
 			publishProgress((int) (2 / ((float) 3) * 100));
 			load.getFolders(Globalconstant.get_user_folders_url+tokens);
 			publishProgress((int) (3 / ((float) 4) * 100));
+			
 			
 
 			if (Globalconstant.LOG)

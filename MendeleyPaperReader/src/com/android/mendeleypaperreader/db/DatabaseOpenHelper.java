@@ -19,6 +19,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String TABLE_AUTHORS = "authors";
 	public final static String TABLE_FOLDERS = "folders";
 	public final static String TABLE_FILES = "files";
+	public final static String TABLE_PROFILE = "profile";
 	
 	
 	public final static String _ID = "_id";
@@ -76,7 +77,11 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String FILE_MIME_TYPE = "mime_type";
 	public final static String FILE_DOC_ID = "document_id";
 	public final static String FILE_FILEHASH = "filehash"; 
-	
+	//Table Profile colunms
+	public final static String PROFILE_FIRST_NAME = "first_name";
+	public final static String PROFILE_LAST_NAME = "last_name";
+	public final static String PROFILE_DISPLAY_NAME = "display_name";
+	public final static String PROFILE_LINK = "link";
 
 	final static String[] document_details_columns = { _ID, TYPE, MONTH, YEAR, LAST_MODIFIED, DAY, GROUP_ID, SOURCE, TITLE, REVISION, IDENTIFIERS, ABSTRACT, PROFILE_ID, AUTHORS, ADDED, PAGES, VOLUME, ISSUE, WEBSITE, PUBLISHER, CITY, EDITION, INSTITUTION, SERIES, CHAPTER, EDITORS, READ, STARRED, AUTHORED, CONFIRMED, HIDDEN};
 	final static String[] document_titles_columns = {TITLE, AUTHORS, SOURCE, YEAR};
@@ -86,6 +91,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	
 	final private static String CREATE_TABLE_FILE = "CREATE TABLE files (" + FILE_ID + " TEXT, "
 			+ FILE_NAME + " TEXT, " + FILE_MIME_TYPE + " TEXT, " + FILE_DOC_ID + " TEXT, " + FILE_FILEHASH + " TEXT, PRIMARY KEY (" + FILE_ID +") ) ";
+	
+	final private static String CREATE_TABLE_PROFILE = "CREATE TABLE profile (" + PROFILE_ID + " TEXT, "
+			+ PROFILE_FIRST_NAME + " TEXT, " + PROFILE_LAST_NAME + " TEXT, " + PROFILE_DISPLAY_NAME + " TEXT, " + PROFILE_LINK + " TEXT, PRIMARY KEY (" + PROFILE_ID +") ) ";
 	
 	
 	final private static String CREATE_TABLE_FOLDERS = "CREATE TABLE folders (" + FOLDER_ID + " TEXT, " + FOLDER_ADDED + " TEXT, " + FOLDER_PARENT + " TEXT, " + FOLDER_GROUP + " TEXT, "
@@ -159,6 +167,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			db.execSQL(CREATE_TABLE_AUTHORS);
 			db.execSQL(CREATE_TABLE_FOLDERS);
 			db.execSQL(CREATE_TABLE_FILE);
+			db.execSQL(CREATE_TABLE_PROFILE);
 		
 		
 	}

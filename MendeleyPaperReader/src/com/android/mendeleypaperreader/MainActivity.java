@@ -206,7 +206,7 @@ public class MainActivity extends Activity {
 	            	   	String refresh = json.getString("refresh_token");
 	            	   	
 	            	    //Save access token in shared preferences
-	            	   	//jParser.savePreferences(getApplicationContext(), "access_token", json.getString("access_token"), Globalconstant.shared_file_name);
+	            	   
 	                    session.savePreferences("access_token", json.getString("access_token"));
 	            	   	
 	            	   	if (Globalconstant.LOG){
@@ -214,7 +214,6 @@ public class MainActivity extends Activity {
 	            	   		Log.d("Expire", expire);
 	            	   		Log.d("Refresh", refresh);
 	            	   	}
-	            	   	 //TODO - Se a autenticação tiver sucesso fazer o upload dos dados e abrir nova ativity
 	            	   	
 	            	   
 	            	   	if(!tok.isEmpty()){
