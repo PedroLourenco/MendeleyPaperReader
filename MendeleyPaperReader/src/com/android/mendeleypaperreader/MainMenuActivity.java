@@ -90,6 +90,7 @@ public class MainMenuActivity extends FragmentActivity
 			switch (event.getAction()) {
 			case KeyEvent.ACTION_DOWN:
 				if (event.getDownTime() - mLastPressedTime < PERIOD) {
+					//TODO  -  Quando n‹o Ž feito logout n‹o apresentar o layout para fazer login
 					finish();
 
 				} else {
@@ -123,6 +124,7 @@ public class MainMenuActivity extends FragmentActivity
 				
 			case R.id. menu_logout:
 				session.deletePreferences();
+				//TODO  -  Apagar os dados da bd quando Ž feito o logout
 				getApplicationContext().deleteDatabase("mendeley_library");
 				finish();
 				return true;		

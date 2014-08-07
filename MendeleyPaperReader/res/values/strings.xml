@@ -15,12 +15,12 @@
     
     <!-- DocumentsDetailActivity  -->
     
-    <string name="email_subject"> <p></p>-<p></p>Shared document by Paper Reader</string>
-    <string name="email_text">The following document was shared using Android Paper Reader app:<br/><br/></string>
-    <string name="email_publication"><br/><br/>Publication:<p></p> </string>
-    <string name="email_authors"><br/><br/>Authors:<p></p> </string>
-    <string name="email_mendeley_profile"><br/><br/><br/><br/>Mendeley profile:<p></p> </string>
-    <string name="email_play_store"><br/><br/>Play Store:<p></p></string>
+    <string name="email_subject">" - Shared document by Paper Reader"</string>
+    <string name="email_text">The following document was shared using Android Paper Reader app:</string>
+    <string name="email_publication">"Publication: "</string>
+    <string name="email_authors">"Authors: " </string>
+    <string name="email_mendeley_profile">"Mendeley profile: "</string>
+    <string name="email_play_store">"Play Store: "</string>
     
     
     <!-- About activity -->

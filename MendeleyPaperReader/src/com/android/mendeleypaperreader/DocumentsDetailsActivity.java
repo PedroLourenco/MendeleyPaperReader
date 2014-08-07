@@ -641,7 +641,7 @@ public class DocumentsDetailsActivity extends Activity  {
 	public void onShareClick(View v) {
 	    Resources resources = getResources();
 	   	   
-	    String email_text = resources.getString(R.string.email_text) + "<b>" + doc_title + "</b>" + resources.getString(R.string.email_authors) + doc_authors_text + resources.getString(R.string.email_publication) + doc_source_text + resources.getString(R.string.email_mendeley_profile) + getProfileSettings(DatabaseOpenHelper.PROFILE_LINK) + resources.getString(R.string.email_play_store) ;
+	    String email_text = resources.getString(R.string.email_text) + "<br/><br/><b>" + doc_title + "</b><br/><br/>" + resources.getString(R.string.email_authors) + doc_authors_text + "<br/><br/>" + resources.getString(R.string.email_publication) + doc_source_text + "<br/><br/>" + resources.getString(R.string.email_mendeley_profile) + getProfileSettings(DatabaseOpenHelper.PROFILE_LINK) + "<br/><br/>" + resources.getString(R.string.email_play_store) ;
 	    String email_subject_text = getProfileSettings(DatabaseOpenHelper.PROFILE_DISPLAY_NAME)  + resources.getString(R.string.email_subject);
 	  	String sms_text = doc_title; 
 		
