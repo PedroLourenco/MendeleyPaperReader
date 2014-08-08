@@ -1,90 +1,99 @@
 package com.android.mendeleypaperreader.utl;
 
-public class Globalconstant {
-	
-	 public static String TAG = "MendeleyPaperReader";
-	 public static final boolean LOG = true;
-	 
-	 public static String shared_file_name = "share_pref";
-	 public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&access_token=";
-	 public static String get_docs_in_folders = "https://mix.mendeley.com/folders/id/documents?access_token=";
-	 
+/**
+ * Classname: Globalconstant 
+ * 	 
+ * 
+ * @date July 8, 2014
+ * @author PedroLourenco (pdrolourenco@gmail.com)
+ */
 
-	 public static String get_docs_ann = "https://mix.mendeley.com/annotations/?document_id=doc_id&access_token=";
-	 public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";
-	 
-	 public static String get_files = "https://mix.mendeley.com/files?access_token=";
-	 public static String get_files_by_doc_id = "https://mix.mendeley.com/files?document_id=doc_id&access_token=";
-	 public static String get_profile = "https://mix.mendeley.com/profiles/me?access_token=";
-	 
-	 
-	 public static String ISSN_URL = "http://www.worldcat.org/issn/"; //gene-an-international-journal-focusing-on-gene-cloning-and-gene-structure-and-function/oclc/776694941"
-	 public static String DOI_URL = "http://dx.doi.org/";
-	 public static String PMID_URL = "http://www.ncbi.nlm.nih.gov/m/pubmed/";
-	 
-	 
-	 //Json variables
-	 public static String ID = "id";
-	 public static String TYPE = "type";
-	 public static String MONTH = "month";
-	 public static String YEAR = "year";
-	 public static String LAST_MODIFIED = "last_modified";
-	 public static String DAY = "day";
-	 public static String GROUP_ID = "group_id";
-	 public static String SOURCE = "source";
-	 public static String TITLE = "title";
-	 public static String REVISION = "revision";
-	 public static String IDENTIFIERS = "identifiers";
-	 public static String PMID = "pmid";
-	 public static String DOI = "doi";
-	 public static String ISSN = "issn";
-	 public static String ABSTRACT = "abstract";
-	 public static String PROFILE_ID = "profile_id";
-	 public static String AUTHORS = "authors";
-	 public static String FORENAME = "first_name";
-	 public static String SURNAME = "last_name";
-	 public static String ADDED = "added";
-	 public static String PAGES = "pages";
-	 public static String VOLUME = "volume";
-	 public static String ISSUE = "issue";
-	 public static String WEBSITE = "website";
-	 public static String PUBLISHER = "publisher";
-	 public static String CITY = "city";
-	 public static String EDITION = "edition";
-	 public static String INSTITUTION = "institution";
-	 public static String SERIES = "series";
-	 public static String EDITORS = "editors";
-	 public static String READ = "read";
-	 public static String STARRED = "starred";
-	 public static String AUTHORED = "authored";
-	 public static String CONFIRMED = "confirmed";
-	 public static String HIDDEN = "hidden";
-	 public static String NAME = "name";
-	 public static String PARENT = "parent";
-	 public static String GROUP = "group";
-	 public static String DOCUMENTS_ID = "document_ids";
-	 public static String DOCUMENTS = "documents";
-	 public static String FILE_ID =  "id";
-	 public static String FILE_NAME = "file_name";
-	 public static String FILE_MIME_TYPE = "mime_type";
-	 public static String FILE_DOC_ID = "document_id";
-	 public static String FILE_FILEHASH = "filehash"; 
-	 public static String PROFILE_DISPLAY_NAME = "display_name";
-	 public static String PROFILE_LINK = "link";
-	 
-	 
-	    public static final String[] MYLIBRARY = 
-	        {
-	                "All Documents",   
-	                "Recently Added",
-	                "Favorites",       
-	                "My Publications",
-	                "Trash",
-	        };
-	        
-	    
-	    
-	    
-	  
+
+public class Globalconstant {
+
+    public static String TAG = "PaperReader";
+    public static final boolean LOG = true;
+
+    public static String shared_file_name = "share_pref";
+    public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&access_token=";
+    public static String get_docs_in_folders = "https://mix.mendeley.com/folders/id/documents?access_token=";
+
+
+    public static String get_docs_ann = "https://mix.mendeley.com/annotations/?document_id=doc_id&access_token=";
+    public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";
+
+    public static String get_files = "https://mix.mendeley.com/files?access_token=";
+    public static String get_files_by_doc_id = "https://mix.mendeley.com/files?document_id=doc_id&access_token=";
+    public static String get_profile = "https://mix.mendeley.com/profiles/me?access_token=";
+
+
+    public static String ISSN_URL = "http://www.worldcat.org/issn/"; 
+    public static String DOI_URL = "http://dx.doi.org/";
+    public static String PMID_URL = "http://www.ncbi.nlm.nih.gov/m/pubmed/";
+
+
+    //Json variables
+    public static String ID = "id";
+    public static String TYPE = "type";
+    public static String MONTH = "month";
+    public static String YEAR = "year";
+    public static String LAST_MODIFIED = "last_modified";
+    public static String DAY = "day";
+    public static String GROUP_ID = "group_id";
+    public static String SOURCE = "source";
+    public static String TITLE = "title";
+    public static String REVISION = "revision";
+    public static String IDENTIFIERS = "identifiers";
+    public static String PMID = "pmid";
+    public static String DOI = "doi";
+    public static String ISSN = "issn";
+    public static String ABSTRACT = "abstract";
+    public static String PROFILE_ID = "profile_id";
+    public static String AUTHORS = "authors";
+    public static String FORENAME = "first_name";
+    public static String SURNAME = "last_name";
+    public static String ADDED = "added";
+    public static String PAGES = "pages";
+    public static String VOLUME = "volume";
+    public static String ISSUE = "issue";
+    public static String WEBSITE = "website";
+    public static String PUBLISHER = "publisher";
+    public static String CITY = "city";
+    public static String EDITION = "edition";
+    public static String INSTITUTION = "institution";
+    public static String SERIES = "series";
+    public static String EDITORS = "editors";
+    public static String READ = "read";
+    public static String STARRED = "starred";
+    public static String AUTHORED = "authored";
+    public static String CONFIRMED = "confirmed";
+    public static String HIDDEN = "hidden";
+    public static String NAME = "name";
+    public static String PARENT = "parent";
+    public static String GROUP = "group";
+    public static String DOCUMENTS_ID = "document_ids";
+    public static String DOCUMENTS = "documents";
+    public static String FILE_ID =  "id";
+    public static String FILE_NAME = "file_name";
+    public static String FILE_MIME_TYPE = "mime_type";
+    public static String FILE_DOC_ID = "document_id";
+    public static String FILE_FILEHASH = "filehash"; 
+    public static String PROFILE_DISPLAY_NAME = "display_name";
+    public static String PROFILE_LINK = "link";
+
+
+    public static final String[] MYLIBRARY = 
+	{
+	"All Documents",   
+	"Recently Added",
+	"Favorites",       
+	"My Publications",
+	"Trash",
+	};
+
+
+
+
+
 
 }

@@ -7,40 +7,34 @@ import android.util.Log;
 
 import com.android.mendeleypaperreader.utl.Globalconstant;
 
-
 /**
- * @author Pedro Lourenco
+ * Classname: DatabaseOpenHelper 
+ * 	 
  * 
+ * @date July 8, 2014
+ * @author PedroLourenco (pdrolourenco@gmail.com)
  */
 
 public class MendeleyDataSource {
 
 
+    private SQLiteDatabase db;
+    private DatabaseOpenHelper mendeley_library;
 
-	private SQLiteDatabase db;
-	private DatabaseOpenHelper mendeley_library;
 
+    public MendeleyDataSource(Context context) {
+	mendeley_library = new DatabaseOpenHelper(context);	
+    }
+
+
+    public void open() throws SQLException {
 	
-	
-	public MendeleyDataSource(Context context) {
-		mendeley_library = new DatabaseOpenHelper(context);	
-	}
+	db = mendeley_library.getWritableDatabase();
+    }
 
+    public void close() {
 
-	public void open() throws SQLException {
-
-		db = mendeley_library.getWritableDatabase();
-	}
-
-	public void close() {
-		
-		Log.d(Globalconstant.TAG, "DATABASE CLOSED!!!");
-		mendeley_library.close();
-	}
-	
-
-	
-	
-
-	
-	}
+	Log.d(Globalconstant.TAG, "DATABASE CLOSED!!!");
+	mendeley_library.close();
+    }
+}

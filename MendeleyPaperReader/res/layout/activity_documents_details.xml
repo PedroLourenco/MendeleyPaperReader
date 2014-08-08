@@ -27,7 +27,7 @@
         android:id="@+id/favorite_star"
         android:layout_width="@dimen/image_size"
         android:layout_height="@dimen/image_size"
-        android:src="@drawable/ic_action_star" />
+        android:src="@drawable/ic_action_not_important" />
        
   </RelativeLayout>
     

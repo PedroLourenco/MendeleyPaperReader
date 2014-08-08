@@ -1,17 +1,20 @@
 package com.android.mendeleypaperreader.db;
 
 
-
-import java.io.File;
-
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import com.android.mendeleypaperreader.utl.Globalconstant;
+
+/**
+ * Classname: DatabaseOpenHelper 
+ * 	 
+ * 
+ * @date July 8, 2014
+ * @author PedroLourenco (pdrolourenco@gmail.com)
+ */
 
 public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	
@@ -19,9 +22,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String TABLE_AUTHORS = "authors";
 	public final static String TABLE_FOLDERS = "folders";
 	public final static String TABLE_FILES = "files";
-	public final static String TABLE_PROFILE = "profile";
-	
-	
+	public final static String TABLE_PROFILE = "profile";	
 	public final static String _ID = "_id";
 	public final static String TYPE = "type";
 	public final static String MONTH = "month";

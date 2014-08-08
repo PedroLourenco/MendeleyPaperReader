@@ -3,6 +3,7 @@ package com.android.mendeleypaperreader.utl;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -30,6 +31,7 @@ public class MyContentProvider extends ContentProvider {
 	public static final Uri CONTENT_URI_FOLDERS = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FOLDERS);
 	public static final Uri CONTENT_URI_FILES = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FILES);
 	public static final Uri CONTENT_URI_PROFILE = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_PROFILE);
+	public static final Uri CONTENT_URI_DELETE_DATA_BASE= Uri.parse("content://" + AUTHORITY + "/" + "DUMMY");
 	
 	public static final int ALLDOCS = 1;
 	public static final int ALL_DOCS_ID = 2;  
@@ -40,6 +42,7 @@ public class MyContentProvider extends ContentProvider {
 	public static final int ALL_FILES = 7;
 	public static final int ALL_PROFILE = 8;
 	public static final int ALL_PROFILE_ID = 9;
+	public static final int DELETE_DATA_BASE = 10;
 	
 	
 	private static final UriMatcher sURIMatcher = 
@@ -54,6 +57,7 @@ public class MyContentProvider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS + "/#", FOLDERS_ID);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FILES, ALL_FILES);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_PROFILE, ALL_PROFILE);
+		sURIMatcher.addURI(AUTHORITY, "DUMMY", DELETE_DATA_BASE);
 }
 	
 
@@ -68,10 +72,24 @@ public class MyContentProvider extends ContentProvider {
 	
 	
 	@Override
-	public int delete(Uri arg0, String arg1, String[] arg2) {
-		// TODO Auto-generated method stub
-		
-		return 0;
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+
+		SQLiteDatabase db = db_helper.getWritableDatabase();
+		int count = 0;
+		switch (sURIMatcher.match(uri)) {
+		case DELETE_DATA_BASE:
+
+			count = deleteDatabase(db, selection, selectionArgs);
+
+			break;
+
+		default:
+			throw new IllegalArgumentException("Unsupported URI: " + uri);
+		}
+
+		getContext().getContentResolver().notifyChange(uri, null, false);
+		return count;
+
 	}
 
 	
@@ -241,5 +259,22 @@ public class MyContentProvider extends ContentProvider {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	private int deleteDatabase(SQLiteDatabase db, String selection, String[] selectionArgs) {
+		
+		 int count = 0;
+
+		 count = db.delete(DatabaseOpenHelper.TABLE_DOCUMENT_DETAILS, selection, selectionArgs);
+		 count = count + db.delete(DatabaseOpenHelper.TABLE_AUTHORS, selection, selectionArgs);
+		 count = count + db.delete(DatabaseOpenHelper.TABLE_FOLDERS, selection, selectionArgs);
+		 count = count + db.delete(DatabaseOpenHelper.TABLE_FILES, selection, selectionArgs);
+		 count = count + db.delete(DatabaseOpenHelper.TABLE_PROFILE, selection, selectionArgs);
+		 
+		 return count;
+	}
+	
+	
+	
 
 }

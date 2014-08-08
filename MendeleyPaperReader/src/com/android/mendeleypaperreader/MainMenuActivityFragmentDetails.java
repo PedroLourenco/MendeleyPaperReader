@@ -23,6 +23,15 @@ import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
 import com.android.mendeleypaperreader.utl.Globalconstant;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
 
+/**
+ * Classname: MainMenuActivityFragmentDetails 
+ * 	
+ * 
+ * @date July 8, 2014
+ * @author PedroLourenco (pdrolourenco@gmail.com)
+ *
+ */
+
 public class MainMenuActivityFragmentDetails  extends ListFragment  implements LoaderCallbacks<Cursor> {
 
 	boolean mDualPane;
