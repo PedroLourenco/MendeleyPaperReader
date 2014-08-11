@@ -51,6 +51,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	TextView title;
 	// Session Manager Class
 	private static SessionManager session;
+	private static LoadData load;
 	private ProgressTask task=null;
 	private static ProgressDialog dialog;
 
@@ -88,6 +89,9 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		session = new SessionManager(getActivity().getApplicationContext()); 
+		load = new LoadData(getActivity().getApplicationContext());
 		if (container == null) {
 			// We have different layouts, and in one of them this
 			// fragment's containing frame doesn't exist.  The fragment
@@ -142,7 +146,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 
 			Log.d(Globalconstant.TAG,"Click on refresh icon!");
 			
-			new RefreshToken(getActivity()).execute();
+			//new RefreshToken(getActivity()).execute();
 			
 			sync();
 			
@@ -162,6 +166,8 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	private void sync(){
 	    
 		if (task==null) {
+			
+			getActivity().getContentResolver().delete(MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,null, null);
 			task=new ProgressTask(this);
 			task.execute();
 
@@ -191,11 +197,14 @@ void updateProgress(int progress) {
 
 void markAsDone() {
 	dialog.dismiss();
-	getActivity().setContentView(R.layout.activity_main_menu_details);
+	task = null;
+	getLoaderManager().restartLoader(1, null, this);
 }
 
 void startDialog(){
 	dialog = new ProgressDialog(getActivity());
+	dialog.setCanceledOnTouchOutside(false);
+	dialog.setCancelable(false);
 	dialog.setMessage(getResources().getString(R.string.sync_data_0));
 	dialog.show();
 }
@@ -388,6 +397,7 @@ void startDialog(){
 		    else {
 			//Save Flag to control data upload
 			session.savePreferences("IS_DB_CREATED", "YES");
+			
 			activity.markAsDone();
 		    }
 		} 
@@ -414,13 +424,16 @@ void startDialog(){
 		protected String doInBackground(final String... args) {
 
 		    String tokens = session.LoadPreference("access_token");
-		    //LoadData load = new LoadData(getApplicationContext());
+		    //LoadData load = new LoadData(getApplication());
+		    
+		    Log.d(Globalconstant.TAG, "tokens: " + tokens);
+		    
 		    publishProgress((int) (1 / ((float) 4) * 100));
-		    //load.getProfileInformation(Globalconstant.get_profile+tokens);
+		    load.getProfileInformation(Globalconstant.get_profile+tokens);
 		    publishProgress((int) (2 / ((float) 4) * 100));
-		    //load.GetUserLibrary(Globalconstant.get_user_library_url+tokens);
+		    load.GetUserLibrary(Globalconstant.get_user_library_url+tokens);
 		    publishProgress((int) (3 / ((float) 4) * 100));
-		    //load.getFolders(Globalconstant.get_user_folders_url+tokens);
+		    load.getFolders(Globalconstant.get_user_folders_url+tokens);
 		    publishProgress((int) (4 / ((float) 3.99) * 100));
 
 

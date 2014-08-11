@@ -23,9 +23,14 @@ public class LoadData {
 
     private Context context;
     private String doc_detail_id;
-
+    private static SessionManager session;
+    private static String access_token;
     public LoadData(Context context) {
 	this.context = context;
+	
+	session = new SessionManager(this.context);  
+	access_token = session.LoadPreference("access_token");
+	
 	
     }
 
@@ -123,7 +128,7 @@ public class LoadData {
 		
 		Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_DOC_DETAILS, values);
 
-		get_files_doc_id(doc_detail_id);
+		//get_files_doc_id(doc_detail_id);
 
 	    }
 
@@ -145,6 +150,7 @@ public class LoadData {
 
 	if (Globalconstant.LOG)
 	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Folders:::::");
+	Log.d(Globalconstant.TAG, url);
 	
 	JSONParser jParser = new JSONParser();
 	// get JSON data from URL
@@ -187,11 +193,13 @@ public class LoadData {
 	ContentValues values = new ContentValues();
 	String auxurl = Globalconstant.get_docs_in_folders;
 	String where= null;
+	Log.d(Globalconstant.TAG, "auxurl: " + auxurl);
 	//String [] selectionArgs = {};
-	String url = auxurl.replace("id", folder_id) + this.context; 
+	String url = auxurl.replace("id", folder_id) + access_token; 
 
 	if (Globalconstant.LOG)
 	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Docs in Folders:::::");
+		Log.d(Globalconstant.TAG, url);
 	JSONParser jParser = new JSONParser();
 	// get JSON data from URL
 	String strResponse = jParser.getJSONFromUrl(url);
@@ -233,11 +241,12 @@ public class LoadData {
 	ContentValues values = new ContentValues();
 
 	String auxurl = Globalconstant.get_files_by_doc_id;
-	String url = auxurl.replace("doc_id", doc_id) + this.context; 
+	Log.d(Globalconstant.TAG, "auxurl: " + auxurl);
+	String url = auxurl.replace("doc_id", doc_id) + access_token; 
 
 	Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + doc_id);
 	if (Globalconstant.LOG)
-	    Log.d(Globalconstant.TAG, url);
+	    Log.d(Globalconstant.TAG, "url: " + url);
 	JSONParser jParser = new JSONParser();
 	// get JSON data from URL
 	String strResponse = jParser.getJSONFromUrl(url);

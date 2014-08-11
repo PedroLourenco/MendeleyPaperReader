@@ -52,12 +52,12 @@ public class MainMenuActivity extends FragmentActivity
 	String db_uploded_flag = session.LoadPreference("IS_DB_CREATED");
 	if(!db_uploded_flag.equals("YES")){
 	    if (task==null) {
-		task=new ProgressTask(this);
-		task.execute();
+	    	task=new ProgressTask(this);
+	    	task.execute();
 
 	    }else {
-		task.attach(this);
-		updateProgress(task.getProgress());
+	    	task.attach(this);
+	    	updateProgress(task.getProgress());
 
 		if (task.getProgress()>=100) {
 		    markAsDone();				
@@ -72,23 +72,25 @@ public class MainMenuActivity extends FragmentActivity
 
 
     public Object onRetainCusObjectNonConfigurationInstance() {
-	task.detach();
-	return(task);
+    	task.detach();
+    	return(task);
     }
 
     void updateProgress(int progress) {
-	dialog.setMessage(getResources().getString(R.string.sync_data) + progress + "%)");
+    	dialog.setMessage(getResources().getString(R.string.sync_data) + progress + "%)");
     }
 
     void markAsDone() {
-	dialog.dismiss();
-	setContentView(R.layout.activity_main_menu);
+    	dialog.dismiss();
+    	setContentView(R.layout.activity_main_menu);
     }
 
     void startDialog(){
-	dialog = new ProgressDialog(MainMenuActivity.this );
-	dialog.setMessage(getResources().getString(R.string.sync_data_0));
-	dialog.show();
+    	dialog = new ProgressDialog(MainMenuActivity.this );
+    	dialog.setCanceledOnTouchOutside(false);
+    	dialog.setCancelable(false);
+    	dialog.setMessage(getResources().getString(R.string.sync_data_0));
+    	dialog.show();
     }
 
 
@@ -191,7 +193,8 @@ public class MainMenuActivity extends FragmentActivity
 	}
 
 	protected void onPreExecute() {
-	    activity.startDialog();
+	    
+			activity.startDialog();
 	}
 
 
@@ -199,8 +202,9 @@ public class MainMenuActivity extends FragmentActivity
 
 
 	    if (activity==null) {
+	    
 		if(Globalconstant.LOG)
-		    Log.w("RotationAsync", "onPostExecute() skipped -- no activity");
+		    Log.w(Globalconstant.TAG, "RotationAsync - onPostExecute() skipped -- no activity");
 	    }
 	    else {
 		//Save Flag to control data upload
@@ -216,13 +220,12 @@ public class MainMenuActivity extends FragmentActivity
 	protected void onProgressUpdate(final Integer... values) {
 
 	    if (activity==null) {
-		if(Globalconstant.LOG)
-		    Log.w("RotationAsync", "onProgressUpdate() skipped -- no activity");
-	    }
-	    else {
+	    	if(Globalconstant.LOG)
+	    		Log.w(Globalconstant.TAG ,"RotationAsync - onProgressUpdate() skipped -- no activity");
+	    }else {
 
-		progress = values[0];
-		activity.updateProgress(progress);
+	    	progress = values[0];
+	    	activity.updateProgress(progress);
 	    }
 	}
 
@@ -230,14 +233,14 @@ public class MainMenuActivity extends FragmentActivity
 
 	protected String doInBackground(final String... args) {
 
-	    String tokens = session.LoadPreference("access_token");
+	    String access_token = session.LoadPreference("access_token");
 	    LoadData load = new LoadData(activity);
 	    publishProgress((int) (1 / ((float) 4) * 100));
-	    load.getProfileInformation(Globalconstant.get_profile+tokens);
+	    load.getProfileInformation(Globalconstant.get_profile+access_token);
 	    publishProgress((int) (2 / ((float) 4) * 100));
-	    load.GetUserLibrary(Globalconstant.get_user_library_url+tokens);
+	    load.GetUserLibrary(Globalconstant.get_user_library_url+access_token);
 	    publishProgress((int) (3 / ((float) 4) * 100));
-	    load.getFolders(Globalconstant.get_user_folders_url+tokens);
+	    load.getFolders(Globalconstant.get_user_folders_url+access_token);
 	    publishProgress((int) (4 / ((float) 3.99) * 100));
 
 
