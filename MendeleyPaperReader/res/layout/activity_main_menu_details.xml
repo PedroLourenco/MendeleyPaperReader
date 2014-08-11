@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -17,8 +17,32 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content" 
+        android:layout_below="@+id/detailTitle"
+        android:layout_above="@+id/footer">
 
     </ListView>
+    
+    
+    
+     <!-- Footer aligned to bottom -->
+  
+
+  <RelativeLayout
+    android:id="@+id/footer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@drawable/texttopline" >
+
+    <ImageView
+        android:id="@+id/refresh"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:layout_marginRight="@dimen/pading"
+        android:src="@drawable/ic_action_refresh" />
+       
+  </RelativeLayout>
+    
         
-</LinearLayout>
+</RelativeLayout>

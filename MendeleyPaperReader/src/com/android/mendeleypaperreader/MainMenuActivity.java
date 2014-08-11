@@ -47,8 +47,8 @@ public class MainMenuActivity extends FragmentActivity
 	super.onCreate(savedInstanceState);
 
 	session = new SessionManager(getApplicationContext()); 
-	//Start upload data from server	       
 
+	//Start upload data from server	       
 	String db_uploded_flag = session.LoadPreference("IS_DB_CREATED");
 	if(!db_uploded_flag.equals("YES")){
 	    if (task==null) {
@@ -60,7 +60,8 @@ public class MainMenuActivity extends FragmentActivity
 		updateProgress(task.getProgress());
 
 		if (task.getProgress()>=100) {
-		    markAsDone();				}
+		    markAsDone();				
+		}
 	    }
 
 	}else{
@@ -157,9 +158,7 @@ public class MainMenuActivity extends FragmentActivity
 	    public void onClick(DialogInterface dialog, int which) {
 
 		session.deletePreferences();
-		getContentResolver().delete(
-			MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,
-			null, null);
+		getContentResolver().delete(MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,null, null);
 		finish();
 
 	    }

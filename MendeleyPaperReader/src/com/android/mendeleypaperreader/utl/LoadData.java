@@ -8,6 +8,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.android.mendeleypaperreader.MainMenuActivityFragmentDetails;
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
 
 /**
@@ -297,5 +298,9 @@ public class LoadData {
 	Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_PROFILE, values);
 
     }
+    
+    
+    
+   
 }
 

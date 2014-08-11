@@ -1,5 +1,8 @@
 package com.android.mendeleypaperreader;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -82,13 +85,11 @@ public class MainActivity extends Activity {
 
 	isInternetPresent = cd.isConnectingToInternet();
 
-	// If data base have data skip login layout
-	String db_uploded_flag = session.LoadPreference("IS_DB_CREATED");
 	
-	if (db_uploded_flag.equals("YES")) {
+	// If logged skip login layout	
+	if (session.isLogged()) {
 	    Intent options = new Intent(getApplicationContext(), MainMenuActivity.class);
 	    startActivity(options);
-
 	}
 
 	// Click on "Sign in" Button and make login
@@ -202,7 +203,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected JSONObject doInBackground(String... args) {
 	    GetAccessToken jParser = new GetAccessToken();
-	    JSONObject json = jParser.gettoken(TOKEN_URL, code, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, GRANT_TYPE);
+	    JSONObject json = jParser.getToken(TOKEN_URL, code, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, GRANT_TYPE);
 
 	    return json;
 	}
@@ -219,11 +220,21 @@ public class MainActivity extends Activity {
 		    // Save access token in shared preferences
 
 		    session.savePreferences("access_token", json.getString("access_token"));
-
+		    session.savePreferences("expires_in", json.getString("expires_in"));
+		    session.savePreferences("refresh_token", json.getString("refresh_token"));
+		    Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
+		    
+		    Log.d("NOW: ", calendar.getTime().toString());
+		    
+		    calendar.add(Calendar.SECOND, 3600);
+		    System.out.println(calendar.getTime());
+		    
+		    
 		    if (Globalconstant.LOG) {
 			Log.d("Token Access", tok);
 			Log.d("Expire", expire);
 			Log.d("Refresh", refresh);
+			
 		    }
 
 		    if (!tok.isEmpty()) {

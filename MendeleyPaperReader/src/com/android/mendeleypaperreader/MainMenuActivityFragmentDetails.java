@@ -1,10 +1,12 @@
 package com.android.mendeleypaperreader;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -17,11 +19,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.android.mendeleypaperreader.MainMenuActivity.ProgressTask;
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
 import com.android.mendeleypaperreader.utl.Globalconstant;
+import com.android.mendeleypaperreader.utl.LoadData;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
+import com.android.mendeleypaperreader.utl.RefreshToken;
+import com.android.mendeleypaperreader.utl.SessionManager;
 
 /**
  * Classname: MainMenuActivityFragmentDetails 
@@ -40,6 +49,10 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	private CursorLoader mcursor;
 	private String description = null;
 	TextView title;
+	// Session Manager Class
+	private static SessionManager session;
+	private ProgressTask task=null;
+	private static ProgressDialog dialog;
 
 	public static MainMenuActivityFragmentDetails newInstance(int index , String description) {
 		MainMenuActivityFragmentDetails f = new MainMenuActivityFragmentDetails();
@@ -117,12 +130,75 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 
 		if (Globalconstant.LOG)
 			LoaderManager.enableDebugLogging(true);     
+		
+		
+		
+		ImageView share = (ImageView) view.findViewById(R.id.refresh);
+
+		//onclick on Share button link
+		OnClickListener click_on_refresh_icon = new OnClickListener() {
+
+		    public void onClick(View v) {
+
+			Log.d(Globalconstant.TAG,"Click on refresh icon!");
+			
+			new RefreshToken(getActivity()).execute();
+			
+			sync();
+			
+		    }
+		};
+		share.setOnClickListener(click_on_refresh_icon);
+	   
+		
+		
+		
 		return view;
 
 	}
+	
+	
+	
+	private void sync(){
+	    
+		if (task==null) {
+			task=new ProgressTask(this);
+			task.execute();
+
+		    }else {
+			task.attach(this);
+			updateProgress(task.getProgress());
+
+			if (task.getProgress()>=100) {
+			    markAsDone();				
+			}
+		    }
+	    
+	    
+	}
+	
+	
 
 
+public Object onRetainCusObjectNonConfigurationInstance() {
+	task.detach();
+	return(task);
+}
 
+void updateProgress(int progress) {
+    dialog.setMessage(getResources().getString(R.string.sync_data) + progress + "%)");
+}
+
+void markAsDone() {
+	dialog.dismiss();
+	getActivity().setContentView(R.layout.activity_main_menu_details);
+}
+
+void startDialog(){
+	dialog = new ProgressDialog(getActivity());
+	dialog.setMessage(getResources().getString(R.string.sync_data_0));
+	dialog.show();
+}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -284,5 +360,93 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 			mAdapter.swapCursor(null);
 		}
 	}
+	
+	
+	
+	//AsyncTask to download DATA from server
+
+	    static class ProgressTask extends AsyncTask<String, Integer, String> {
+		MainMenuActivityFragmentDetails activity=null;
+		int progress=0;
+
+		ProgressTask(MainMenuActivityFragmentDetails activity) {
+		    attach(activity);
+		}
+
+		protected void onPreExecute() {
+		    activity.startDialog();
+		}
+
+
+		protected void onPostExecute(final String success) {
+
+
+		    if (activity==null) {
+			if(Globalconstant.LOG)
+			    Log.w("RotationAsync", "onPostExecute() skipped -- no activity");
+		    }
+		    else {
+			//Save Flag to control data upload
+			session.savePreferences("IS_DB_CREATED", "YES");
+			activity.markAsDone();
+		    }
+		} 
+
+
+
+
+		@Override
+		protected void onProgressUpdate(final Integer... values) {
+
+		    if (activity==null) {
+			if(Globalconstant.LOG)
+			    Log.w("RotationAsync", "onProgressUpdate() skipped -- no activity");
+		    }
+		    else {
+
+			progress = values[0];
+			activity.updateProgress(progress);
+		    }
+		}
+
+
+
+		protected String doInBackground(final String... args) {
+
+		    String tokens = session.LoadPreference("access_token");
+		    //LoadData load = new LoadData(getApplicationContext());
+		    publishProgress((int) (1 / ((float) 4) * 100));
+		    //load.getProfileInformation(Globalconstant.get_profile+tokens);
+		    publishProgress((int) (2 / ((float) 4) * 100));
+		    //load.GetUserLibrary(Globalconstant.get_user_library_url+tokens);
+		    publishProgress((int) (3 / ((float) 4) * 100));
+		    //load.getFolders(Globalconstant.get_user_folders_url+tokens);
+		    publishProgress((int) (4 / ((float) 3.99) * 100));
+
+
+		    if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "Fim do Load Data");
+		    return null;
+
+		}
+
+
+
+		void detach() {
+		    activity=null;
+		}
+
+		void attach(MainMenuActivityFragmentDetails activity) {
+		    this.activity=activity;
+		}
+
+		int getProgress() {
+		    return(progress);
+		}
+
+	    }	 
+
+	
+	
 
 }

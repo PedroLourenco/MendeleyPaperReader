@@ -76,6 +76,21 @@ public class SessionManager {
 		
 	}
     
+   /**
+    *  
+    * @return
+    */
+    public boolean isLogged(){
+	String access_token = LoadPreference("access_token");
+	
+	if(!access_token.isEmpty())
+	    return true;
+	    
+		
+	return false;
+	
+    }
+    
     
    
 }

@@ -13,21 +13,32 @@
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
     android:background="@drawable/texttopline"
-    android:gravity="center" >
+    android:weightSum="4"> 
+    
+    
+    <ImageView
+        android:id="@+id/refresh"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:layout_marginRight="@dimen/pading"
+        android:src="@drawable/ic_action_refresh"
+        android:layout_alignParentLeft="true" />
     
     
     <ImageView
         android:id="@+id/share"
         android:layout_width="@dimen/image_size"
         android:layout_height="@dimen/image_size"
-        android:layout_centerInParent="true"
-        android:src="@drawable/ic_action_share" />
+        android:src="@drawable/ic_action_share"
+         android:layout_alignParentRight="true" />
    
    <ImageView
         android:id="@+id/favorite_star"
         android:layout_width="@dimen/image_size"
         android:layout_height="@dimen/image_size"
-        android:src="@drawable/ic_action_not_important" />
+        android:src="@drawable/ic_action_not_important" 
+        android:layout_centerInParent="true"/>
+       
        
   </RelativeLayout>
     
