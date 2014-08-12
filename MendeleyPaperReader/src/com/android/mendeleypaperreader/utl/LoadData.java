@@ -45,7 +45,7 @@ public class LoadData {
 	JSONParser jParser = new JSONParser();
 
 	// get JSON data from URL
-	String strResponse = jParser.getJSONFromUrl(url);
+	String strResponse = jParser.getJSONFromUrl(url+access_token);
 
 	if (Globalconstant.LOG)
 	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::");
@@ -128,7 +128,7 @@ public class LoadData {
 		
 		Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_DOC_DETAILS, values);
 
-		//get_files_doc_id(doc_detail_id);
+		get_files_doc_id(doc_detail_id);
 
 	    }
 
@@ -154,7 +154,7 @@ public class LoadData {
 	
 	JSONParser jParser = new JSONParser();
 	// get JSON data from URL
-	String strResponse = jParser.getJSONFromUrl(url);
+	String strResponse = jParser.getJSONFromUrl(url+access_token);
 	
 	try {
 
@@ -193,7 +193,7 @@ public class LoadData {
 	ContentValues values = new ContentValues();
 	String auxurl = Globalconstant.get_docs_in_folders;
 	String where= null;
-	Log.d(Globalconstant.TAG, "auxurl: " + auxurl);
+	Log.d(Globalconstant.TAG, "access_token: " + access_token);
 	//String [] selectionArgs = {};
 	String url = auxurl.replace("id", folder_id) + access_token; 
 
@@ -285,7 +285,7 @@ public class LoadData {
 	JSONParser jParser = new JSONParser();
 
 	// get JSON data from URL
-	String strResponse = jParser.getJSONFromUrl(url);
+	String strResponse = jParser.getJSONFromUrl(url+access_token);
 	
 	try {
 

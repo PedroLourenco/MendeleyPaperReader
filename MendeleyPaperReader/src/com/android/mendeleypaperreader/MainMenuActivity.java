@@ -90,7 +90,7 @@ public class MainMenuActivity extends FragmentActivity
     	dialog.setCanceledOnTouchOutside(false);
     	dialog.setCancelable(false);
     	dialog.setMessage(getResources().getString(R.string.sync_data_0));
-    	dialog.show();
+    	//dialog.show();
     }
 
 
@@ -234,6 +234,7 @@ public class MainMenuActivity extends FragmentActivity
 	protected String doInBackground(final String... args) {
 
 	    String access_token = session.LoadPreference("access_token");
+	    Log.d(Globalconstant.TAG, "access_token: " + access_token);
 	    LoadData load = new LoadData(activity);
 	    publishProgress((int) (1 / ((float) 4) * 100));
 	    load.getProfileInformation(Globalconstant.get_profile+access_token);
