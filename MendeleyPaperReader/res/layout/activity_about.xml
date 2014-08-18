@@ -15,7 +15,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:contentDescription="@string/app_logo"
-            android:src="@drawable/icon_mendeley48_48" />
+            android:src="@drawable/ic_launcher" />
 
         <TextView
             android:id="@+id/msg_about"

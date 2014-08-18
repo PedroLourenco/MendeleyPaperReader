@@ -38,17 +38,6 @@ public class DetailsActivity extends FragmentActivity {
 	private Boolean isInternetPresent = false;
 
 
-	private static String CLIENT_ID = "177";
-	// Use your own client id
-	private static String CLIENT_SECRET = "V!yw8[5_0ZliXK$0";
-	// Use your own client secret
-	private static String REDIRECT_URI = "http://localhost";
-
-	private static String GRANT_TYPE = "refresh_token";
-	private static String TOKEN_URL = "https://api-oauth2.mendeley.com/oauth/token";
-
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -62,12 +51,7 @@ public class DetailsActivity extends FragmentActivity {
 		if(getResources().getBoolean(R.bool.portrait_only)){
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		}
-		//else{
-
-		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		//}
-
-
+		
 		if (savedInstanceState == null) {
 			// During initial setup, plug in the details fragment.
 			MainMenuActivityFragmentDetails details = new MainMenuActivityFragmentDetails();
@@ -104,7 +88,7 @@ public class DetailsActivity extends FragmentActivity {
 
 
 
-	public void syncData(){
+	private void syncData(){
 
 		new SyncDataAsync(DetailsActivity.this, DetailsActivity.this).execute();
 	}
@@ -112,7 +96,7 @@ public class DetailsActivity extends FragmentActivity {
 
 	private void refreshToken(){
 
-		//delete data from data base and get new accesstoken to start sync
+		//delete data from data base and get new access token to start sync
 		
 		// check internet connection
 		ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
@@ -185,7 +169,7 @@ public class DetailsActivity extends FragmentActivity {
 			Log.d(Globalconstant.TAG,  "ACCESS_TOKEN_OLD: " + session.LoadPreference("access_token"));
 			GetAccessToken jParser = new GetAccessToken();
 
-			JSONObject json = jParser.refresh_token(TOKEN_URL, code, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, GRANT_TYPE, refresh_token);
+			JSONObject json = jParser.refresh_token(Globalconstant.TOKEN_URL, code, Globalconstant.CLIENT_ID, Globalconstant.CLIENT_SECRET, Globalconstant.REDIRECT_URI, Globalconstant.GRANT_TYPE, refresh_token);
 
 			Log.w(Globalconstant.TAG, "doInBackground - FINISH");
 
@@ -193,11 +177,6 @@ public class DetailsActivity extends FragmentActivity {
 
 
 		} 
-
-
-
-
-
 
 	}	  
 

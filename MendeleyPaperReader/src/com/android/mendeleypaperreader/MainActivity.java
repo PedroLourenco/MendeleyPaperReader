@@ -1,11 +1,8 @@
 package com.android.mendeleypaperreader;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -46,12 +42,7 @@ public class MainActivity extends Activity {
 
     private static String CLIENT_ID = "177";
     // Use your own client id
-    private static String CLIENT_SECRET = "V!yw8[5_0ZliXK$0";
-    // Use your own client secret
-    private static String REDIRECT_URI = "http://localhost";
-
-    private static String GRANT_TYPE = "authorization_code";
-    private static String TOKEN_URL = "https://api-oauth2.mendeley.com/oauth/token";
+   
     private static String OAUTH_URL = "https://api-oauth2.mendeley.com/oauth/authorize?";
     private static String OAUTH_SCOPE = "all";
     private Dialog auth_dialog;
@@ -87,7 +78,7 @@ public class MainActivity extends Activity {
 
 	
 	// If logged skip login layout	
-	if (!session.isLogged()) {
+	if (session.isLogged()) {
 	    Intent options = new Intent(getApplicationContext(), MainMenuActivity.class);
 	    startActivity(options);
 	}
@@ -106,7 +97,7 @@ public class MainActivity extends Activity {
 		    auth_dialog.setContentView(R.layout.webviewoauth);
 		    web = (WebView) auth_dialog.findViewById(R.id.webview);
 		    web.getSettings().setJavaScriptEnabled(true);
-		    web.loadUrl(OAUTH_URL + "client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI + "&response_type=code&scope=" + OAUTH_SCOPE);
+		    web.loadUrl(OAUTH_URL + "client_id=" + CLIENT_ID + "&redirect_uri=" + Globalconstant.REDIRECT_URI + "&response_type=code&scope=" + OAUTH_SCOPE);
 		    web.setWebViewClient(new WebViewClient() {
 			boolean authComplete = false;
 			Intent resultIntent = new Intent();
@@ -204,7 +195,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected JSONObject doInBackground(String... args) {
 	    GetAccessToken jParser = new GetAccessToken();
-	    JSONObject json = jParser.getToken(TOKEN_URL, code, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, GRANT_TYPE);
+	    JSONObject json = jParser.getToken(Globalconstant.TOKEN_URL, code, Globalconstant.CLIENT_ID, Globalconstant.CLIENT_SECRET, Globalconstant.REDIRECT_URI, Globalconstant.GRANT_TYPE);
 
 	    return json;
 	}

@@ -1,16 +1,11 @@
 package com.android.mendeleypaperreader;
 
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -21,22 +16,14 @@ import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
-import com.android.mendeleypaperreader.utl.GetAccessToken;
 import com.android.mendeleypaperreader.utl.Globalconstant;
-import com.android.mendeleypaperreader.utl.LoadData;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
 import com.android.mendeleypaperreader.utl.SessionManager;
-import com.android.mendeleypaperreader.utl.SyncDataAsync;
 
 /**
  * Classname: MainMenuActivityFragmentDetails 

@@ -23,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.android.mendeleypaperreader.adapter.ListTitleAdapter;
 import com.android.mendeleypaperreader.adapter.MergeAdapter;
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;

@@ -2,6 +2,10 @@ package com.android.mendeleypaperreader;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -15,6 +19,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils.TruncateAt;
@@ -22,14 +27,19 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
+import com.android.mendeleypaperreader.utl.ConnectionDetector;
+import com.android.mendeleypaperreader.utl.GetAccessToken;
 import com.android.mendeleypaperreader.utl.Globalconstant;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
+import com.android.mendeleypaperreader.utl.SessionManager;
+import com.android.mendeleypaperreader.utl.SyncDataAsync;
 
 /**
  * Classname: DocumentsDetailsActivity 
@@ -41,15 +51,21 @@ import com.android.mendeleypaperreader.utl.MyContentProvider;
 
 public class DocumentsDetailsActivity extends Activity  {
 
-    Cursor mAdapter;
-    TextView doc_abstract, doc_url, doc_pmid, doc_issn, doc_catalog;
-    String mAbstract, t_doc_url, issn, doi, pmid, doc_title, doc_authors_text, doc_source_text;
-
-
+   // private Cursor mAdapter;
+    private TextView doc_abstract, doc_url, doc_pmid, doc_issn, doc_catalog;
+    private String mAbstract, t_doc_url, issn, doi, pmid, doc_title, doc_authors_text, doc_source_text;
+    private static SessionManager session;
+    private static String code;
+    private static String refresh_token;
+    private Boolean isInternetPresent = false;
+    
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_documents_details);
+
+	getActionBar().setDisplayHomeAsUpEnabled(true);
 
 	doc_abstract = new TextView(this);
 	doc_url = new TextView(this);
@@ -157,8 +173,27 @@ public class DocumentsDetailsActivity extends Activity  {
 	inflater.inflate(R.menu.action_bar_refresh, menu);
 	return super.onCreateOptionsMenu(menu);
     }
-    
-    
+
+
+
+    //ActionBar Menu Options 
+    public boolean onOptionsItemSelected(MenuItem item) {
+	// Handle item selection
+	switch (item.getItemId()) {
+	case R.id.menu_refresh:
+	    refreshToken();
+	    return true;
+
+
+	default:
+	    return super.onOptionsItemSelected(item);
+	}
+    }
+
+
+
+
+
 
     private String getDocId(){
 
@@ -405,13 +440,14 @@ public class DocumentsDetailsActivity extends Activity  {
 		relativeLayout.addView(doc_notes); 
 
 	 */	
-	String aux_doi = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.DOI));
-	String aux_pmid = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PMID));
-	String aux_issn = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSN));
+
+	issn = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSN));
+	pmid = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PMID));
+	doi = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.DOI));
 
 	TextView doc_catalog_title = new TextView(this);
 
-	if(!aux_issn.isEmpty() || !aux_doi.isEmpty() || !aux_pmid.isEmpty()){
+	if(!issn.isEmpty() || !doi.isEmpty() || !pmid.isEmpty()){
 
 	    //Document Catalog IDS
 	    doc_catalog_title.setId(15);
@@ -428,7 +464,6 @@ public class DocumentsDetailsActivity extends Activity  {
 	    //Document Catalog DOI
 	    doc_catalog.setId(16);
 	    doc_catalog.setBackgroundColor(Color.WHITE);
-	    doi = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.DOI));
 	    doc_catalog.setText(getResources().getString(R.string.doi) + "\t\t" + doi);
 	    doc_catalog.setMaxLines(1);
 	    doc_catalog.setEllipsize(TruncateAt.END);
@@ -442,7 +477,6 @@ public class DocumentsDetailsActivity extends Activity  {
 	    //Document Catalog PMID
 	    doc_pmid.setId(18);
 	    doc_pmid.setBackgroundColor(Color.WHITE);
-	    pmid = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PMID));
 	    doc_pmid.setText(getResources().getString(R.string.pmid) + "\t\t" + pmid);
 	    doc_pmid.setMaxLines(1);
 	    doc_pmid.setEllipsize(TruncateAt.END);
@@ -456,7 +490,6 @@ public class DocumentsDetailsActivity extends Activity  {
 	    //Document Catalog ISSN
 	    doc_issn.setId(20);
 	    doc_issn.setBackgroundColor(Color.WHITE);
-	    issn = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSN));
 	    doc_issn.setText(getResources().getString(R.string.issn) + "\t\t" + issn);
 	    doc_issn.setMaxLines(1);
 	    doc_issn.setEllipsize(TruncateAt.END);
@@ -468,7 +501,7 @@ public class DocumentsDetailsActivity extends Activity  {
 	    doc_issn.setLayoutParams(layout_doc_issn);
 
 
-	    if(!aux_issn.isEmpty() && !aux_doi.isEmpty() && !aux_pmid.isEmpty()){
+	    if(!issn.isEmpty() && !doi.isEmpty() && !pmid.isEmpty()){
 
 		//DOI
 		relativeLayout.addView(doc_catalog);
@@ -484,7 +517,7 @@ public class DocumentsDetailsActivity extends Activity  {
 	    }
 
 
-	    else if(!aux_issn.isEmpty() && !aux_doi.isEmpty() && aux_pmid.isEmpty()){
+	    else if(!issn.isEmpty() && !doi.isEmpty() && pmid.isEmpty()){
 
 		//DOI
 		relativeLayout.addView(doc_catalog);
@@ -495,7 +528,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		relativeLayout.addView(doc_issn);
 	    }
 
-	    else if(aux_issn.isEmpty() && !aux_doi.isEmpty() && !aux_pmid.isEmpty()){
+	    else if(issn.isEmpty() && !doi.isEmpty() && !pmid.isEmpty()){
 
 		//DOI
 		relativeLayout.addView(doc_catalog);
@@ -506,7 +539,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		layout_doc_pmid.addRule(RelativeLayout.BELOW, doc_catalog.getId());
 	    }
 
-	    else if(!aux_issn.isEmpty() && aux_doi.isEmpty() && !aux_pmid.isEmpty()){
+	    else if(!issn.isEmpty() && doi.isEmpty() && !pmid.isEmpty()){
 
 		//PMID
 		relativeLayout.addView(doc_pmid);
@@ -517,21 +550,21 @@ public class DocumentsDetailsActivity extends Activity  {
 		relativeLayout.addView(doc_issn);
 	    }
 
-	    else if(aux_issn.isEmpty() && !aux_doi.isEmpty() && aux_pmid.isEmpty()){
+	    else if(issn.isEmpty() && !doi.isEmpty() && pmid.isEmpty()){
 
 		//DOI
 		relativeLayout.addView(doc_catalog);
 		layout_doc_catalog.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
 	    }
 
-	    else if(aux_issn.isEmpty() && aux_doi.isEmpty() && !aux_pmid.isEmpty()){
+	    else if(issn.isEmpty() && doi.isEmpty() && !pmid.isEmpty()){
 
 		//PMID
 		relativeLayout.addView(doc_pmid);
 		layout_doc_pmid.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
 	    }
 
-	    else if(!aux_issn.isEmpty() && aux_doi.isEmpty() && aux_pmid.isEmpty()){
+	    else if(!issn.isEmpty() && doi.isEmpty() && pmid.isEmpty()){
 
 		//Document Catalog ISSN
 		layout_doc_issn.addRule(RelativeLayout.BELOW, doc_catalog_title.getId());
@@ -541,13 +574,13 @@ public class DocumentsDetailsActivity extends Activity  {
 	}
 
 
-	String aux_url = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.WEBSITE));
+	t_doc_url = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.WEBSITE));
 	TextView doc_url_title = new TextView(this);
 
 	RelativeLayout.LayoutParams layout_doc_url_title;
 	RelativeLayout.LayoutParams layout_doc_url;
 
-	if(!aux_url.isEmpty()){
+	if(!t_doc_url.isEmpty()){
 
 	    //Document URL Title
 	    doc_url_title.setId(22);
@@ -560,8 +593,7 @@ public class DocumentsDetailsActivity extends Activity  {
 
 	    //Document URL
 	    doc_url.setId(23);
-	    doc_url.setBackgroundColor(Color.WHITE);
-	    t_doc_url = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.WEBSITE));
+	    doc_url.setBackgroundColor(Color.WHITE);	    
 	    doc_url.setText(t_doc_url);
 	    doc_url.setMaxLines(1);
 	    doc_url.setEllipsize(TruncateAt.END);
@@ -576,19 +608,19 @@ public class DocumentsDetailsActivity extends Activity  {
 
 
 
-	    if(!aux_issn.isEmpty()){
+	    if(!issn.isEmpty()){
 
 		//Document URL Title
 		layout_doc_url_title.addRule(RelativeLayout.BELOW, doc_issn.getId());
 	    }
 
-	    else if(aux_issn.isEmpty() && !aux_pmid.isEmpty()){
+	    else if(issn.isEmpty() && !pmid.isEmpty()){
 
 		//Document URL
 		layout_doc_url_title.addRule(RelativeLayout.BELOW, doc_pmid.getId());
 	    }
 
-	    else if(!aux_issn.isEmpty() && !aux_pmid.isEmpty() && aux_doi.isEmpty()){
+	    else if(!issn.isEmpty() && !pmid.isEmpty() && doi.isEmpty()){
 
 		//Document URL
 		layout_doc_url_title.addRule(RelativeLayout.BELOW, doc_catalog.getId());
@@ -609,6 +641,25 @@ public class DocumentsDetailsActivity extends Activity  {
 
     public void onShareClick(View v) {
 	Resources resources = getResources();
+	String url = "";
+
+	if(!t_doc_url.isEmpty()){
+
+	    url = t_doc_url;
+
+	}else if(!issn.isEmpty() ){
+
+	    url  = Globalconstant.ISSN_URL+issn;	    
+	}else if(!pmid.isEmpty()){
+	    url  = Globalconstant.PMID_URL+pmid;
+	}else if(!doi.isEmpty()){
+	    url  = Globalconstant.DOI_URL+doi;
+
+	}
+
+
+
+
 
 	String email_text = resources.getString(R.string.email_text) + "<br/><br/><b>" + doc_title + "</b><br/><br/>" + resources.getString(R.string.email_authors) + doc_authors_text + "<br/><br/>" + resources.getString(R.string.email_publication) + doc_source_text + "<br/><br/>" + resources.getString(R.string.email_mendeley_profile) + getProfileSettings(DatabaseOpenHelper.PROFILE_LINK) + "<br/><br/>" + resources.getString(R.string.email_play_store) ;
 	String email_subject_text = getProfileSettings(DatabaseOpenHelper.PROFILE_DISPLAY_NAME)  + resources.getString(R.string.email_subject);
@@ -647,14 +698,14 @@ public class DocumentsDetailsActivity extends Activity  {
 		intent.setAction(Intent.ACTION_SEND);
 		intent.setType("text/plain");
 		if(packageName.contains("twitter")) {
-		    intent.putExtra(Intent.EXTRA_TEXT, sms_text + t_doc_url);
+		    intent.putExtra(Intent.EXTRA_TEXT, sms_text +" "+ url);
 		} else if(packageName.contains("facebook")) {
 		    // Warning: Facebook IGNORES our text. They say "These fields are intended for users to express themselves. Pre-filling these fields erodes the authenticity of the user voice."
 		    // One workaround is to use the Facebook SDK to post, but that doesn't allow the user to choose how they want to share. We can also make a custom landing page, and the link
 		    // will show the <meta content ="..."> text from that page with our link in Facebook.
-		    intent.putExtra(Intent.EXTRA_TEXT, sms_text + t_doc_url);
+		    intent.putExtra(Intent.EXTRA_TEXT, sms_text + " " + url);
 		} else if(packageName.contains("mms")) {
-		    intent.putExtra(Intent.EXTRA_TEXT, sms_text + t_doc_url);
+		    intent.putExtra(Intent.EXTRA_TEXT, sms_text +" "+ url);
 		} else if(packageName.contains("android.gm")) {
 		    intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(email_text));
 		    intent.putExtra(Intent.EXTRA_SUBJECT, email_subject_text);               
@@ -671,6 +722,104 @@ public class DocumentsDetailsActivity extends Activity  {
 	openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents);
 	startActivity(openInChooser);       
     }
+
+
+
+
+    private void syncData(){
+
+	new SyncDataAsync(DocumentsDetailsActivity.this, DocumentsDetailsActivity.this).execute();
+    }
+
+
+    private void refreshToken(){
+
+	//delete data from data base and get new access token to start sync
+
+	// check internet connection
+	ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+
+	isInternetPresent = connectionDetector.isConnectingToInternet();
+
+	if(isInternetPresent){
+	    getContentResolver().delete(MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,null, null);
+	    new ProgressTask().execute();
+	}
+	else{
+	    connectionDetector.showDialog(DocumentsDetailsActivity.this, ConnectionDetector.DEFAULT_DIALOG);
+	}
+
+    }
+
+
+
+
+
+    //AsyncTask to download DATA from server
+
+    class ProgressTask extends AsyncTask<String, Integer, JSONObject> {
+
+
+	protected void onPreExecute() {
+	    session = new SessionManager(DocumentsDetailsActivity.this); 
+	    code = session.LoadPreference("Code");
+	    refresh_token = session.LoadPreference("refresh_token");
+
+	    Log.w(Globalconstant.TAG, "MainMenuActivityFragmentDetails" + session.LoadPreference("access_token"));
+	}
+
+
+
+	protected void onPostExecute(final JSONObject json) {
+
+
+	    if (json != null) {
+		try {
+		    String token = json.getString("access_token");
+		    String expire = json.getString("expires_in");
+		    String refresh = json.getString("refresh_token");
+
+		    // Save access token in shared preferences
+		    session.savePreferences("access_token", json.getString("access_token"));
+		    session.savePreferences("expires_in", json.getString("expires_in"));
+		    session.savePreferences("refresh_token", json.getString("refresh_token"));
+
+
+		    //Get data from server
+		    syncData();
+
+		    if (Globalconstant.LOG) {
+			Log.d("refresh_token - Token Access", token);
+			Log.d("refresh_token - Expire", expire);
+			Log.d("refresh_token - Refresh", refresh);			
+		    }
+
+		} catch (JSONException e) {
+		    e.printStackTrace();
+		}
+
+
+	    }
+
+	}
+
+
+
+	protected JSONObject doInBackground(final String... args) {
+
+	    Log.d(Globalconstant.TAG,  "ACCESS_TOKEN_OLD: " + session.LoadPreference("access_token"));
+	    GetAccessToken jParser = new GetAccessToken();
+
+	    JSONObject json = jParser.refresh_token(Globalconstant.TOKEN_URL, code, Globalconstant.CLIENT_ID, Globalconstant.CLIENT_SECRET, Globalconstant.REDIRECT_URI, Globalconstant.GRANT_TYPE, refresh_token);
+
+	    Log.w(Globalconstant.TAG, "doInBackground - FINISH");
+
+	    return json;
+
+
+	} 
+
+    }	  
 
 
 }

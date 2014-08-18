@@ -16,6 +16,7 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
     Activity activity;
     private static LoadData load;
     ProgressDialog dialog;
+    private static SessionManager session;
 
 
     public SyncDataAsync(Context context, Activity activity) 
@@ -65,7 +66,8 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
     protected void onPostExecute(String json) {
 	if(dialog.isShowing())
 	    dialog.dismiss();	    
-
+	session = new SessionManager(this.context); 
+	session.savePreferences("IS_DB_CREATED", "YES");
 	unlockScreenOrientation();
     }
 

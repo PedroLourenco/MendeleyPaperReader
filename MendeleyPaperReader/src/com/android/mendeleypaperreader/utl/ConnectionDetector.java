@@ -1,8 +1,5 @@
 package com.android.mendeleypaperreader.utl;
 
-import com.android.mendeleypaperreader.MainActivity;
-import com.android.mendeleypaperreader.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -11,6 +8,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
+
+import com.android.mendeleypaperreader.R;
 
 /**
  * Classname: ConnectionDetector 

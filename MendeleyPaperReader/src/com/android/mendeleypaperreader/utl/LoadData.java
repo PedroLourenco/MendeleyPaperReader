@@ -7,8 +7,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-
-import com.android.mendeleypaperreader.MainMenuActivityFragmentDetails;
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
 
 /**
