@@ -81,13 +81,13 @@ public class MainActivity extends Activity {
 	session = new SessionManager(MainActivity.this);
 
 	// check internet connection
-	ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
+	final ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
 
-	isInternetPresent = cd.isConnectingToInternet();
+	isInternetPresent = connectionDetector.isConnectingToInternet();
 
 	
 	// If logged skip login layout	
-	if (session.isLogged()) {
+	if (!session.isLogged()) {
 	    Intent options = new Intent(getApplicationContext(), MainMenuActivity.class);
 	    startActivity(options);
 	}
@@ -174,6 +174,7 @@ public class MainActivity extends Activity {
 		    startActivity(myWebLink);
 
 		} else {
+			connectionDetector.showDialog(MainActivity.this, ConnectionDetector.NETWORK_DIALOG);
 		    showDialog();
 		}
 	    }

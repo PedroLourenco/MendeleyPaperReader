@@ -25,24 +25,5 @@
     
     
     
-     <!-- Footer aligned to bottom -->
-  
-
-  <RelativeLayout
-    android:id="@+id/footer"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:background="@drawable/texttopline" >
-
-    <ImageView
-        android:id="@+id/refresh"
-        android:layout_width="@dimen/image_size"
-        android:layout_height="@dimen/image_size"
-        android:layout_marginRight="@dimen/pading"
-        android:src="@drawable/ic_action_refresh" />
-       
-  </RelativeLayout>
-    
-        
+     
 </RelativeLayout>

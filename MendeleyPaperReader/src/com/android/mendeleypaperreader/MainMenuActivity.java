@@ -5,10 +5,10 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -17,11 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.android.mendeleypaperreader.utl.GetAccessToken;
+import com.android.mendeleypaperreader.DetailsActivity.ProgressTask;
+import com.android.mendeleypaperreader.utl.ConnectionDetector;
 import com.android.mendeleypaperreader.utl.Globalconstant;
 import com.android.mendeleypaperreader.utl.LoadData;
 import com.android.mendeleypaperreader.utl.MyContentProvider;
 import com.android.mendeleypaperreader.utl.SessionManager;
+import com.android.mendeleypaperreader.utl.SyncDataAsync;
 
 /**
  * Classname: MainMenuActivity 
@@ -40,32 +42,35 @@ public class MainMenuActivity extends FragmentActivity
     private static ProgressDialog dialog;
     // Session Manager Class
     private static SessionManager session;
+    private Boolean isInternetPresent = false;
+    private String db_uploded_flag ;
     
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
+	
 
 	session = new SessionManager(getApplicationContext()); 
 
 	//Start upload data from server	       
-	String db_uploded_flag = session.LoadPreference("IS_DB_CREATED");
+	 db_uploded_flag = session.LoadPreference("IS_DB_CREATED");
 	if(!db_uploded_flag.equals("YES")){
-	    if (task==null) {
-	    	task=new ProgressTask(this);
-	    	task.execute();
+		if (task==null) {
+			task=new ProgressTask(this);
+			task.execute();
 
-	    }else {
-	    	task.attach(this);
-	    	updateProgress(task.getProgress());
+		}else {
+			task.attach(this);
+			updateProgress(task.getProgress());
 
-		if (task.getProgress()>=100) {
-		    markAsDone();				
+			if (task.getProgress()>=100) {
+				markAsDone();				
+			}
 		}
-	    }
 
 	}else{
-	    setContentView(R.layout.activity_main_menu);
+		setContentView(R.layout.activity_main_menu);
 	}
     }
 
@@ -82,7 +87,7 @@ public class MainMenuActivity extends FragmentActivity
 
     void markAsDone() {
     	dialog.dismiss();
-    	setContentView(R.layout.activity_main_menu);
+    	
     }
 
     void startDialog(){
@@ -90,7 +95,7 @@ public class MainMenuActivity extends FragmentActivity
     	dialog.setCanceledOnTouchOutside(false);
     	dialog.setCancelable(false);
     	dialog.setMessage(getResources().getString(R.string.sync_data_0));
-    	//dialog.show();
+    	dialog.show();
     }
 
 
@@ -121,22 +126,32 @@ public class MainMenuActivity extends FragmentActivity
     public boolean onCreateOptionsMenu(Menu menu) {
 	// Inflate the menu items for use in the action bar
 	MenuInflater inflater = getMenuInflater();
+	//inflater.inflate(R.menu.main_menu_activity_actions, menu);
 	inflater.inflate(R.menu.main_menu_activity_actions, menu);
+	
 	return super.onCreateOptionsMenu(menu);
     }
 
     //ActionBar Menu Options 
     public boolean onOptionsItemSelected(MenuItem item) {
 	// Handle item selection
-	switch (item.getItemId()) {
-	case R.id. menu_About:
+    	Log.w(Globalconstant.TAG, "MENU REFRESH: " + item.getItemId());
+    	
+    	
+    	switch (item.getItemId()) {
+	case R.id.menu_About:
 	    Intent i_about = new Intent(getApplicationContext(), AboutActivity.class);
 	    startActivity(i_about);
 	    return true;
 
-	case R.id. menu_logout:
+	case R.id.menu_logout:
 	    showDialog();
 	    return true;		
+	case R.id.menu_refresh :
+		
+		Log.w(Globalconstant.TAG, "MENU REFRESH: " + item.getItemId());
+		refreshToken();
+	    return true;	
 	default:
 	    return super.onOptionsItemSelected(item);
 	}
@@ -156,7 +171,7 @@ public class MainMenuActivity extends FragmentActivity
 		MainMenuActivity.this);
 	builder.setTitle(getResources().getString(R.string.log_out));
 	builder.setMessage(getResources().getString(R.string.warning))
-	.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+	.setPositiveButton(getResources().getString(R.string.word_ok), new DialogInterface.OnClickListener() {
 	    public void onClick(DialogInterface dialog, int which) {
 
 		session.deletePreferences();
@@ -179,12 +194,35 @@ public class MainMenuActivity extends FragmentActivity
     }		
 
 
+    public void syncData(){
 
+		new SyncDataAsync(MainMenuActivity.this, MainMenuActivity.this).execute();
+	}
+
+
+	private void refreshToken(){
+
+		//delete data from data base and get new accesstoken to start sync
+		
+		// check internet connection
+		ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+
+		isInternetPresent = connectionDetector.isConnectingToInternet();
+
+		if(isInternetPresent){
+			getContentResolver().delete(MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,null, null);
+			new ProgressTask(this).execute();
+		}
+		else{
+			connectionDetector.showDialog(MainMenuActivity.this, ConnectionDetector.DEFAULT_DIALOG);
+		}
+
+	}
 
 
     //AsyncTask to download DATA from server
 
-    static class ProgressTask extends AsyncTask<String, Integer, String> {
+    class ProgressTask extends AsyncTask<String, Integer, String> {
 	MainMenuActivity activity=null;
 	int progress=0;
 
@@ -193,13 +231,13 @@ public class MainMenuActivity extends FragmentActivity
 	}
 
 	protected void onPreExecute() {
-	    
+		lockScreenOrientation();
 			activity.startDialog();
 	}
 
 
 	protected void onPostExecute(final String success) {
-
+		unlockScreenOrientation();
 
 	    if (activity==null) {
 	    
@@ -219,6 +257,7 @@ public class MainMenuActivity extends FragmentActivity
 	@Override
 	protected void onProgressUpdate(final Integer... values) {
 
+		
 	    if (activity==null) {
 	    	if(Globalconstant.LOG)
 	    		Log.w(Globalconstant.TAG ,"RotationAsync - onProgressUpdate() skipped -- no activity");
@@ -233,17 +272,24 @@ public class MainMenuActivity extends FragmentActivity
 
 	protected String doInBackground(final String... args) {
 
-	    String access_token = session.LoadPreference("access_token");
-	    Log.d(Globalconstant.TAG, "access_token: " + access_token);
-	    LoadData load = new LoadData(activity);
-	    publishProgress((int) (1 / ((float) 4) * 100));
-	    load.getProfileInformation(Globalconstant.get_profile+access_token);
-	    publishProgress((int) (2 / ((float) 4) * 100));
-	    load.GetUserLibrary(Globalconstant.get_user_library_url+access_token);
-	    publishProgress((int) (3 / ((float) 4) * 100));
-	    load.getFolders(Globalconstant.get_user_folders_url+access_token);
-	    publishProgress((int) (4 / ((float) 3.99) * 100));
+	   if(!db_uploded_flag.equals("YES")){
+		   String access_token = session.LoadPreference("access_token");
+		    Log.d(Globalconstant.TAG, "access_token: " + access_token);
+		    LoadData load = new LoadData(activity);
+		    publishProgress((int) (1 / ((float) 4) * 100));
+		    load.getProfileInformation(Globalconstant.get_profile);
+		    publishProgress((int) (2 / ((float) 4) * 100));
+		    load.GetUserLibrary(Globalconstant.get_user_library_url);
+		    publishProgress((int) (3 / ((float) 4) * 100));
+		    load.getFolders(Globalconstant.get_user_folders_url);
+		    publishProgress((int) (4 / ((float) 3.99) * 100));
 
+	   }
+	   else{
+		   syncData();
+	   }
+		
+		
 
 	    if (Globalconstant.LOG)
 		Log.d(Globalconstant.TAG, "Fim do Load Data");
@@ -265,6 +311,21 @@ public class MainMenuActivity extends FragmentActivity
 	    return(progress);
 	}
 
-    }	 
+    }
+    
+    private void lockScreenOrientation() {
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
+     
+    private void unlockScreenOrientation() {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
+
+    
 
 }

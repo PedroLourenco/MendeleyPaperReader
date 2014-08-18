@@ -30,6 +30,8 @@ public class AboutActivity extends Activity{
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_about);		
 
+	getActionBar().setDisplayHomeAsUpEnabled(true);
+	
 	SpannableStringBuilder builder = new SpannableStringBuilder();
 
 	String e_mail = getResources().getString(R.string.msg_email);

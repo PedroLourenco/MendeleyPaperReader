@@ -13,16 +13,9 @@
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
     android:background="@drawable/texttopline"
-    android:weightSum="4"> 
+    android:gravity="center"> 
     
     
-    <ImageView
-        android:id="@+id/refresh"
-        android:layout_width="@dimen/image_size"
-        android:layout_height="@dimen/image_size"
-        android:layout_marginRight="@dimen/pading"
-        android:src="@drawable/ic_action_refresh"
-        android:layout_alignParentLeft="true" />
     
     
     <ImageView

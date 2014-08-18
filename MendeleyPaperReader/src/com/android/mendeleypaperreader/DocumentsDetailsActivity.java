@@ -20,6 +20,8 @@ import android.text.Html;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -147,6 +149,16 @@ public class DocumentsDetailsActivity extends Activity  {
     }
 
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+	// Inflate the menu items for use in the action bar
+	MenuInflater inflater = getMenuInflater();
+	inflater.inflate(R.menu.action_bar_refresh, menu);
+	return super.onCreateOptionsMenu(menu);
+    }
+    
+    
 
     private String getDocId(){
 

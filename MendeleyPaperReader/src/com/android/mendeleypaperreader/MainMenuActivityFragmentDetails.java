@@ -21,6 +21,8 @@ import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -56,8 +58,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
     // Session Manager Class
     private static SessionManager session;
     //private static LoadData load;
-    private ProgressTask task=null;
-    private static ProgressDialog dialog;
+    
     private static Context context; 
     
     
@@ -65,20 +66,8 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
     private static String refresh_token;
     
     
-    private static String CLIENT_ID = "177";
-    // Use your own client id
-    private static String CLIENT_SECRET = "V!yw8[5_0ZliXK$0";
-    // Use your own client secret
-    private static String REDIRECT_URI = "http://localhost";
-
-    private static String GRANT_TYPE = "refresh_token";
-    private static String TOKEN_URL = "https://api-oauth2.mendeley.com/oauth/token";
     
 
-    // Constructor
-    public MainMenuActivityFragmentDetails(){
-        
-    }
     
     
     public static MainMenuActivityFragmentDetails newInstance(int index , String description) {
@@ -113,8 +102,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	    Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 
 	context = getActivity().getApplicationContext();
 	session = new SessionManager(getActivity().getApplicationContext()); 
@@ -144,6 +132,8 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	View view = inflater.inflate(R.layout.activity_main_menu_details, container, false);
 	ListView lv = (ListView) view.findViewById(android.R.id.list);
 
+	
+	
 	title = (TextView) view.findViewById(R.id.detailTitle);
 	title.setTypeface(null, Typeface.BOLD);
 	title.setText(description);
@@ -164,7 +154,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 
 
 
-	ImageView share = (ImageView) view.findViewById(R.id.refresh);
+	/*ImageView share = (ImageView) view.findViewById(R.id.refresh);
 
 	//onclick on Share button link
 	OnClickListener click_on_refresh_icon = new OnClickListener() {
@@ -175,12 +165,12 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 
 		//new RefreshToken(getActivity()).execute();
 
-		sync();
+		//sync();
 
 	    }
 	};
 	share.setOnClickListener(click_on_refresh_icon);
-
+*/
 
 
 
@@ -189,58 +179,11 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
     }
 
     
+   
     
-    public void syncData(){
-	
-	 new SyncDataAsync(getActivity()).execute();
-    }
-
-
-    private void sync(){
-
-	if (task==null) {
-
-	    getActivity().getContentResolver().delete(MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,null, null);
-	    task=new ProgressTask(this);
-	    task.execute();
-
-	}else {
-	    task.attach(this);
-	    updateProgress(task.getProgress());
-
-	    if (task.getProgress()>=100) {
-		markAsDone();				
-	    }
-	}
-
-
-    }
-
-
-
-
-    public Object onRetainCusObjectNonConfigurationInstance() {
-	task.detach();
-	return(task);
-    }
-
-    private void updateProgress(int progress) {
-	dialog.setMessage(getResources().getString(R.string.sync_data) + progress + "%)");
-    }
-
-    private void markAsDone() {
-	dialog.dismiss();
-	task = null;
-	getLoaderManager().restartLoader(1, null, this);
-    }
-
-    private void startDialog(){
-	dialog = new ProgressDialog(getActivity());
-	dialog.setCanceledOnTouchOutside(false);
-	dialog.setCancelable(false);
-	dialog.setMessage(getResources().getString(R.string.sync_data_0));
-	//dialog.show();
-    }
+    
+    
+    
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
@@ -410,126 +353,6 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	
 	
     }
-
-
-    //AsyncTask to download DATA from server
-
-     class ProgressTask extends AsyncTask<String, Integer, JSONObject> {
-	MainMenuActivityFragmentDetails activity=null;
-	int progress=0;
-
-	ProgressTask(MainMenuActivityFragmentDetails activity) {
-	    attach(activity);
-	}
-
-	protected void onPreExecute() {
-	    activity.startDialog();
-	 // Session Manager
-	    session = new SessionManager(context.getApplicationContext());
-
-	    code = session.LoadPreference("Code");
-	    refresh_token = session.LoadPreference("refresh_token");
-	  
-	    Log.w(Globalconstant.TAG, "MainMenuActivityFragmentDetails" + session.LoadPreference("access_token"));
-	}
-	
-
-
-	protected void onPostExecute(final JSONObject json) {
-
-	    
-	    if (json != null) {
-		try {
-		    String token = json.getString("access_token");
-		    String expire = json.getString("expires_in");
-		    String refresh = json.getString("refresh_token");
-
-		    // Save access token in shared preferences
-		    session.savePreferences("access_token", json.getString("access_token"));
-		    session.savePreferences("expires_in", json.getString("expires_in"));
-		    session.savePreferences("refresh_token", json.getString("refresh_token"));
-		    
-		    
-		    syncData();
-		    
-		    if (Globalconstant.LOG) {
-			Log.d("refresh_token - Token Access", token);
-			Log.d("refresh_token - Expire", expire);
-			Log.d("refresh_token - Refresh", refresh);			
-		    }
-
-		} catch (JSONException e) {
-		    e.printStackTrace();
-		}
-	    
-	    
-	    }
-	
-	    
-	  
-	    
-	    if (activity==null) {
-		if(Globalconstant.LOG)
-		    Log.w("RotationAsync", "onPostExecute() skipped -- no activity");
-	    }
-	    else {
-		//Save Flag to control data upload
-		session.savePreferences("IS_DB_CREATED", "YES");
-		Log.w(Globalconstant.TAG, "onPostExecute() skipped -- no activity");
-		activity.markAsDone();
-	    }
-	 
-
-}
-
-
-	@Override
-	protected void onProgressUpdate(final Integer... values) {
-
-	    if (activity==null) {
-		if(Globalconstant.LOG)
-		    Log.w("RotationAsync", "onProgressUpdate() skipped -- no activity");
-	    }
-	    else {
-
-		progress = values[0];
-		activity.updateProgress(progress);
-	    }
-	}
-
-
-
-	protected JSONObject doInBackground(final String... args) {
-
-	    Log.d(Globalconstant.TAG,  "ACCESS_TOKEN_OLD: " + session.LoadPreference("access_token"));
-	    GetAccessToken jParser = new GetAccessToken();
-	    
-	    JSONObject json = jParser.refresh_token(TOKEN_URL, code, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, GRANT_TYPE, refresh_token);
-	    
-	    Log.w(Globalconstant.TAG, "doInBackground - FINISH");
-	    
-	    return json;
-	    
-	    
-	} 
-	    
-
-
-
-	void detach() {
-	    activity=null;
-	}
-
-	void attach(MainMenuActivityFragmentDetails activity) {
-	    this.activity=activity;
-	}
-
-	int getProgress() {
-	    return(progress);
-	}
-
-    }	 
-
 
 
 
