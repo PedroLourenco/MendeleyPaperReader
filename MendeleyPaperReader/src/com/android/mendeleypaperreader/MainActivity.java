@@ -195,7 +195,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected JSONObject doInBackground(String... args) {
 	    GetAccessToken jParser = new GetAccessToken();
-	    JSONObject json = jParser.getToken(Globalconstant.TOKEN_URL, code, Globalconstant.CLIENT_ID, Globalconstant.CLIENT_SECRET, Globalconstant.REDIRECT_URI, Globalconstant.GRANT_TYPE);
+	    JSONObject json = jParser.getToken(Globalconstant.TOKEN_URL, code, Globalconstant.CLIENT_ID, Globalconstant.CLIENT_SECRET, Globalconstant.REDIRECT_URI, "authorization_code");
 
 	    return json;
 	}
@@ -215,17 +215,15 @@ public class MainActivity extends Activity {
 		    session.savePreferences("expires_in", json.getString("expires_in"));
 		    session.savePreferences("refresh_token", json.getString("refresh_token"));
 		    Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
-		    
-		    Log.d("NOW: ", calendar.getTime().toString());
-		    
 		    calendar.add(Calendar.SECOND, 3600);
-		    System.out.println(calendar.getTime());
-		    
+		    session.savePreferences("expires_on", calendar.getTime().toString());
 		    
 		    if (Globalconstant.LOG) {
-			Log.d("Token Access", tok);
-			Log.d("Expire", expire);
-			Log.d("Refresh", refresh);
+		    	Log.d(Globalconstant.TAG, "NOW: " + calendar.getTime().toString());
+		    	Log.d(Globalconstant.TAG, "Expires on: " + calendar.getTime());
+		    	Log.d("Token Access", tok);
+		    	Log.d("Expire", expire);
+		    	Log.d("Refresh", refresh);
 			
 		    }
 

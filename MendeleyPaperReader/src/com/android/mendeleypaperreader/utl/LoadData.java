@@ -17,6 +17,8 @@ import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
  * @author PedroLourenco (pdrolourenco@gmail.com)
  */
 
+//TODO - adicionar arvore de pastas e documentos
+
 public class LoadData {
 
     private Context context;
