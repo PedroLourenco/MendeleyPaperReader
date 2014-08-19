@@ -23,6 +23,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String TABLE_FOLDERS = "folders";
 	public final static String TABLE_FILES = "files";
 	public final static String TABLE_PROFILE = "profile";	
+	public final static String TABLE_FOLDERS_DOCS = "folders_docs";	
+	
 	public final static String _ID = "_id";
 	public final static String TYPE = "type";
 	public final static String MONTH = "month";
@@ -100,6 +102,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final private static String CREATE_TABLE_FOLDERS = "CREATE TABLE folders (" + FOLDER_ID + " TEXT, " + FOLDER_ADDED + " TEXT, " + FOLDER_PARENT + " TEXT, " + FOLDER_GROUP + " TEXT, "
 			+ FOLDER_NAME + " TEXT, PRIMARY KEY (" + FOLDER_ID + ") ) ";
 	
+	final private static String CREATE_TABLE_FOLDERS_DOCS = "CREATE TABLE folders_docs (" + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FOLDER_ID + " TEXT, " + DOC_DETAILS_ID + " TEXT) ";
+	
 
 	final private static String CREATE_TABLE_DOCUMENT_DETAILS =
 
@@ -169,7 +173,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			db.execSQL(CREATE_TABLE_FOLDERS);
 			db.execSQL(CREATE_TABLE_FILE);
 			db.execSQL(CREATE_TABLE_PROFILE);
-		
+			db.execSQL(CREATE_TABLE_FOLDERS_DOCS);
 		
 	}
 

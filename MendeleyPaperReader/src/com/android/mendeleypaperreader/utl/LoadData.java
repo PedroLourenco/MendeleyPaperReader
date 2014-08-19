@@ -41,7 +41,7 @@ public class LoadData {
 	ContentValues values = new ContentValues();
 	ContentValues authors_values = new ContentValues();
 
-	Log.d(Globalconstant.TAG, url);
+	Log.d(Globalconstant.TAG, "GetUserLibrary: " + url);
 	JSONParser jParser = new JSONParser();
 
 	// get JSON data from URL
@@ -166,7 +166,7 @@ public class LoadData {
 		JSONObject lib = jcols.getJSONObject(i);
 
 		values.put(DatabaseOpenHelper.FOLDER_NAME,	lib.optString(Globalconstant.NAME));
-		values.put(DatabaseOpenHelper.FOLDER_PARENT,lib.optString(Globalconstant.PARENT));
+		values.put(DatabaseOpenHelper.FOLDER_PARENT,lib.optString(Globalconstant.PARENT_ID));
 		values.put(DatabaseOpenHelper.FOLDER_ID,lib.optString(Globalconstant.ID));
 		values.put(DatabaseOpenHelper.FOLDER_GROUP,	lib.optString(Globalconstant.GROUP));
 		values.put(DatabaseOpenHelper.FOLDER_ADDED,	lib.optString(Globalconstant.ADDED));
@@ -215,12 +215,18 @@ public class LoadData {
 		    JSONObject lib = docs_ids.getJSONObject(i);
 
 		    String doc_id = lib.optString(Globalconstant.ID);
-
+		    
+		    Log.d(Globalconstant.TAG, "DOC_ID: " + lib.optString(Globalconstant.ID));
+		    
 		    values.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
-		    where = DatabaseOpenHelper._ID + " = '" + doc_id + "'";
+		    values.put(DatabaseOpenHelper.DOC_DETAILS_ID, lib.optString(Globalconstant.ID));
+		    
+		    Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FOLDERS_DOCS, values);
+		    //values.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
+		    //where = DatabaseOpenHelper._ID + " = '" + doc_id + "'";
 
-		    Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
-		    this.context.getContentResolver().update(uri, values, where, null);
+		    //Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+		    //this.context.getContentResolver().update(uri, values, where, null);
 		}
 
 	    } catch (Exception e) {

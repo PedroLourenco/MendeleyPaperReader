@@ -29,6 +29,7 @@ public class MyContentProvider extends ContentProvider {
     public static final Uri CONTENT_URI_FILES = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FILES);
     public static final Uri CONTENT_URI_PROFILE = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_PROFILE);
     public static final Uri CONTENT_URI_DELETE_DATA_BASE= Uri.parse("content://" + AUTHORITY + "/" + "DUMMY");
+    public static final Uri CONTENT_URI_FOLDERS_DOCS= Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FOLDERS_DOCS);
 
     public static final int ALLDOCS = 1;
     public static final int ALL_DOCS_ID = 2;  
@@ -40,6 +41,7 @@ public class MyContentProvider extends ContentProvider {
     public static final int ALL_PROFILE = 8;
     public static final int ALL_PROFILE_ID = 9;
     public static final int DELETE_DATA_BASE = 10;
+    public static final int ALL_FOLDERS_DOCS = 11;
 
 
     private static final UriMatcher sURIMatcher = 
@@ -55,6 +57,7 @@ public class MyContentProvider extends ContentProvider {
 	sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FILES, ALL_FILES);
 	sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_PROFILE, ALL_PROFILE);
 	sURIMatcher.addURI(AUTHORITY, "DUMMY", DELETE_DATA_BASE);
+	sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS_DOCS, ALL_FOLDERS_DOCS);
     }
 
 
@@ -163,6 +166,18 @@ public class MyContentProvider extends ContentProvider {
 	    }
 	    break;
 
+	case ALL_FOLDERS_DOCS:
+
+	    long folders_docs_row = db.insert(DatabaseOpenHelper.TABLE_FOLDERS_DOCS, null, values);
+
+	    // If record is added successfully		 
+	    if(folders_docs_row > 0) {
+		Log.d(Globalconstant.TAG, "FOLDERS_DOCS");
+		Uri newUri = ContentUris.withAppendedId(CONTENT_URI_FOLDERS_DOCS, folders_docs_row);		 
+		getContext().getContentResolver().notifyChange(newUri, null);		 
+		return newUri;	
+	    }
+	    break;
 	default: throw new SQLException("Failed to insert row into " + uri);
 	}
 	return uri;
@@ -206,6 +221,9 @@ public class MyContentProvider extends ContentProvider {
 	    throw new IllegalArgumentException("Unsupported URI: " + uri);
 	}
 
+	String sql = queryBuilder.buildQuery(projection, selection, null, null, sortOrder, null);
+	Log.w(Globalconstant.TAG, "QUERY: " + sql);
+	
 	Cursor cursor = queryBuilder.query(db, projection, selection,
 		selectionArgs, null, null, sortOrder);
 	cursor.setNotificationUri(getContext().getContentResolver(), uri);

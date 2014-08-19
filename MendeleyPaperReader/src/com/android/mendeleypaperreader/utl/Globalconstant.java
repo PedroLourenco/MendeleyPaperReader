@@ -81,6 +81,7 @@ public class Globalconstant {
     public static String HIDDEN = "hidden";
     public static String NAME = "name";
     public static String PARENT = "parent";
+    public static String PARENT_ID = "parent_id";    
     public static String GROUP = "group";
     public static String DOCUMENTS_ID = "document_ids";
     public static String DOCUMENTS = "documents";
@@ -91,6 +92,7 @@ public class Globalconstant {
     public static String FILE_FILEHASH = "filehash"; 
     public static String PROFILE_DISPLAY_NAME = "display_name";
     public static String PROFILE_LINK = "link";
+    public static String FOLDERS_DOCS_ID = "doc_id";
 
 
     public static final String[] MYLIBRARY = 
