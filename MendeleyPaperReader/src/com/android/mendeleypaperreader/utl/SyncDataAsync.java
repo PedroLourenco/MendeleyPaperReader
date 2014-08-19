@@ -82,9 +82,9 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 	load.getProfileInformation(Globalconstant.get_profile);
 	publishProgress((int) (2 / ((float) 4) * 100));
 	load.GetUserLibrary(Globalconstant.get_user_library_url);
-	publishProgress((int) (3 / ((float) 4) * 100));
-	load.getFolders(Globalconstant.get_user_folders_url);
-	publishProgress((int) (4 / ((float) 3.99) * 100));
+	//publishProgress((int) (3 / ((float) 4) * 100));
+	//load.getFolders(Globalconstant.get_user_folders_url);
+	//publishProgress((int) (4 / ((float) 3.99) * 100));
 
     }
     
