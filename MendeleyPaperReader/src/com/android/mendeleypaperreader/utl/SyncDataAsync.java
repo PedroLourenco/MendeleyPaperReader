@@ -17,6 +17,7 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
     private static LoadData load;
     ProgressDialog dialog;
     private static SessionManager session;
+    String access_token;
 
 
     public SyncDataAsync(Context context, Activity activity) 
@@ -24,7 +25,11 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 	this.context = context;
 	this.activity = activity;
 	load = new LoadData(this.context.getApplicationContext());
-	dialog = new ProgressDialog(context);	
+	dialog = new ProgressDialog(context);
+	session = new SessionManager(this.context); 
+	session.savePreferences("IS_DB_CREATED", "YES");
+	 access_token = session.LoadPreference("access_token");
+	
     }
 
 
@@ -36,7 +41,7 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 	lockScreenOrientation();
 	dialog.setIndeterminate(true);
 	dialog.setCancelable(false);
-	dialog.show();
+	//dialog.show();
 
     }
 
@@ -66,8 +71,7 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
     protected void onPostExecute(String json) {
 	if(dialog.isShowing())
 	    dialog.dismiss();	    
-	session = new SessionManager(this.context); 
-	session.savePreferences("IS_DB_CREATED", "YES");
+	
 	unlockScreenOrientation();
     }
 
@@ -81,10 +85,12 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 	publishProgress((int) (1 / ((float) 4) * 100));
 	load.getProfileInformation(Globalconstant.get_profile);
 	publishProgress((int) (2 / ((float) 4) * 100));
-	load.GetUserLibrary(Globalconstant.get_user_library_url);
+	
+	Log.d(Globalconstant.TAG, "access_token: " + access_token);
+	load.GetUserLibrary(Globalconstant.get_user_library_url + access_token);
 	publishProgress((int) (3 / ((float) 4) * 100));
-	load.getFolders(Globalconstant.get_user_folders_url);
-	publishProgress((int) (4 / ((float) 3.99) * 100));
+	//load.getFolders(Globalconstant.get_user_folders_url);
+	//publishProgress((int) (4 / ((float) 3.99) * 100));
 
     }
     

@@ -134,7 +134,8 @@ public class MyContentProvider extends ContentProvider {
 
 	    // If record is added successfully		 
 	    if(folders_row > 0) {
-		Log.d(Globalconstant.TAG, "ALL_FOLDERS");
+		
+	    Log.d(Globalconstant.TAG, "ALL_FOLDERS");
 		Uri newUri = ContentUris.withAppendedId(CONTENT_URI_FOLDERS, folders_row);		 
 		getContext().getContentResolver().notifyChange(newUri, null);		 
 		return newUri;	

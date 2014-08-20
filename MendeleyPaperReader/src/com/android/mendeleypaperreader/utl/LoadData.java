@@ -45,20 +45,23 @@ public class LoadData {
 	ContentValues authors_values = new ContentValues();
 
 	Log.d(Globalconstant.TAG, "GetUserLibrary: " + url);
+	Log.d(Globalconstant.TAG, "access_token: " + access_token);
 	JSONParser jParser = new JSONParser();
 
 	List<String> jsostrResponse = new ArrayList<String>();
 
 	// get JSON data from URL
-	jsostrResponse = jParser.getJSONFromUrl(url+access_token, true);
+	
+	jsostrResponse = jParser.getJSONFromUrl(url, true);
 
 
 	// iterate over the array
-	for( String oneItem : jsostrResponse ) {
+	//for( String oneItem : jsostrResponse ) {
 	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + jsostrResponse.size());
+	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + jsostrResponse.get(0));
+	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + jsostrResponse.get(1));
 
-
-
+   
 
 	    //String strResponse = jParser.getJSONFromUrl(url+access_token);
 
@@ -66,7 +69,7 @@ public class LoadData {
 		Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::");
 	    try {
 
-		JSONArray jcols = new JSONArray(oneItem);
+		JSONArray jcols = new JSONArray(jsostrResponse.get(0));
 
 		for (int i = 0; i < jcols.length(); i++) {
 
@@ -143,7 +146,7 @@ public class LoadData {
 
 		    Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_DOC_DETAILS, values);
 
-		    get_files_doc_id(doc_detail_id);
+		    //get_files_doc_id(doc_detail_id);
 
 		}
 
@@ -156,7 +159,16 @@ public class LoadData {
 		    // rollback á tabela de authores com o doc id respetivo
 		}
 	    }
-	}
+	    
+	    if(jsostrResponse.size() > 1 && !jsostrResponse.get(1).equals("meu") ){
+	    	
+	    	Log.e(Globalconstant.TAG , "CONTINUACAO!!!");
+	    	Log.e(Globalconstant.TAG , "CONTINUACAO!!!" + jsostrResponse.get(1));
+	    	GetUserLibrary(jsostrResponse.get(1));
+	    	
+	    }
+	    
+	
 
     }
 
@@ -172,7 +184,7 @@ public class LoadData {
 	// get JSON data from URL
 	//String strResponse = jParser.getJSONFromUrl(url+access_token);
 	List<String> jsostrResponse = new ArrayList<String>();
-	jsostrResponse = jParser.getJSONFromUrl(url+access_token, true);
+	jsostrResponse = jParser.getJSONFromUrl(url+access_token, false);
 
 
 	// iterate over the array
@@ -230,7 +242,7 @@ public class LoadData {
 
 	// get JSON data from URL
 	List<String> jsostrResponse = new ArrayList<String>();
-	jsostrResponse = jParser.getJSONFromUrl(url+access_token, false);
+	jsostrResponse = jParser.getJSONFromUrl(url, false);
 
 
 
@@ -287,10 +299,12 @@ public class LoadData {
 	// get JSON data from URL
 
 	List<String> jsostrResponse = new ArrayList<String>();
-	jsostrResponse = jParser.getJSONFromUrl(url+access_token, false);
+	jsostrResponse = jParser.getJSONFromUrl(url, false);
 
+	Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + jsostrResponse.size());
+	Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + jsostrResponse.get(1));
 	//String strResponse = jParser.getJSONFromUrl(url);
-
+	if (jsostrResponse.size() > 0) {
 	try {
 
 	    JSONArray jcols = new JSONArray(jsostrResponse.get(0));	   
@@ -314,7 +328,7 @@ public class LoadData {
 	}
 
 	Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FILES, values);
-
+	}
     }
 
 
