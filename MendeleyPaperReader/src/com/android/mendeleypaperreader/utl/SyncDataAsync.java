@@ -87,10 +87,11 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 	publishProgress((int) (2 / ((float) 4) * 100));
 	
 	Log.d(Globalconstant.TAG, "access_token: " + access_token);
-	load.GetUserLibrary(Globalconstant.get_user_library_url + access_token);
+	//load.GetUserLibrary(Globalconstant.get_user_library_url + access_token);
 	publishProgress((int) (3 / ((float) 4) * 100));
 	//load.getFolders(Globalconstant.get_user_folders_url);
 	//publishProgress((int) (4 / ((float) 3.99) * 100));
+	load.GetUserLibrary2(Globalconstant.get_user_library_url + access_token);
 
     }
     

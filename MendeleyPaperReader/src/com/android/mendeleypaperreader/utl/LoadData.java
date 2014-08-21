@@ -1,5 +1,6 @@
 package com.android.mendeleypaperreader.utl;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 
 /**
  * Classname: LoadData 
@@ -36,6 +40,259 @@ public class LoadData {
 
 
     }
+    
+    
+    
+
+    public void GetUserLibrary2(String url) {
+
+	ContentValues values = new ContentValues();
+	ContentValues authors_values = new ContentValues();
+	JSONParser jParser = new JSONParser();
+	JsonFactory factory = new JsonFactory();
+	List<InputStream> link = new ArrayList<InputStream>();
+	
+	Log.d(Globalconstant.TAG, "--fieldname--: " + link.size() );
+	
+	try {
+	    link = jParser.getJACKSONFromUrl(url,true);
+	    
+	    for( InputStream oneItem : link ) {
+
+		JsonParser jp = factory.createJsonParser(oneItem);
+
+
+	    
+
+
+		//JsonFactory factory = new JsonFactory();
+
+
+		//JsonToken token = jp.nextToken();
+
+
+
+
+		while (jp.nextToken() != JsonToken.END_OBJECT) {
+
+
+
+		    String fieldname = jp.getCurrentName();
+		    //Log.d(Globalconstant.TAG, "--fieldname--: " + fieldname +" --- " + jp.getText());
+		    if (Globalconstant.ID.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.TITLE.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.TYPE.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.AUTHORS.equals(fieldname)) {
+
+			while (jp.nextToken() != JsonToken.END_ARRAY ) {
+			    String first_name = jp.getCurrentName();
+
+			    if (Globalconstant.FORENAME.equals(first_name)){
+				jp.nextToken();
+				Log.d(Globalconstant.TAG, "fieldname: " + first_name +" --- " + jp.getText());
+
+				while (jp.nextToken() != JsonToken.END_OBJECT) {
+				    String last_name = jp.getCurrentName();
+
+				    if (Globalconstant.SURNAME.equals(last_name)){
+					jp.nextToken();
+					Log.d(Globalconstant.TAG, "fieldname: " + last_name +" --- " + jp.getText());
+
+				    }
+				}
+
+			    }
+
+
+
+			}
+		    }
+
+
+		    if (Globalconstant.YEAR.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.SOURCE.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.IDENTIFIERS.equals(fieldname)) {
+			while (jp.nextToken() != JsonToken.END_ARRAY) {
+			    String pmid = jp.getCurrentName();
+
+			    if (Globalconstant.PMID.equals(pmid)){
+				jp.nextToken();
+				Log.d(Globalconstant.TAG, "fieldname: " + pmid +" --- " + jp.getText());
+			    }
+
+
+
+			    if (Globalconstant.DOI.equals(pmid)){
+				jp.nextToken();
+				Log.d(Globalconstant.TAG, "fieldname: " + pmid +" --- " + jp.getText());
+
+			    }
+
+
+			    if (Globalconstant.ISSN.equals(pmid)){
+				jp.nextToken();
+				Log.d(Globalconstant.TAG, "fieldname: " + pmid +" --- " + jp.getText());
+
+			    }
+			}
+
+		    }
+
+		    if (Globalconstant.ABSTRACT.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.PAGES.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.CREATED.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.VOLUME.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.ISSUE.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+
+		    if (Globalconstant.WEBSITES.equals(fieldname)) {
+			while (jp.nextToken() != JsonToken.END_ARRAY) {
+			    //String website = jp.getCurrentName();
+
+			    jp.nextToken();
+
+			    Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+			}
+
+
+		    }
+		    if (Globalconstant.INSTITUTION.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+		    if (Globalconstant.READ.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+		    if (Globalconstant.STARRED.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+		    if (Globalconstant.AUTHORED.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+		    if (Globalconstant.CONFIRMED.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+		    if (Globalconstant.HIDDEN.equals(fieldname)) {
+			// current token is "name",
+			// move to next, which is "name"'s value
+			jp.nextToken();
+
+			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
+
+		    }
+		}
+	}
+
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+
+
+
+	}
 
 
 
@@ -71,6 +328,8 @@ public class LoadData {
 
 		JSONArray jcols = new JSONArray(jsostrResponse.get(0));
 
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + jcols.length());
+		
 		for (int i = 0; i < jcols.length(); i++) {
 
 		    String authors = "";

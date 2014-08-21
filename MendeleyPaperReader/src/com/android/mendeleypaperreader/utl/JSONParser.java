@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -36,6 +37,8 @@ public class JSONParser {
 	static String json = "";
 
 	List<String> jsonArray = new ArrayList<String>();
+	List<InputStream> jacksonArray = new ArrayList<InputStream>();
+	Map<InputStream, String> myMap = new HashMap<InputStream, String>();
 
 	// constructor
 	public JSONParser() {
@@ -46,7 +49,7 @@ public class JSONParser {
 		if (Globalconstant.LOG)
 			Log.d(Globalconstant.TAG, "url: " + url);
 		
-
+		//InputStream content = null;	
 		StringBuilder builder = new StringBuilder();
 		HttpClient client = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet(url);
@@ -59,6 +62,9 @@ public class JSONParser {
 				HttpEntity entity = response.getEntity();
 
 				InputStream content = entity.getContent();
+				
+				Log.e(Globalconstant.TAG, "content: " +content);
+				
 				BufferedReader reader = new BufferedReader(new InputStreamReader(content));
 				String line;
 				while ((line = reader.readLine()) != null) {
@@ -66,7 +72,9 @@ public class JSONParser {
 					Log.d(Globalconstant.TAG, "Build --> "+ line);
 
 				}
+				content.close();
 				jsonArray.add(builder.toString());
+				
 
 				if(with_header){
 					String link = header(response.getHeaders("Link"));
@@ -130,6 +138,96 @@ public class JSONParser {
 
 	}
 
+	
+	public void header2(org.apache.http.Header[] header){
+
+		//Log.e(Globalconstant.TAG, "header_link: " + header);
+		String aux = null;
+
+		if(header.length > 0){
+
+			Log.e(Globalconstant.TAG, "header_link: " + header[0]);
+
+			if(header[0].toString().contains("rel=\"next\"")){
+
+
+				Log.e(Globalconstant.TAG, "Next page! ");
+
+				Pattern pattern = Pattern.compile("\\<(.+?)\\>");
+				Matcher matcher = pattern.matcher(header[0].toString());
+
+
+				while (matcher.find()) {
+					System.out.println("I found the text " + matcher.group(1)
+							+ " starting at " + "index " + matcher.start()
+							+ " and ending at index " +
+							matcher.end());
+
+					aux = matcher.group(1);
+					getJACKSONFromUrl(aux, true);
+					
+				}
+				
+			}
+
+
+
+		}
+
+		
+
+	}
+	
+	
+
+	public List<InputStream> getJACKSONFromUrl(String url, boolean with_header) {
+		// Making HTTP request
+	   
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "url: " + url);
+		
+		InputStream content = null;	
+		StringBuilder builder = new StringBuilder();
+		HttpClient client = new DefaultHttpClient();
+		HttpGet httpGet = new HttpGet(url);
+		try {
+			HttpResponse response = client.execute(httpGet);
+			StatusLine statusLine = response.getStatusLine();
+			int statusCode = statusLine.getStatusCode();
+
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
+				jacksonArray.add(entity.getContent());
+				myMap.put(entity.getContent(), "INPUTSTREAM");
+				
+				if(with_header){
+					String link = header(response.getHeaders("Link"));
+					
+				}
+
+				
+				
+				return jacksonArray;
+				
+				
+
+			} else {
+				if (Globalconstant.LOG)
+					Log.e(Globalconstant.TAG, "Failed to download file");
+			}
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (Globalconstant.LOG)
+			Log.e(Globalconstant.TAG, "builder.toString(): " +builder.toString());
+		Log.e(Globalconstant.TAG, "builder.toString().lenght: " +builder.length());
+
+
+		return jacksonArray;
+	}
 
 
 

@@ -29,7 +29,7 @@ public class Globalconstant {
     
     
     //API URLs
-    public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&limit=1&access_token=";
+    public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&limit=20&access_token=";
     public static String get_docs_in_folders = "https://mix.mendeley.com/folders/id/documents?access_token=";
     public static String get_docs_ann = "https://mix.mendeley.com/annotations/?document_id=doc_id&access_token=";
     public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";
@@ -64,10 +64,12 @@ public class Globalconstant {
     public static String FORENAME = "first_name";
     public static String SURNAME = "last_name";
     public static String ADDED = "added";
+    public static String CREATED = "created";
     public static String PAGES = "pages";
     public static String VOLUME = "volume";
     public static String ISSUE = "issue";
     public static String WEBSITE = "website";
+    public static String WEBSITES = "websites";
     public static String PUBLISHER = "publisher";
     public static String CITY = "city";
     public static String EDITION = "edition";
