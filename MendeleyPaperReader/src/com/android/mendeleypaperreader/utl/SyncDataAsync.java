@@ -1,5 +1,7 @@
 package com.android.mendeleypaperreader.utl;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.util.Log;
 import com.android.mendeleypaperreader.R;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 
 public class SyncDataAsync extends AsyncTask<String,Integer,String> {
@@ -41,7 +44,7 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 	lockScreenOrientation();
 	dialog.setIndeterminate(true);
 	dialog.setCancelable(false);
-	//dialog.show();
+	dialog.show();
 
     }
 
@@ -57,7 +60,15 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
     @Override
     protected  String doInBackground(String... arg0) {
 
-	syncronizeData();
+	try {
+		syncronizeData();
+	} catch (JsonProcessingException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 
 	if (Globalconstant.LOG)
 	    Log.d(Globalconstant.TAG, "Fim do Load Data");
@@ -80,18 +91,17 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
     }
 
 
-    private void syncronizeData(){
+    private void syncronizeData() throws JsonProcessingException, IOException{
 
 	publishProgress((int) (1 / ((float) 4) * 100));
-	load.getProfileInformation(Globalconstant.get_profile);
+	load.getProfileInfo(Globalconstant.get_profile + access_token);
 	publishProgress((int) (2 / ((float) 4) * 100));
-	
 	Log.d(Globalconstant.TAG, "access_token: " + access_token);
-	//load.GetUserLibrary(Globalconstant.get_user_library_url + access_token);
+	load.getUserLibrary(Globalconstant.get_user_library_url + access_token);
 	publishProgress((int) (3 / ((float) 4) * 100));
-	//load.getFolders(Globalconstant.get_user_folders_url);
-	//publishProgress((int) (4 / ((float) 3.99) * 100));
-	load.GetUserLibrary2(Globalconstant.get_user_library_url + access_token);
+	load.getFolders(Globalconstant.get_user_folders_url + access_token);
+	publishProgress((int) (4 / ((float) 3.99) * 100));
+	
 
     }
     

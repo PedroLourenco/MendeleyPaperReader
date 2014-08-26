@@ -2,11 +2,12 @@ package com.android.mendeleypaperreader.utl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Map.Entry;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
@@ -14,7 +15,9 @@ import android.util.Log;
 import com.android.mendeleypaperreader.db.DatabaseOpenHelper;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Classname: LoadData 
@@ -24,611 +27,363 @@ import com.fasterxml.jackson.core.JsonToken;
  * @author PedroLourenco (pdrolourenco@gmail.com)
  */
 
-//TODO - adicionar arvore de pastas e documentos
+
 
 public class LoadData {
 
-    private Context context;
-    private String doc_detail_id;
-    private static SessionManager session;
-    private static String access_token;
-    public LoadData(Context context) {
-	this.context = context;
+	private Context context;
+	//private String doc_detail_id;
+	private static SessionManager session;
+	private static String access_token;
+	public LoadData(Context context) {
+		this.context = context;
 
-	session = new SessionManager(this.context);  
-	access_token = session.LoadPreference("access_token");
-
-
-    }
-    
-    
-    
-
-    public void GetUserLibrary2(String url) {
-
-	ContentValues values = new ContentValues();
-	ContentValues authors_values = new ContentValues();
-	JSONParser jParser = new JSONParser();
-	JsonFactory factory = new JsonFactory();
-	List<InputStream> link = new ArrayList<InputStream>();
-	
-	Log.d(Globalconstant.TAG, "--fieldname--: " + link.size() );
-	
-	try {
-	    link = jParser.getJACKSONFromUrl(url,true);
-	    
-	    for( InputStream oneItem : link ) {
-
-		JsonParser jp = factory.createJsonParser(oneItem);
+		session = new SessionManager(this.context);  
+		access_token = session.LoadPreference("access_token");
 
 
-	    
+	}
 
 
-		//JsonFactory factory = new JsonFactory();
+	public void getFolders(String url){
 
+		ContentValues values = new ContentValues();
 
-		//JsonToken token = jp.nextToken();
+		JSONParser jParser = new JSONParser();
+		ObjectMapper mapper = new ObjectMapper();
+		JsonFactory factory = mapper.getFactory(); 
+		List<InputStream> link = new ArrayList<InputStream>();
+		link = jParser.getJACKSONFromUrl(url,true);
 
+		try {
+			for( InputStream oneItem : link ) {
+				JsonParser jp = factory.createParser(oneItem);	
+				JsonNode rootNode = mapper.readTree(jp);
 
+				Iterator<JsonNode> ite = rootNode.iterator();
 
+				while (ite.hasNext() ) {
+					JsonNode temp = ite.next();
 
-		while (jp.nextToken() != JsonToken.END_OBJECT) {
+					if(temp.has(Globalconstant.ID)){
+						values.put(DatabaseOpenHelper.FOLDER_ID,temp.get(Globalconstant.ID).asText());
+					}
 
+					if(temp.has(Globalconstant.NAME)){
+						values.put(DatabaseOpenHelper.FOLDER_NAME,temp.get(Globalconstant.NAME).asText());
+					}else{
+						values.put(DatabaseOpenHelper.FOLDER_NAME, "");
+					}
 
+					if(temp.has(Globalconstant.PARENT_ID)){
+						values.put(DatabaseOpenHelper.FOLDER_PARENT,temp.get(Globalconstant.PARENT_ID).asText());
+					}else{
+						values.put(DatabaseOpenHelper.FOLDER_PARENT, "");
+					}
 
-		    String fieldname = jp.getCurrentName();
-		    //Log.d(Globalconstant.TAG, "--fieldname--: " + fieldname +" --- " + jp.getText());
-		    if (Globalconstant.ID.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
+					if(temp.has(Globalconstant.ADDED)){
+						values.put(DatabaseOpenHelper.FOLDER_ADDED,temp.get(Globalconstant.ADDED).asText());
+					}else{
+						values.put(DatabaseOpenHelper.FOLDER_ADDED, "");
+					}
+					if(temp.has(Globalconstant.GROUP)){
+						values.put(DatabaseOpenHelper.FOLDER_GROUP,temp.get(Globalconstant.GROUP).asText());
+					}else{
+						values.put(DatabaseOpenHelper.FOLDER_GROUP, "");
+					}
 
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.TITLE.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.TYPE.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.AUTHORS.equals(fieldname)) {
-
-			while (jp.nextToken() != JsonToken.END_ARRAY ) {
-			    String first_name = jp.getCurrentName();
-
-			    if (Globalconstant.FORENAME.equals(first_name)){
-				jp.nextToken();
-				Log.d(Globalconstant.TAG, "fieldname: " + first_name +" --- " + jp.getText());
-
-				while (jp.nextToken() != JsonToken.END_OBJECT) {
-				    String last_name = jp.getCurrentName();
-
-				    if (Globalconstant.SURNAME.equals(last_name)){
-					jp.nextToken();
-					Log.d(Globalconstant.TAG, "fieldname: " + last_name +" --- " + jp.getText());
-
-				    }
+					Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FOLDERS, values);
+					getDocsInFolder(temp.get(Globalconstant.ID).asText());	
 				}
 
-			    }
-
-
-
-			}
-		    }
-
-
-		    if (Globalconstant.YEAR.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.SOURCE.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.IDENTIFIERS.equals(fieldname)) {
-			while (jp.nextToken() != JsonToken.END_ARRAY) {
-			    String pmid = jp.getCurrentName();
-
-			    if (Globalconstant.PMID.equals(pmid)){
-				jp.nextToken();
-				Log.d(Globalconstant.TAG, "fieldname: " + pmid +" --- " + jp.getText());
-			    }
-
-
-
-			    if (Globalconstant.DOI.equals(pmid)){
-				jp.nextToken();
-				Log.d(Globalconstant.TAG, "fieldname: " + pmid +" --- " + jp.getText());
-
-			    }
-
-
-			    if (Globalconstant.ISSN.equals(pmid)){
-				jp.nextToken();
-				Log.d(Globalconstant.TAG, "fieldname: " + pmid +" --- " + jp.getText());
-
-			    }
-			}
-
-		    }
-
-		    if (Globalconstant.ABSTRACT.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.PAGES.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.CREATED.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.VOLUME.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.ISSUE.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-
-		    if (Globalconstant.WEBSITES.equals(fieldname)) {
-			while (jp.nextToken() != JsonToken.END_ARRAY) {
-			    //String website = jp.getCurrentName();
-
-			    jp.nextToken();
-
-			    Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
+				jp.close();
 			}
 
 
-		    }
-		    if (Globalconstant.INSTITUTION.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
 
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-		    if (Globalconstant.READ.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-		    if (Globalconstant.STARRED.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-		    if (Globalconstant.AUTHORED.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-		    if (Globalconstant.CONFIRMED.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
-		    if (Globalconstant.HIDDEN.equals(fieldname)) {
-			// current token is "name",
-			// move to next, which is "name"'s value
-			jp.nextToken();
-
-			Log.d(Globalconstant.TAG, "fieldname: " + fieldname +" --- " + jp.getText());
-
-		    }
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	}
-
-	    } catch (Exception e) {
-		e.printStackTrace();
-	    }
-
 
 
 	}
 
 
+	public void getUserLibrary(String url) {
 
-    public void GetUserLibrary(String url) {
+		ContentValues values = new ContentValues();
+		ContentValues authors_values = new ContentValues();
+		JSONParser jParser = new JSONParser();
 
-	ContentValues values = new ContentValues();
-	ContentValues authors_values = new ContentValues();
+		List<InputStream> link = new ArrayList<InputStream>();
 
-	Log.d(Globalconstant.TAG, "GetUserLibrary: " + url);
-	Log.d(Globalconstant.TAG, "access_token: " + access_token);
-	JSONParser jParser = new JSONParser();
+		ObjectMapper mapper = new ObjectMapper();
 
-	List<String> jsostrResponse = new ArrayList<String>();
+		JsonFactory factory = mapper.getFactory();
+		link = jParser.getJACKSONFromUrl(url,true);
 
-	// get JSON data from URL
-	
-	jsostrResponse = jParser.getJSONFromUrl(url, true);
+		try {
 
+			for( InputStream oneItem : link ) {
 
-	// iterate over the array
-	//for( String oneItem : jsostrResponse ) {
-	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + jsostrResponse.size());
-	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + jsostrResponse.get(0));
-	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + jsostrResponse.get(1));
+				JsonParser jp = factory.createParser(oneItem);	
+				JsonNode rootNode = mapper.readTree(jp);
 
-   
+				Iterator<JsonNode> ite = rootNode.iterator();
+				while (ite.hasNext() ) {
 
-	    //String strResponse = jParser.getJSONFromUrl(url+access_token);
+					JsonNode temp = ite.next();
 
-	    if (Globalconstant.LOG)
-		Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::");
-	    try {
+					if(temp.has(Globalconstant.ID)){
+						values.put(DatabaseOpenHelper._ID,temp.get(Globalconstant.ID).asText());
+					}
 
-		JSONArray jcols = new JSONArray(jsostrResponse.get(0));
+					if(temp.has(Globalconstant.TITLE)){
+						values.put(DatabaseOpenHelper.TITLE,temp.get(Globalconstant.TITLE).asText());
+					}else{
+						values.put(DatabaseOpenHelper.TITLE, "");
+					}
 
-		Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + jcols.length());
-		
-		for (int i = 0; i < jcols.length(); i++) {
+					if(temp.has(Globalconstant.TYPE)){
+						values.put(DatabaseOpenHelper.TYPE,temp.get(Globalconstant.TYPE).asText());
+					}else{
+						values.put(DatabaseOpenHelper.TYPE, "");
+					}
 
-		    String authors = "";
+					if(temp.has(Globalconstant.MONTH)){
+						values.put(DatabaseOpenHelper.MONTH,temp.get(Globalconstant.MONTH).asText());
+					}else{
+						values.put(DatabaseOpenHelper.MONTH, "");
+					}
+					if(temp.has(Globalconstant.YEAR)){
+						values.put(DatabaseOpenHelper.YEAR,temp.get(Globalconstant.YEAR).asText());
+					}else{
+						values.put(DatabaseOpenHelper.YEAR, "");
+					}
+					if(temp.has(Globalconstant.LAST_MODIFIED)){
+						values.put(DatabaseOpenHelper.LAST_MODIFIED,temp.get(Globalconstant.LAST_MODIFIED).asText());
+					}else{
+						values.put(DatabaseOpenHelper.LAST_MODIFIED, "");
+					}
 
-		    JSONObject lib = jcols.getJSONObject(i);
+					if(temp.has(Globalconstant.DAY)){
+						values.put(DatabaseOpenHelper.DAY,temp.get(Globalconstant.DAY).asText());
+					}else{
+						values.put(DatabaseOpenHelper.DAY, "");
+					}
 
-		    doc_detail_id = lib.optString(Globalconstant.ID);
-		    values.put(DatabaseOpenHelper._ID,lib.optString(Globalconstant.ID));
-		    values.put(DatabaseOpenHelper.TYPE,	lib.optString(Globalconstant.TYPE));
-		    values.put(DatabaseOpenHelper.MONTH,lib.optString(Globalconstant.MONTH));
-		    values.put(DatabaseOpenHelper.YEAR,	lib.optString(Globalconstant.YEAR));
-		    values.put(DatabaseOpenHelper.LAST_MODIFIED,lib.optString(Globalconstant.LAST_MODIFIED));
-		    values.put(DatabaseOpenHelper.DAY,lib.optString(Globalconstant.DAY));
-		    values.put(DatabaseOpenHelper.GROUP_ID,	lib.optString(Globalconstant.GROUP_ID));
-		    values.put(DatabaseOpenHelper.SOURCE,lib.optString(Globalconstant.SOURCE));
-		    values.put(DatabaseOpenHelper.TITLE,lib.optString(Globalconstant.TITLE));
-		    values.put(DatabaseOpenHelper.REVISION,	lib.optString(Globalconstant.REVISION));
+					if(temp.has(Globalconstant.GROUP_ID)){
+						values.put(DatabaseOpenHelper.GROUP_ID,temp.get(Globalconstant.GROUP_ID).asText());
+					}else{
+						values.put(DatabaseOpenHelper.GROUP_ID, "");
+					}
+					if(temp.has(Globalconstant.SOURCE)){
+						values.put(DatabaseOpenHelper.SOURCE,temp.get(Globalconstant.SOURCE).asText());
+					}else{
+						values.put(DatabaseOpenHelper.SOURCE, "");
+					}
 
-		    if (!lib.isNull(Globalconstant.IDENTIFIERS)) {
-			JSONObject structure = (JSONObject) lib.get(Globalconstant.IDENTIFIERS);
-			Log.d(Globalconstant.TAG, "IDENTIFIERS: " + lib.get(Globalconstant.IDENTIFIERS));
+					if(temp.has(Globalconstant.REVISION)){
+						values.put(DatabaseOpenHelper.REVISION,temp.get(Globalconstant.REVISION).asText());
+					}else{
+						values.put(DatabaseOpenHelper.REVISION, "");
+					}
 
-			values.put(DatabaseOpenHelper.PMID,	structure.optString(Globalconstant.PMID));
-			values.put(DatabaseOpenHelper.DOI,structure.optString(Globalconstant.DOI));
-			values.put(DatabaseOpenHelper.ISSN,	structure.optString(Globalconstant.ISSN));
+					if(temp.has(Globalconstant.PAGES)){
+						values.put(DatabaseOpenHelper.PAGES, temp.get(Globalconstant.PAGES).asText());
+					}else{
+						values.put(DatabaseOpenHelper.PAGES, "");
+					}
 
-		    }
-		    else{
+					if(temp.has(Globalconstant.VOLUME)){
+						values.put(DatabaseOpenHelper.VOLUME, temp.get(Globalconstant.VOLUME).asText());
+					}else{
+						values.put(DatabaseOpenHelper.VOLUME, "");
+					}
+					if(temp.has(Globalconstant.ISSUE)){
+						values.put(DatabaseOpenHelper.ISSUE, temp.get(Globalconstant.ISSUE).asText());
+					}else{
+						values.put(DatabaseOpenHelper.ISSUE, "");
+					}
+					if(temp.has(Globalconstant.WEBSITE)){
+						values.put(DatabaseOpenHelper.WEBSITE, temp.get(Globalconstant.WEBSITE).asText());
+					}else{
+						values.put(DatabaseOpenHelper.WEBSITE, "");
+					}
+					if(temp.has(Globalconstant.PUBLISHER)){
+						values.put(DatabaseOpenHelper.PUBLISHER, temp.get(Globalconstant.PUBLISHER).asText());
+					}else{
+						values.put(DatabaseOpenHelper.PUBLISHER, "");
+					}
+					if(temp.has(Globalconstant.CITY)){
+						values.put(DatabaseOpenHelper.CITY, temp.get(Globalconstant.CITY).asText());
+					}else{
+						values.put(DatabaseOpenHelper.CITY, "");
+					}
+					if(temp.has(Globalconstant.EDITION)){
+						values.put(DatabaseOpenHelper.EDITION, temp.get(Globalconstant.EDITION).asText());
+					}else{
+						values.put(DatabaseOpenHelper.EDITION, "");
+					}
+					if(temp.has(Globalconstant.INSTITUTION)){
+						values.put(DatabaseOpenHelper.INSTITUTION, temp.get(Globalconstant.INSTITUTION).asText());
+					}else{
+						values.put(DatabaseOpenHelper.INSTITUTION, "");
+					}
+					if(temp.has(Globalconstant.SERIES)){
+						values.put(DatabaseOpenHelper.SERIES, temp.get(Globalconstant.SERIES).asText());
+					}else{
+						values.put(DatabaseOpenHelper.SERIES, "");
+					}
+					if(temp.has(Globalconstant.EDITORS)){
+						values.put(DatabaseOpenHelper.EDITORS, temp.get(Globalconstant.EDITORS).asText());
+					}else{
+						values.put(DatabaseOpenHelper.EDITORS, "");
+					}
+					if(temp.has(Globalconstant.READ)){
+						values.put(DatabaseOpenHelper.READ, temp.get(Globalconstant.READ).asText());
+					}else{
+						values.put(DatabaseOpenHelper.READ, "");
+					}
+					if(temp.has(Globalconstant.STARRED)){
+						values.put(DatabaseOpenHelper.STARRED, temp.get(Globalconstant.STARRED).asText());
+					}else{
+						values.put(DatabaseOpenHelper.STARRED, "");
+					}
+					if(temp.has(Globalconstant.AUTHORED)){
+						values.put(DatabaseOpenHelper.AUTHORED, temp.get(Globalconstant.AUTHORED).asText());
 
-			values.put(DatabaseOpenHelper.PMID,	"");
-			values.put(DatabaseOpenHelper.DOI,"");
-			values.put(DatabaseOpenHelper.ISSN,	"");
+					}else{
+						values.put(DatabaseOpenHelper.AUTHORED, "");
+					}
+					if(temp.has(Globalconstant.CONFIRMED)){
+						values.put(DatabaseOpenHelper.CONFIRMED, temp.get(Globalconstant.CONFIRMED).asText());
+					}else{
+						values.put(DatabaseOpenHelper.CONFIRMED, "");
+					}
+					if(temp.has(Globalconstant.HIDDEN)){
+						values.put(DatabaseOpenHelper.HIDDEN, temp.get(Globalconstant.HIDDEN).asText());
+					}else{
+						values.put(DatabaseOpenHelper.HIDDEN, "");
+					}
+					if(temp.has(Globalconstant.ABSTRACT)){
+						values.put(DatabaseOpenHelper.ABSTRACT, temp.get(Globalconstant.ABSTRACT).asText());
+					}else{
+						values.put(DatabaseOpenHelper.ABSTRACT, "");
+					}
 
-		    }
+					//Array
+					//authors":[{"first_name":"Asger","last_name":"Hobolth"},{"first_name":"Ole F","last_name":"Christensen"},{"first_name":"Thomas","last_name":"Mailund"},{"first_name":"Mikkel H","last_name":"Schierup"}]
+					if(temp.has(Globalconstant.AUTHORS)){	
+						Iterator<JsonNode> authorsIterator = temp.get(Globalconstant.AUTHORS).elements();
+						String authors = "";
+						while (authorsIterator.hasNext() ){
 
-		    values.put(DatabaseOpenHelper.ABSTRACT,	lib.optString(Globalconstant.ABSTRACT));
-		    values.put(DatabaseOpenHelper.PROFILE_ID,lib.optString(Globalconstant.PROFILE_ID));
+							JsonNode author = authorsIterator.next();
+							author.get(Globalconstant.FORENAME);
+							author.get(Globalconstant.SURNAME);
 
-		    JSONArray documents_array = lib.getJSONArray(Globalconstant.AUTHORS);
+							String author_name = author.get(Globalconstant.FORENAME).asText()	+ " "+ author.get(Globalconstant.SURNAME).asText();
 
-		    for (int j = 0; j < documents_array.length(); j++) {
+							authors += author_name + ",";
+							values.put(DatabaseOpenHelper.AUTHORS, authors.substring(0,authors.length()-1));
 
-			JSONObject sub_documents_array = documents_array.getJSONObject(j);
+							authors_values.put(DatabaseOpenHelper.DOC_DETAILS_ID,temp.get("id").asText());
+							authors_values.put(DatabaseOpenHelper.AUTHOR_NAME,author_name);
 
-			String author_name = sub_documents_array.optString(Globalconstant.FORENAME)	+ " "+ sub_documents_array.optString(Globalconstant.SURNAME);
+							Uri uri_authors = context.getContentResolver().insert(MyContentProvider.CONTENT_URI_AUTHORS,authors_values);
 
-			authors += author_name + ",";
+						}
+					}else{
+						values.put(DatabaseOpenHelper.AUTHORS, "");
+					}
 
-			authors_values.put(DatabaseOpenHelper.DOC_DETAILS_ID,doc_detail_id);
-			authors_values.put(DatabaseOpenHelper.AUTHOR_NAME,author_name);
+					//"identifiers":{"pmid":"17319744","doi":"10.1371/journal.pgen.0030007","issn":"1553-7404"}
+					if(temp.has(Globalconstant.IDENTIFIERS)){	
 
-			Uri uri_authors = context.getContentResolver().insert(MyContentProvider.CONTENT_URI_AUTHORS,authors_values);
+						Iterator<Entry<String, JsonNode>> identifierIterator = temp.get(Globalconstant.IDENTIFIERS).fields();
 
-		    }
+						values.put(DatabaseOpenHelper.ISSN, "");
+						values.put(DatabaseOpenHelper.ISBN, "");
+						values.put(DatabaseOpenHelper.PMID, "");
+						values.put(DatabaseOpenHelper.SCOPUS, "");
+						values.put(DatabaseOpenHelper.SSN, "");
+						values.put(DatabaseOpenHelper.ARXIV, "");
+						values.put(DatabaseOpenHelper.DOI, "");
 
-		    values.put(DatabaseOpenHelper.AUTHORS, authors.substring(0,authors.length()-1));
-		    values.put(DatabaseOpenHelper.ADDED,lib.optString(Globalconstant.ADDED));
-		    values.put(DatabaseOpenHelper.PAGES,lib.optString(Globalconstant.PAGES));
-		    values.put(DatabaseOpenHelper.VOLUME,lib.optString(Globalconstant.VOLUME));
-		    values.put(DatabaseOpenHelper.ISSUE,lib.optString(Globalconstant.ISSUE));
-		    values.put(DatabaseOpenHelper.WEBSITE,lib.optString(Globalconstant.WEBSITE));
-		    values.put(DatabaseOpenHelper.PUBLISHER,lib.optString(Globalconstant.PUBLISHER));
-		    values.put(DatabaseOpenHelper.CITY,	lib.optString(Globalconstant.CITY));
-		    values.put(DatabaseOpenHelper.EDITION,lib.optString(Globalconstant.EDITION));
-		    values.put(DatabaseOpenHelper.INSTITUTION,lib.optString(Globalconstant.INSTITUTION));
-		    values.put(DatabaseOpenHelper.SERIES,lib.optString(Globalconstant.SERIES));
-		    values.put(DatabaseOpenHelper.EDITORS,lib.optString(Globalconstant.EDITORS));
-		    values.put(DatabaseOpenHelper.READ,	lib.optString(Globalconstant.READ));
-		    values.put(DatabaseOpenHelper.STARRED,lib.optString(Globalconstant.STARRED));
-		    values.put(DatabaseOpenHelper.AUTHORED,	lib.optString(Globalconstant.AUTHORED));
-		    values.put(DatabaseOpenHelper.CONFIRMED,lib.optString(Globalconstant.CONFIRMED));
-		    values.put(DatabaseOpenHelper.HIDDEN,lib.optString(Globalconstant.HIDDEN));
+						while (identifierIterator.hasNext() ){
 
-		    Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_DOC_DETAILS, values);
+							Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) identifierIterator.next();
+							values.put(entry.getKey(),entry.getValue().asText());
+						}
+					}else{
+						values.put(DatabaseOpenHelper.ISSN, "");
+						values.put(DatabaseOpenHelper.ISBN, "");
+						values.put(DatabaseOpenHelper.PMID, "");
+						values.put(DatabaseOpenHelper.SCOPUS, "");
+						values.put(DatabaseOpenHelper.SSN, "");
+						values.put(DatabaseOpenHelper.ARXIV, "");
+						values.put(DatabaseOpenHelper.DOI, "");
+					}
 
-		    //get_files_doc_id(doc_detail_id);
+					Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_DOC_DETAILS, values);
+					//getFilesByDocId(doc_detail_id);
+				}
+				jp.close();
+			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-	    } catch (Exception e) {
-		if (Globalconstant.LOG) {
-		    Log.e(Globalconstant.TAG,
-			    "Got exception when parsing online data");
-		    Log.e(Globalconstant.TAG, e.getClass().getSimpleName() + ": "+ e.getMessage());
-		    // mendeleyDataSource.delete_author_table_by_doc_id(doc_detail_id);
-		    // rollback á tabela de authores com o doc id respetivo
-		}
-	    }
-	    
-	    if(jsostrResponse.size() > 1 && !jsostrResponse.get(1).equals("meu") ){
-	    	
-	    	Log.e(Globalconstant.TAG , "CONTINUACAO!!!");
-	    	Log.e(Globalconstant.TAG , "CONTINUACAO!!!" + jsostrResponse.get(1));
-	    	GetUserLibrary(jsostrResponse.get(1));
-	    	
-	    }
-	    
-	
-
-    }
-
-    public void getFolders(String url) {
-
-	ContentValues values = new ContentValues();
-
-	if (Globalconstant.LOG)
-	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Folders:::::");
-	Log.d(Globalconstant.TAG, url);
-
-	JSONParser jParser = new JSONParser();
-	// get JSON data from URL
-	//String strResponse = jParser.getJSONFromUrl(url+access_token);
-	List<String> jsostrResponse = new ArrayList<String>();
-	jsostrResponse = jParser.getJSONFromUrl(url+access_token, false);
-
-
-	// iterate over the array
-	for( String oneItem : jsostrResponse ) {
-	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Folders:::::" + jsostrResponse.size());
-
-
-	    try {
-
-		JSONArray jcols = new JSONArray(oneItem);
-
-
-		for (int i = 0; i < jcols.length(); i++) {
-
-		    JSONObject lib = jcols.getJSONObject(i);
-
-		    values.put(DatabaseOpenHelper.FOLDER_NAME,	lib.optString(Globalconstant.NAME));
-		    values.put(DatabaseOpenHelper.FOLDER_PARENT,lib.optString(Globalconstant.PARENT_ID));
-		    values.put(DatabaseOpenHelper.FOLDER_ID,lib.optString(Globalconstant.ID));
-		    values.put(DatabaseOpenHelper.FOLDER_GROUP,	lib.optString(Globalconstant.GROUP));
-		    values.put(DatabaseOpenHelper.FOLDER_ADDED,	lib.optString(Globalconstant.ADDED));
-
-		    Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FOLDERS, values);
-
-		    get_docs_in_folders(lib.optString(Globalconstant.ID));
-
-		}
-
-	    } catch (Exception e) {
-		if (Globalconstant.LOG) {
-		    Log.e(Globalconstant.TAG, "Got exception when parsing online data");
-		    Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
-		}
-
-	    }
-
-
-	}
-    }
-
-
-    private void get_docs_in_folders(String folder_id){
-
-	ContentValues values = new ContentValues();
-	String auxurl = Globalconstant.get_docs_in_folders;
-	String where= null;
-	Log.d(Globalconstant.TAG, "access_token: " + access_token);
-	//String [] selectionArgs = {};
-	String url = auxurl.replace("id", folder_id) + access_token; 
-
-	if (Globalconstant.LOG)
-	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Docs in Folders:::::");
-	Log.d(Globalconstant.TAG, url);
-	JSONParser jParser = new JSONParser();
-
-	// get JSON data from URL
-	List<String> jsostrResponse = new ArrayList<String>();
-	jsostrResponse = jParser.getJSONFromUrl(url, false);
-
-
-
-	if (jsostrResponse.size() > 0) {
-
-	    try {
-
-		JSONArray docs_ids = new JSONArray(jsostrResponse.get(0));
-
-		for (int i = 0; i < docs_ids.length(); i++) {
-
-		    JSONObject lib = docs_ids.getJSONObject(i);
-
-		    String doc_id = lib.optString(Globalconstant.ID);
-
-		    Log.d(Globalconstant.TAG, "DOC_ID: " + lib.optString(Globalconstant.ID));
-
-		    values.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
-		    values.put(DatabaseOpenHelper.DOC_DETAILS_ID, lib.optString(Globalconstant.ID));
-
-		    Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FOLDERS_DOCS, values);
-		    //values.put(DatabaseOpenHelper.FOLDER_ID, folder_id);
-		    //where = DatabaseOpenHelper._ID + " = '" + doc_id + "'";
-
-		    //Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
-		    //this.context.getContentResolver().update(uri, values, where, null);
-		}
-
-	    } catch (Exception e) {
-		if (Globalconstant.LOG) {
-		    Log.e(Globalconstant.TAG, "Got exception when parsing online data");
-		    Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
-		}
-	    }
 	}
 
-    }
 
 
 
+	private void getDocsInFolder(String folderId){
 
-    private void get_files_doc_id(String doc_id){	
+		ContentValues values = new ContentValues();
 
-	ContentValues values = new ContentValues();
+		String auxurl = Globalconstant.get_docs_in_folders;
+		String url = auxurl.replace("id", folderId) + access_token; 
 
-	String auxurl = Globalconstant.get_files_by_doc_id;
-	Log.d(Globalconstant.TAG, "auxurl: " + auxurl);
-	String url = auxurl.replace("doc_id", doc_id) + access_token; 
+		JSONParser jParser = new JSONParser();
+		ObjectMapper mapper = new ObjectMapper();
+		JsonFactory factory = mapper.getFactory(); 
+		List<InputStream> link = new ArrayList<InputStream>();
+		link = jParser.getJACKSONFromUrl(url,true);
 
-	Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + doc_id);
-	if (Globalconstant.LOG)
-	    Log.d(Globalconstant.TAG, "url: " + url);
-	JSONParser jParser = new JSONParser();
-	// get JSON data from URL
+		Log.d(Globalconstant.TAG, "--fieldname--: " + link.size() );
 
-	List<String> jsostrResponse = new ArrayList<String>();
-	jsostrResponse = jParser.getJSONFromUrl(url, false);
+		try {
 
-	Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + jsostrResponse.size());
-	Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + jsostrResponse.get(1));
-	//String strResponse = jParser.getJSONFromUrl(url);
-	if (jsostrResponse.size() > 0) {
-	try {
+			for( InputStream oneItem : link ) {
+				JsonParser jp = factory.createParser(oneItem);	
+				JsonNode rootNode = mapper.readTree(jp);
 
-	    JSONArray jcols = new JSONArray(jsostrResponse.get(0));	   
+				Iterator<JsonNode> ite = rootNode.iterator();
+				while (ite.hasNext() ) {
+					JsonNode temp = ite.next();
 
-	    for (int i = 0; i < jcols.length(); i++) {
+					if(temp.has(Globalconstant.ID)){
 
-		JSONObject lib = jcols.getJSONObject(i);
+						values.put(DatabaseOpenHelper.FOLDER_ID, folderId);
+						values.put(DatabaseOpenHelper.DOC_DETAILS_ID, temp.get(Globalconstant.ID).asText());
 
-		values.put(DatabaseOpenHelper.FILE_ID,lib.optString(Globalconstant.FILE_ID));		
-		values.put(DatabaseOpenHelper.FILE_DOC_ID,lib.optString(Globalconstant.FILE_DOC_ID));		
-		values.put(DatabaseOpenHelper.FILE_MIME_TYPE,lib.optString(Globalconstant.FILE_MIME_TYPE));		
-		values.put(DatabaseOpenHelper.FILE_NAME,lib.optString(Globalconstant.FILE_NAME));		
-		values.put(DatabaseOpenHelper.FILE_FILEHASH,lib.optString(Globalconstant.FILE_FILEHASH));
+					}else{
+						values.put(DatabaseOpenHelper.FOLDER_ID, "");
+						values.put(DatabaseOpenHelper.DOC_DETAILS_ID, "");
 
-	    }
-	} catch (Exception e) {
-	    if (Globalconstant.LOG) {
-		Log.e(Globalconstant.TAG, "Got exception when parsing online data");
-		Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
-	    }
-	}
+					}
+					Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FOLDERS_DOCS, values);
 
-	Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FILES, values);
-	}
-    }
+				}
+				jp.close();
+			}
 
-
-    public void getProfileInformation(String url) {
-	ContentValues values = new ContentValues();
-
-	Log.d(Globalconstant.TAG, url);
-	JSONParser jParser = new JSONParser();
-
-	// get JSON data from URL
-	//String strResponse = jParser.getJSONFromUrl(url+access_token);
-
-	List<String> jsostrResponse = new ArrayList<String>();
-
-	// get JSON data from URL
-	jsostrResponse = jParser.getJSONFromUrl(url+access_token, false);
-
-
-	// iterate over the array
-	for( String oneItem : jsostrResponse ) {
-	    Log.d(Globalconstant.TAG, ":::::::LoadData  - Library:::::" + oneItem);
-
-
-	    try {
-
-		JSONObject jcols = new JSONObject(new String(oneItem));
-
-		values.put(DatabaseOpenHelper.PROFILE_ID, jcols.optString(Globalconstant.ID));
-		values.put(DatabaseOpenHelper.PROFILE_FIRST_NAME, jcols.optString(Globalconstant.FORENAME));	   
-		values.put(DatabaseOpenHelper.PROFILE_LAST_NAME, jcols.optString(Globalconstant.SURNAME));	   
-		values.put(DatabaseOpenHelper.PROFILE_DISPLAY_NAME,	jcols.optString(Globalconstant.PROFILE_DISPLAY_NAME));	   
-		values.put(DatabaseOpenHelper.PROFILE_LINK,jcols.optString(Globalconstant.PROFILE_LINK));
-
-	    } catch (Exception e) {
-		if (Globalconstant.LOG) {
-		    Log.e(Globalconstant.TAG, "Got exception when parsing online data");
-		    Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	    }
-
-
 	}
 
 
@@ -636,9 +391,91 @@ public class LoadData {
 
 
 
-	Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_PROFILE, values);
 
-    }
+	private void get_files_doc_id(String doc_id){	
+
+		ContentValues values = new ContentValues();
+
+		String auxurl = Globalconstant.get_files_by_doc_id;
+		Log.d(Globalconstant.TAG, "auxurl: " + auxurl);
+		String url = auxurl.replace("doc_id", doc_id) + access_token; 
+
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + doc_id);
+		if (Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "url: " + url);
+		JSONParser jParser = new JSONParser();
+		// get JSON data from URL
+
+		List<String> jsostrResponse = new ArrayList<String>();
+		jsostrResponse = jParser.getJSONFromUrl(url, false);
+
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + jsostrResponse.size());
+		Log.d(Globalconstant.TAG, ":::::::LoadData  - FILES::::: doc_id: " + jsostrResponse.get(1));
+		//String strResponse = jParser.getJSONFromUrl(url);
+		if (jsostrResponse.size() > 0) {
+			try {
+
+				JSONArray jcols = new JSONArray(jsostrResponse.get(0));	   
+
+				for (int i = 0; i < jcols.length(); i++) {
+
+					JSONObject lib = jcols.getJSONObject(i);
+
+					values.put(DatabaseOpenHelper.FILE_ID,lib.optString(Globalconstant.FILE_ID));		
+					values.put(DatabaseOpenHelper.FILE_DOC_ID,lib.optString(Globalconstant.FILE_DOC_ID));		
+					values.put(DatabaseOpenHelper.FILE_MIME_TYPE,lib.optString(Globalconstant.FILE_MIME_TYPE));		
+					values.put(DatabaseOpenHelper.FILE_NAME,lib.optString(Globalconstant.FILE_NAME));		
+					values.put(DatabaseOpenHelper.FILE_FILEHASH,lib.optString(Globalconstant.FILE_FILEHASH));
+
+				}
+			} catch (Exception e) {
+				if (Globalconstant.LOG) {
+					Log.e(Globalconstant.TAG, "Got exception when parsing online data");
+					Log.e(Globalconstant.TAG,e.getClass().getSimpleName() + ": " + e.getMessage());
+				}
+			}
+
+			Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FILES, values);
+		}
+	}
+
+
+	public void getProfileInfo(String url){
+
+		ContentValues values = new ContentValues();
+
+
+		JSONParser jParser = new JSONParser();
+		ObjectMapper mapper = new ObjectMapper();
+		JsonFactory factory = mapper.getFactory(); 
+		List<InputStream> link = new ArrayList<InputStream>();
+		link = jParser.getJACKSONFromUrl(url,true);
+
+		try {
+
+			for( InputStream oneItem : link ) {
+
+				Map<String, Object> mapObject = mapper.readValue(oneItem,
+						new TypeReference<Map<String, Object>>() {
+
+				});
+
+				values.put(DatabaseOpenHelper.PROFILE_ID, mapObject.get(Globalconstant.ID).toString());
+				values.put(DatabaseOpenHelper.PROFILE_FIRST_NAME, mapObject.get(Globalconstant.FORENAME).toString());	   
+				values.put(DatabaseOpenHelper.PROFILE_LAST_NAME, mapObject.get(Globalconstant.SURNAME).toString() );	   
+				values.put(DatabaseOpenHelper.PROFILE_DISPLAY_NAME,	mapObject.get(Globalconstant.PROFILE_DISPLAY_NAME).toString());	   
+				values.put(DatabaseOpenHelper.PROFILE_LINK,mapObject.get(Globalconstant.PROFILE_LINK).toString());
+
+				Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_PROFILE, values);
+			}
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
 
 
 

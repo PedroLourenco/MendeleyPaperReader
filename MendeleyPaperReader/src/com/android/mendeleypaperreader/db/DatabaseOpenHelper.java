@@ -38,7 +38,11 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String IDENTIFIERS  = "identifiers";   //MAP
 	public final static String PMID  = "pmid";   
 	public final static String DOI  = "doi";   
-	public final static String ISSN  = "issn";   
+	public final static String ISSN  = "issn"; 
+	public final static String ARXIV  = "arxiv"; 
+	public final static String ISBN  = "isbn"; 
+	public final static String SCOPUS  = "scopus";
+	public final static String SSN  = "ssn";  
 	public final static String ABSTRACT = "abstract";
 	public final static String PROFILE_ID = "profile_id";
 	public final static String AUTHORS = "authors";        //ARRAY
@@ -119,7 +123,11 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			+ REVISION + " TEXT, "
 			+ PMID + " TEXT, "
 			+ DOI + " TEXT, "
-			+ ISSN + " TEXT, "
+			+ ISSN + " TEXT, " 
+			+ ARXIV + " TEXT, "
+			+ ISBN + " TEXT, "
+			+ SCOPUS + " TEXT, "
+			+ SSN + " TEXT, "
 			+ ABSTRACT + " TEXT, "
 			+ PROFILE_ID + " TEXT, "
 			+ AUTHORS + " TEXT, "
