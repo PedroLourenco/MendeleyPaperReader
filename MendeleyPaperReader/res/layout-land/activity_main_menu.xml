@@ -16,7 +16,7 @@
          android:layout_width="210dp"
          android:layout_height="match_parent"
          android:layout_alignParentBottom="true"
-         class="com.android.mendeleypaperreader.MainMenuFragmentList" />
+         class="com.mendeleypaperreader.MainMenuFragmentList" />
 
        <FrameLayout
            android:id="@+id/details"
