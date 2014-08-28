@@ -38,15 +38,15 @@
     <string name="email_publication">"Publication: "</string>
     <string name="email_authors">"Authors: " </string>
     <string name="email_mendeley_profile">"Mendeley profile: "</string>
-    <string name="email_play_store">"Play Store: "</string>
+    <string name="email_play_store">"Play Store: https://play.google.com/store/apps/details?id=com.mendeleypaperreader"</string>
     
     
     <!-- About activity -->
     
-    <string name="msg_about">Get access to Mendeley database papers in any Galaxy.</string>
-    <string name="bugfix"><b>Version 0.0.0 (July, 2014)</b> \n Initial Version.</string>
+    <string name="msg_about">Get access to Mendeley database papers.</string>
+    <string name="bugfix"><b>Version 0.0.1 (July, 2014)</b> \n Initial Version.</string>
     <string name="web_link"></string>
-    <string name="msg_current_version">Version 0.0.0</string>
+    <string name="msg_current_version">Version 0.0.1</string>
     <string name="email">pdrolourenco@gmail.com</string>
     <string name="msg_email">"Contact: "</string>
     
