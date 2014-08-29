@@ -1,5 +1,5 @@
 
-![Logo](https://github.com/PedroLourenco/MendeleyPaperReader/blob/Release2/MendeleyPaperReader/res/drawable-hdpi/paper_reader_512_512.png)PaperReade
+![Logo](https://github.com/PedroLourenco/MendeleyPaperReader/blob/Release2/MendeleyPaperReader/res/drawable-hdpi/icon_mendeley48_48.png)PaperReade
 
 
 ## Overview
