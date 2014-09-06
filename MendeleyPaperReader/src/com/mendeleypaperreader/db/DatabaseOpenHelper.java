@@ -25,6 +25,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String TABLE_FILES = "files";
 	public final static String TABLE_PROFILE = "profile";	
 	public final static String TABLE_FOLDERS_DOCS = "folders_docs";	
+	public final static String TABLE_CATALOG_DOCS = "catalog_docs";
+	public final static String TABLE_ACADEMIC_STATUS_DOCS = "academic_status_docs";
+	public final static String TABLE_COUNTRY_STATUS_DOCS = "country_status_docs";
 	
 	public final static String _ID = "_id";
 	public final static String TYPE = "type";
@@ -67,6 +70,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String IS_DOWNLOAD = "is_download";
 	public final static String DOC_DETAILS_ID = "doc_details_id";
 	public final static String AUTHOR_NAME = "author_name";
+	public final static String READER_COUNT = "reader_count";	
 	public final static String FOLDER_ID = "folder_id";
 	public final static String FOLDER_NAME = "folder_name";
 	public final static String FOLDER_ADDED = "folder_added";
@@ -90,6 +94,14 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public final static String PROFILE_LAST_NAME = "last_name";
 	public final static String PROFILE_DISPLAY_NAME = "display_name";
 	public final static String PROFILE_LINK = "link";
+	
+	public final static String CATALOG_ID = "catalaog_id";
+	public final static String SCORE = "score";
+	public final static String STATUS = "status";
+	public final static String COUNT = "count";
+	public final static String COUNTRY = "country";
+	
+	
 
 	final static String[] document_details_columns = { _ID, TYPE, MONTH, YEAR, LAST_MODIFIED, DAY, GROUP_ID, SOURCE, TITLE, REVISION, IDENTIFIERS, ABSTRACT, PROFILE_ID, AUTHORS, ADDED, PAGES, VOLUME, ISSUE, WEBSITE, PUBLISHER, CITY, EDITION, INSTITUTION, SERIES, CHAPTER, EDITORS, READ, STARRED, AUTHORED, CONFIRMED, HIDDEN};
 	final static String[] document_titles_columns = {TITLE, AUTHORS, SOURCE, YEAR};
@@ -110,6 +122,14 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	final private static String CREATE_TABLE_FOLDERS_DOCS = "CREATE TABLE folders_docs (" + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FOLDER_ID + " TEXT, " + DOC_DETAILS_ID + " TEXT) ";
 	
 
+	final private static String CREATE_TABLE_CATALOG_DOCS = "CREATE TABLE catalog_docs (" + DOC_DETAILS_ID + " TEXT PRIMARY KEY, " + CATALOG_ID + " TEXT, " + SCORE + " TEXT) ";
+	
+
+	final private static String CREATE_TABLE_ACADEMIC_STATUS_DOCS = "CREATE TABLE academic_status_docs (" + DOC_DETAILS_ID + " TEXT, " + STATUS + " TEXT, " + COUNT + " TEXT) ";
+	
+	final private static String CREATE_TABLE_COUNTRY_STATUS_DOCS = "CREATE TABLE country_status_docs (" + DOC_DETAILS_ID + " TEXT, " + COUNTRY + " TEXT, " + COUNT + " TEXT) ";
+	
+	
 	final private static String CREATE_TABLE_DOCUMENT_DETAILS =
 
 	"CREATE TABLE document_details (" + _ID + " TEXT PRIMARY KEY, "
@@ -148,12 +168,13 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			+ AUTHORED + " TEXT, "
 			+ CONFIRMED + " TEXT, "
 			+ FOLDER_ID + " TEXT, "
-			+ HIDDEN + " TEXT )";
+			+ HIDDEN + " TEXT, " 
+			+ READER_COUNT + ")";
 			
 			
 			
 	final private static String DATABASE_NAME = "Mendeley_library.db";
-	final private static Integer VERSION = 1;
+	final private static Integer VERSION = 2;
 	final private Context mContext;
 	
 	public DatabaseOpenHelper(Context context, String name, 
@@ -183,12 +204,22 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			db.execSQL(CREATE_TABLE_FILE);
 			db.execSQL(CREATE_TABLE_PROFILE);
 			db.execSQL(CREATE_TABLE_FOLDERS_DOCS);
-		
+			db.execSQL(CREATE_TABLE_CATALOG_DOCS);
+			db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
+			db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// N/A
+		//Release_2 version 0.2.0 - Add column reader_count to table documents_details 
+		//Database verson 2
+				//db.execSQL("ALTER TABLE document_details ADD COLUMN reader_count TEXT ;");
+				//db.execSQL(CREATE_TABLE_CATALOG_DOCS);
+				//db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
+				//db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
+				
+				
+				
 	}
 
 	void deleteDatabase() {

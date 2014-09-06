@@ -16,16 +16,18 @@ public class ListTitleAdapter extends BaseAdapter {
     Context context;
     String text;
     BaseAdapter parentAdapter;
+    int listView;
 
-    public ListTitleAdapter(Context c, String textToShow) {
-        this(c, textToShow, null);
+    public ListTitleAdapter(Context c, String textToShow, int listLayout) {
+        this(c, textToShow, null,listLayout);
 }
 
-    public ListTitleAdapter(Context c, String textToShow, BaseAdapter dependentAdapter) {
+    public ListTitleAdapter(Context c, String textToShow, BaseAdapter dependentAdapter, int listLayout) {
     super();
     context = c;
     text = textToShow;
-
+    listView = listLayout;
+    
     if(dependentAdapter != null){
         parentAdapter = dependentAdapter;
     }
@@ -54,7 +56,7 @@ public class ListTitleAdapter extends BaseAdapter {
     	View v = convertView;
 
     	LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    	v = vi.inflate(R.layout.listview_section, null);
+    	v = vi.inflate(listView, null);
     	TextView section = (TextView) v.findViewById(R.id.list_header_title);
     	section.setText(text);	
     	LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f);

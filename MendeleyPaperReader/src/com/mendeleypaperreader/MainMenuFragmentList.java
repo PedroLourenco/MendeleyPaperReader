@@ -67,9 +67,9 @@ public class MainMenuFragmentList extends ListFragment implements LoaderCallback
 
 		// Add section to list and merge two adatpers
 		MergeAdapter mergeAdapter = new MergeAdapter();
-		mergeAdapter.addAdapter(new ListTitleAdapter(getActivity().getApplicationContext(), getResources().getString(R.string.my_library), lAdapter));
+		mergeAdapter.addAdapter(new ListTitleAdapter(getActivity().getApplicationContext(), getResources().getString(R.string.my_library), lAdapter, R.layout.listview_section));
 		mergeAdapter.addAdapter(lAdapter);
-		mergeAdapter.addAdapter(new ListTitleAdapter(getActivity().getApplicationContext(), getResources().getString(R.string.my_folders), mAdapter));
+		mergeAdapter.addAdapter(new ListTitleAdapter(getActivity().getApplicationContext(), getResources().getString(R.string.my_folders), mAdapter, R.layout.listview_section));
 		mergeAdapter.addAdapter(mAdapter);
 
 		mergeAdapter.setNoItemsText("Nothing to display. This list is empty.");

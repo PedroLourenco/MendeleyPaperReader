@@ -53,12 +53,14 @@ import com.mendeleypaperreader.utl.SyncDataAsync;
 public class DocumentsDetailsActivity extends Activity  {
 
 	// private Cursor mAdapter;
-	private TextView doc_abstract, doc_url, doc_pmid, doc_issn, doc_catalog;
-	private String mAbstract, t_doc_url, issn, doi, pmid, doc_title, doc_authors_text, doc_source_text;
+	private TextView doc_abstract, doc_url, doc_pmid, doc_issn, doc_catalog, readerCounterValue;
+	private String docId, mAbstract, t_doc_url, issn, doi, pmid, doc_title, doc_authors_text, doc_source_text, readerValue;
 	private static SessionManager session;
 	private static String code;
 	private static String refresh_token;
 	private Boolean isInternetPresent = false;
+	private Cursor cursorProfiel;
+	private Cursor cursorDetails;
 
 
 	@Override
@@ -73,6 +75,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		doc_pmid = new TextView(this);
 		doc_issn = new TextView(this);
 		doc_catalog = new TextView(this);
+		readerCounterValue = new TextView(this);
 
 		if(Globalconstant.LOG)
 			Log.d(Globalconstant.TAG, "DOC_DETAILS - doc_id: " + getDocId());
@@ -84,22 +87,39 @@ public class DocumentsDetailsActivity extends Activity  {
 		OnClickListener click_on_abstract = new OnClickListener() {
 
 			public void onClick(View v) {
-				Intent abstract_intent = new Intent(getApplicationContext(), AbstractDescriptionActivity.class);
+				Intent abstract_intent = new Intent(getApplicationContext(), ReadersActivity.class);
 				abstract_intent.putExtra("abstract", mAbstract);
 				startActivity(abstract_intent);
 			}
 		};
 
 		doc_abstract.setOnClickListener(click_on_abstract);
+		
+		
+		
+		//Onlcick on readersCounter
+		OnClickListener click_on_readers = new OnClickListener() {
+			
+			
+			public void onClick(View v) {
+				
+				Intent readersIntent = new Intent(getApplicationContext(), ReadersActivity.class);
+				readersIntent.putExtra("DOC_ID", docId);
+				readersIntent.putExtra("READER_VALUE", readerValue);
+				startActivity(readersIntent);
+			}
+		};
+
+		readerCounterValue.setOnClickListener(click_on_readers);
+		
+		
 
 		//onclick on url link
 		OnClickListener click_on_url = new OnClickListener() {
 
 			public void onClick(View v) {
-				Intent internetIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(t_doc_url));
-				internetIntent.setComponent(new ComponentName("com.android.browser","com.android.browser.BrowserActivity"));
-				internetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				getApplicationContext().startActivity(internetIntent);   
+				
+				openBrowser(t_doc_url);
 			}
 		};
 
@@ -110,15 +130,12 @@ public class DocumentsDetailsActivity extends Activity  {
 		OnClickListener click_on_pmid = new OnClickListener() {
 
 			public void onClick(View v) {
-				String url = Globalconstant.PMID_URL+pmid; 
-				Intent internetIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
-				internetIntent.setComponent(new ComponentName("com.android.browser","com.android.browser.BrowserActivity"));
-				internetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				getApplicationContext().startActivity(internetIntent);   
+				
+				String url = Globalconstant.PMID_URL+pmid;
+				openBrowser(url);
+				
 			}
 		};
-
-
 
 		doc_pmid.setOnClickListener(click_on_pmid);
 
@@ -127,11 +144,8 @@ public class DocumentsDetailsActivity extends Activity  {
 		OnClickListener click_on_issn = new OnClickListener() {
 
 			public void onClick(View v) {
-				String url = Globalconstant.ISSN_URL+issn; 
-				Intent internetIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-				internetIntent.setComponent(new ComponentName("com.android.browser","com.android.browser.BrowserActivity"));
-				internetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				getApplicationContext().startActivity(internetIntent);   
+				String url = Globalconstant.ISSN_URL+issn;
+				openBrowser(url);
 			}
 		};
 
@@ -143,10 +157,7 @@ public class DocumentsDetailsActivity extends Activity  {
 
 			public void onClick(View v) {
 				String url = Globalconstant.DOI_URL+doi; 
-				Intent internetIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-				internetIntent.setComponent(new ComponentName("com.android.browser","com.android.browser.BrowserActivity"));
-				internetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				getApplicationContext().startActivity(internetIntent);
+				openBrowser(url);
 			}
 		};
 		doc_catalog.setOnClickListener(click_on_doi);
@@ -174,9 +185,24 @@ public class DocumentsDetailsActivity extends Activity  {
 			}
 		};
 		share.setOnClickListener(click_on_share_icon);
+		
+		
+		
+		
 	}
 
-
+	@Override
+	protected void onDestroy() {
+	    super.onDestroy();
+	    
+	    if( cursorProfiel != null && !cursorProfiel. isClosed() ){
+	    	cursorProfiel.close();
+	    }
+	    if( cursorDetails != null && !cursorDetails.isClosed() ){
+	    	cursorDetails.close();
+	    }
+	    
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -219,15 +245,17 @@ public class DocumentsDetailsActivity extends Activity  {
 		if(Globalconstant.LOG)
 			Log.d(Globalconstant.TAG, "getdocDetails - DOC_DETAILS");
 
-		String doc_id = getDocId();
+		docId = getDocId();
 		String[] projection = null;
 		String selection = null;
 
-		projection = new String[] {DatabaseOpenHelper.TYPE + " as _id",  DatabaseOpenHelper.TITLE, DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE , DatabaseOpenHelper.YEAR, DatabaseOpenHelper.VOLUME, DatabaseOpenHelper.PAGES,DatabaseOpenHelper.ISSUE,  DatabaseOpenHelper.ABSTRACT, DatabaseOpenHelper.WEBSITE, DatabaseOpenHelper.DOI, DatabaseOpenHelper.PMID, DatabaseOpenHelper.ISSN, DatabaseOpenHelper.STARRED };
-		selection = DatabaseOpenHelper._ID + " = '" + doc_id +"'";
+		projection = new String[] {DatabaseOpenHelper.TYPE + " as _id",  DatabaseOpenHelper.TITLE, DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE , DatabaseOpenHelper.YEAR, DatabaseOpenHelper.VOLUME, DatabaseOpenHelper.PAGES,DatabaseOpenHelper.ISSUE,  DatabaseOpenHelper.ABSTRACT, DatabaseOpenHelper.WEBSITE, DatabaseOpenHelper.DOI, DatabaseOpenHelper.PMID, DatabaseOpenHelper.ISSN, DatabaseOpenHelper.STARRED , DatabaseOpenHelper.READER_COUNT};
+		selection = DatabaseOpenHelper._ID + " = '" + docId +"'";
 		Uri  uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 
-		return getApplicationContext().getContentResolver().query(uri, projection, selection, null, null);
+		cursorDetails = getApplicationContext().getContentResolver().query(uri, projection, selection, null, null);
+		
+		return cursorDetails;
 
 	}
 
@@ -240,10 +268,10 @@ public class DocumentsDetailsActivity extends Activity  {
 		projection = new String[] {setting_name + " as _id"};
 		Uri uri = MyContentProvider.CONTENT_URI_PROFILE;
 
-		Cursor cursor = getApplicationContext().getContentResolver().query(uri, projection, selection, null, null); 
-		cursor.moveToPosition(0);
+		cursorProfiel = getApplicationContext().getContentResolver().query(uri, projection, selection, null, null); 
+		cursorProfiel.moveToPosition(0);
 
-		return cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper._ID));
+		return cursorProfiel.getString(cursorProfiel.getColumnIndex(DatabaseOpenHelper._ID));
 
 	}
 
@@ -456,7 +484,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		issn = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.ISSN));
 		pmid = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.PMID));
 		doi = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.DOI));
-
+		
 		TextView doc_catalog_title = new TextView(this);
 
 		if(!issn.isEmpty() || !doi.isEmpty() || !pmid.isEmpty()){
@@ -587,12 +615,14 @@ public class DocumentsDetailsActivity extends Activity  {
 
 
 		t_doc_url = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.WEBSITE));
+		
 		TextView doc_url_title = new TextView(this);
 
 		RelativeLayout.LayoutParams layout_doc_url_title;
 		RelativeLayout.LayoutParams layout_doc_url;
+		RelativeLayout.LayoutParams layout_reader_count;
 
-		if(!t_doc_url.isEmpty()){
+		if(t_doc_url != null){
 
 			//Document URL Title
 			doc_url_title.setId(22);
@@ -620,29 +650,68 @@ public class DocumentsDetailsActivity extends Activity  {
 
 
 
-			if(!issn.isEmpty()){
-
+			if(!issn.isEmpty()){			
 				//Document URL Title
 				layout_doc_url_title.addRule(RelativeLayout.BELOW, doc_issn.getId());
 			}
 
 			else if(issn.isEmpty() && !pmid.isEmpty()){
-
 				//Document URL
 				layout_doc_url_title.addRule(RelativeLayout.BELOW, doc_pmid.getId());
 			}
 
-			else if(!issn.isEmpty() && !pmid.isEmpty() && doi.isEmpty()){
-
+			else if(issn.isEmpty() && pmid.isEmpty() && !doi.isEmpty()){
 				//Document URL
 				layout_doc_url_title.addRule(RelativeLayout.BELOW, doc_catalog.getId());
 			}
 			else{
+				Log.d(Globalconstant.TAG, "4: " );
 				//Document URL
 				layout_doc_url_title.addRule(RelativeLayout.BELOW, relativeLayout_line_f.getId());
 			}
 
 		}
+		
+		
+		///////READER COUNTER - BREAK
+		TextView readerCounter = new TextView(this);
+		
+		readerCounter.setId(24);
+		readerCounter.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
+		readerCounter.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
+		layout_reader_count = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
+		readerCounter.setLayoutParams(layout_reader_count);
+		relativeLayout.addView(readerCounter);
+	
+		
+		//READER COUNTER - VALUE
+		
+		readerCounterValue = new TextView(this);
+		RelativeLayout.LayoutParams layoutReaderCounterValue;
+		readerCounterValue.setBackgroundColor(Color.WHITE);
+		readerCounterValue.setCompoundDrawables(null, null, image, null);
+		readerCounterValue.setId(25);
+		readerValue = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.READER_COUNT));
+		readerCounterValue.setText(getResources().getString(R.string.readers) + "\t\t" + readerValue);
+		readerCounterValue.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
+		readerCounterValue.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
+		layoutReaderCounterValue = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
+		readerCounterValue.setLayoutParams(layoutReaderCounterValue);
+		relativeLayout.addView(readerCounterValue);
+		layoutReaderCounterValue.addRule(RelativeLayout.BELOW, readerCounter.getId());
+		
+		
+		if(t_doc_url != null){
+			layout_reader_count.addRule(RelativeLayout.BELOW, doc_url.getId());
+		}else if(t_doc_url == null && !issn.isEmpty() ){
+			layout_reader_count.addRule(RelativeLayout.BELOW, doc_issn.getId());	
+		}else if(t_doc_url == null && issn.isEmpty() && !pmid.isEmpty()){
+			layout_reader_count.addRule(RelativeLayout.BELOW, doc_pmid.getId());	
+		}else if(t_doc_url == null && issn.isEmpty() && pmid.isEmpty() && !doi.isEmpty()){
+			layout_reader_count.addRule(RelativeLayout.BELOW, doc_catalog.getId());	
+		}else{
+			layout_reader_count.addRule(RelativeLayout.BELOW, relativeLayout_line_f.getId());
+		}		
 	}
 
 
@@ -764,6 +833,17 @@ public class DocumentsDetailsActivity extends Activity  {
 	}
 
 
+	
+	private void openBrowser(String url){
+		
+		Uri uri = Uri.parse(url);
+		Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+		browserIntent.setDataAndType(uri, "text/html");
+		browserIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+		browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		getApplicationContext().startActivity(browserIntent);
+		
+	}
 
 
 
@@ -818,7 +898,12 @@ public class DocumentsDetailsActivity extends Activity  {
 
 			return json;
 		} 
-	}	  
+	}
+	
+
+	
+	
+	
 
 
 }

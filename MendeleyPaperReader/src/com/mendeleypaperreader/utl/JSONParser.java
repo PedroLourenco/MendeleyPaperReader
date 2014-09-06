@@ -16,6 +16,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
+
 import android.util.Log;
 
 /**
@@ -58,7 +59,7 @@ public class JSONParser {
 			}
 		}
 
-		return "meu";
+		return "finish";
 
 	}
 
@@ -68,14 +69,16 @@ public class JSONParser {
 	public List<InputStream> getJACKSONFromUrl(String url, boolean with_header) {
 		// Making HTTP request
 
-		if(url.equals("meu")){
-			Log.d(Globalconstant.TAG, "url: " + jacksonArray.size());
+		if(url.equals("finish")){
 			return jacksonArray;
 		}
 
 		//InputStream content = null;	
 		StringBuilder builder = new StringBuilder();
 		HttpClient client = new DefaultHttpClient();
+		
+	
+		
 		HttpGet httpGet = new HttpGet(url);
 		try {
 			HttpResponse response = client.execute(httpGet);

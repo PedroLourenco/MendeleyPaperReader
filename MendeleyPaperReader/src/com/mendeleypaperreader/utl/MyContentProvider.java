@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
-
 import com.mendeleypaperreader.db.DatabaseOpenHelper;
 
 public class MyContentProvider extends ContentProvider {
@@ -28,7 +27,11 @@ public class MyContentProvider extends ContentProvider {
 	public static final Uri CONTENT_URI_PROFILE = Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_PROFILE);
 	public static final Uri CONTENT_URI_DELETE_DATA_BASE= Uri.parse("content://" + AUTHORITY + "/" + "DUMMY");
 	public static final Uri CONTENT_URI_FOLDERS_DOCS= Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_FOLDERS_DOCS);
-
+	public static final Uri CONTENT_URI_CATALOG_DOCS= Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_CATALOG_DOCS);
+	public static final Uri CONTENT_URI_ACADEMIC_DOCS= Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_ACADEMIC_STATUS_DOCS);
+	public static final Uri CONTENT_URI_COUNTRY_DOCS= Uri.parse("content://" + AUTHORITY + "/" + DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS);
+	
+	
 	public static final int ALLDOCS = 1;
 	public static final int ALL_DOCS_ID = 2;  
 	public static final int ALL_DOC_AUTHORS = 3;
@@ -40,7 +43,11 @@ public class MyContentProvider extends ContentProvider {
 	public static final int ALL_PROFILE_ID = 9;
 	public static final int DELETE_DATA_BASE = 10;
 	public static final int ALL_FOLDERS_DOCS = 11;
-
+	public static final int ALL_CATALOG_DOCS = 12;
+	public static final int ALL_ACADEMIC_DOCS = 13;
+	public static final int ALL_ACADEMIC_DOCS_ID = 14;
+	public static final int ALL_COUNTRY_DOCS = 15;
+	public static final int ALL_COUNTRY_DOCS_ID = 16;
 
 	private static final UriMatcher sURIMatcher = 
 			new UriMatcher(UriMatcher.NO_MATCH);
@@ -56,6 +63,11 @@ public class MyContentProvider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_PROFILE, ALL_PROFILE);
 		sURIMatcher.addURI(AUTHORITY, "DUMMY", DELETE_DATA_BASE);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS_DOCS, ALL_FOLDERS_DOCS);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_CATALOG_DOCS, ALL_CATALOG_DOCS);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_ACADEMIC_STATUS_DOCS, ALL_ACADEMIC_DOCS);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_ACADEMIC_STATUS_DOCS + "/id", ALL_ACADEMIC_DOCS_ID);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS, ALL_COUNTRY_DOCS);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS + "/id", ALL_COUNTRY_DOCS_ID);
 	}
 
 
@@ -175,6 +187,43 @@ public class MyContentProvider extends ContentProvider {
 				return newUri;	
 			}
 			break;
+			
+		case ALL_CATALOG_DOCS:
+
+			long catalog_docs_row = db.insert(DatabaseOpenHelper.TABLE_CATALOG_DOCS, null, values);
+
+			// If record is added successfully		 
+			if(catalog_docs_row > 0) {
+
+				Uri newUri = ContentUris.withAppendedId(CONTENT_URI_CATALOG_DOCS, catalog_docs_row);		 
+				getContext().getContentResolver().notifyChange(newUri, null);		 
+				return newUri;	
+			}
+			break;
+		case ALL_ACADEMIC_DOCS:
+
+			long academic_docs_row = db.insert(DatabaseOpenHelper.TABLE_ACADEMIC_STATUS_DOCS, null, values);
+
+			// If record is added successfully		 
+			if(academic_docs_row > 0) {
+
+				Uri newUri = ContentUris.withAppendedId(CONTENT_URI_ACADEMIC_DOCS, academic_docs_row);		 
+				getContext().getContentResolver().notifyChange(newUri, null);		 
+				return newUri;	
+			}
+			break;
+		case ALL_COUNTRY_DOCS:
+
+			long country_docs_row = db.insert(DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS, null, values);
+
+			// If record is added successfully		 
+			if(country_docs_row > 0) {
+
+				Uri newUri = ContentUris.withAppendedId(CONTENT_URI_COUNTRY_DOCS, country_docs_row);		 
+				getContext().getContentResolver().notifyChange(newUri, null);		 
+				return newUri;	
+			}
+			break;
 		default: throw new SQLException("Failed to insert row into " + uri);
 		}
 		return uri;
@@ -209,6 +258,18 @@ public class MyContentProvider extends ContentProvider {
 
 			queryBuilder.setTables(DatabaseOpenHelper.TABLE_PROFILE);
 			break;
+			
+		case ALL_ACADEMIC_DOCS_ID:		   
+
+			queryBuilder.setTables(DatabaseOpenHelper.TABLE_ACADEMIC_STATUS_DOCS);
+			queryBuilder.appendWhere(selection);
+			break;	
+		case ALL_COUNTRY_DOCS_ID:		   
+
+			queryBuilder.setTables(DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS);
+			queryBuilder.appendWhere(selection);
+			break;	
+
 
 
 		default:
@@ -273,7 +334,9 @@ public class MyContentProvider extends ContentProvider {
 		count = count + db.delete(DatabaseOpenHelper.TABLE_FOLDERS, selection, selectionArgs);
 		count = count + db.delete(DatabaseOpenHelper.TABLE_FILES, selection, selectionArgs);
 		count = count + db.delete(DatabaseOpenHelper.TABLE_PROFILE, selection, selectionArgs);
-
+		count = count + db.delete(DatabaseOpenHelper.TABLE_CATALOG_DOCS, selection, selectionArgs);
+		count = count + db.delete(DatabaseOpenHelper.TABLE_ACADEMIC_STATUS_DOCS, selection, selectionArgs);
+		count = count + db.delete(DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS, selection, selectionArgs);
 		return count;
 	}
 

@@ -1185,7 +1185,7 @@ containing a value of this type.
         public static final int trash=0x7f02006c;
     }
     public static final class id {
-        public static final int Doctitle=0x7f050053;
+        public static final int Doctitle=0x7f050056;
         public static final int NewAccount=0x7f05004c;
         public static final int abstractDescription=0x7f050044;
         public static final int action_bar=0x7f05001c;
@@ -1202,13 +1202,13 @@ containing a value of this type.
         public static final int activity_chooser_view_content=0x7f050025;
         public static final int always=0x7f05000b;
         public static final int auth=0x7f05004b;
-        public static final int authors=0x7f050054;
+        public static final int authors=0x7f050057;
         public static final int beginning=0x7f050011;
         public static final int checkbox=0x7f05002e;
         public static final int collapseActionView=0x7f05000d;
-        public static final int copyLink=0x7f05005c;
+        public static final int copyLink=0x7f050061;
         public static final int current_version=0x7f050040;
-        public static final int data=0x7f050055;
+        public static final int data=0x7f050058;
         public static final int default_activity_button=0x7f050028;
         public static final int detailTitle=0x7f050050;
         public static final int details=0x7f05004f;
@@ -1233,12 +1233,12 @@ containing a value of this type.
         public static final int image2=0x7f050029;
         public static final int imageView1=0x7f05003d;
         public static final int listMode=0x7f050001;
-        public static final int list_header_title=0x7f050056;
-        public static final int list_image=0x7f050052;
+        public static final int list_header_title=0x7f050059;
+        public static final int list_image=0x7f050055;
         public static final int list_item=0x7f05002a;
-        public static final int menu_About=0x7f05005a;
-        public static final int menu_logout=0x7f050059;
-        public static final int menu_refresh=0x7f050058;
+        public static final int menu_About=0x7f05005f;
+        public static final int menu_logout=0x7f05005e;
+        public static final int menu_refresh=0x7f05005d;
         public static final int middle=0x7f050012;
         public static final int msg_about=0x7f05003e;
         public static final int never=0x7f050009;
@@ -1247,7 +1247,12 @@ containing a value of this type.
         public static final int progress_circular=0x7f050018;
         public static final int progress_horizontal=0x7f050019;
         public static final int radio=0x7f050030;
-        public static final int refresh=0x7f05005b;
+        public static final int readers=0x7f050051;
+        public static final int readersCount=0x7f05005b;
+        public static final int readersStatus=0x7f05005a;
+        public static final int readersTotal=0x7f050052;
+        public static final int readersValue=0x7f050053;
+        public static final int refresh=0x7f050060;
         public static final int relativedoc=0x7f050049;
         public static final int scrollView1=0x7f05003f;
         public static final int scrollableContents=0x7f050048;
@@ -1269,14 +1274,14 @@ containing a value of this type.
         public static final int split_action_bar=0x7f05001e;
         public static final int submit_area=0x7f05003a;
         public static final int tabMode=0x7f050002;
-        public static final int thumbnail=0x7f050051;
+        public static final int thumbnail=0x7f050054;
         public static final int title=0x7f05002c;
         public static final int top_action_bar=0x7f050020;
         public static final int txt_version3=0x7f050041;
         public static final int up=0x7f050021;
         public static final int useLogo=0x7f050003;
         public static final int web_link=0x7f050042;
-        public static final int webview=0x7f050057;
+        public static final int webview=0x7f05005c;
         public static final int withText=0x7f05000c;
     }
     public static final class integer {
@@ -1336,11 +1341,14 @@ containing a value of this type.
         public static final int activity_main_menu=0x7f03001c;
         public static final int activity_main_menu_details=0x7f03001d;
         public static final int activity_main_menu_list=0x7f03001e;
-        public static final int list_row_all_doc=0x7f03001f;
-        public static final int list_row_with_image=0x7f030020;
-        public static final int listview_section=0x7f030021;
-        public static final int support_simple_spinner_dropdown_item=0x7f030022;
-        public static final int webviewoauth=0x7f030023;
+        public static final int activity_readers=0x7f03001f;
+        public static final int list_row_all_doc=0x7f030020;
+        public static final int list_row_with_image=0x7f030021;
+        public static final int list_view_readers_section=0x7f030022;
+        public static final int listview_section=0x7f030023;
+        public static final int readers_list=0x7f030024;
+        public static final int support_simple_spinner_dropdown_item=0x7f030025;
+        public static final int webviewoauth=0x7f030026;
     }
     public static final class menu {
         public static final int action_bar_refresh=0x7f0d0000;
@@ -1388,35 +1396,39 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0a000b;
+        /**  Readers activity 
+         */
+        public static final int academicStatus=0x7f0a002f;
         public static final int action_settings=0x7f0a000f;
         public static final int app_logo=0x7f0a0015;
         public static final int app_name=0x7f0a000d;
         public static final int auth=0x7f0a0011;
         public static final int bugfix=0x7f0a002a;
         public static final int cancel=0x7f0a001c;
-        public static final int catalog_ids=0x7f0a002f;
+        public static final int catalog_ids=0x7f0a0031;
         public static final int check_internet_connection=0x7f0a0019;
-        /**  MainActivity  
+        /**  MainActivity 
          */
         public static final int contacting_mendeley=0x7f0a0016;
+        public static final int countryStatus=0x7f0a0030;
         public static final int createaccount=0x7f0a0012;
-        public static final int doi=0x7f0a0030;
+        public static final int doi=0x7f0a0032;
         public static final int email=0x7f0a002d;
         public static final int email_authors=0x7f0a0026;
         public static final int email_mendeley_profile=0x7f0a0027;
         public static final int email_play_store=0x7f0a0028;
         public static final int email_publication=0x7f0a0025;
-        /**  DocumentsDetailActivity  
+        /**  DocumentsDetailActivity 
          */
         public static final int email_subject=0x7f0a0023;
         public static final int email_text=0x7f0a0024;
         public static final int exit_msg=0x7f0a0020;
         public static final int hello_world=0x7f0a000e;
-        public static final int issn=0x7f0a0032;
+        public static final int issn=0x7f0a0034;
         public static final int log_out=0x7f0a001f;
-        public static final int menu_about=0x7f0a0035;
-        public static final int menu_logout=0x7f0a0034;
-        public static final int menu_refresh=0x7f0a0036;
+        public static final int menu_about=0x7f0a0038;
+        public static final int menu_logout=0x7f0a0037;
+        public static final int menu_refresh=0x7f0a0039;
         /**  About activity 
          */
         public static final int msg_about=0x7f0a0029;
@@ -1426,14 +1438,16 @@ containing a value of this type.
         public static final int my_library=0x7f0a0013;
         public static final int network_error=0x7f0a0017;
         public static final int no_network_connection=0x7f0a0018;
-        public static final int pmid=0x7f0a0031;
+        public static final int pmid=0x7f0a0033;
+        public static final int readers=0x7f0a0036;
         public static final int settings_3G=0x7f0a001b;
         public static final int sync_data=0x7f0a001e;
-        /**  MainMenuActivity  
+        /**  MainMenuActivity 
          */
         public static final int sync_data_0=0x7f0a001d;
         public static final int title=0x7f0a0010;
-        public static final int urls=0x7f0a0033;
+        public static final int title_activity_readers=0x7f0a003a;
+        public static final int urls=0x7f0a0035;
         public static final int warning=0x7f0a0021;
         public static final int web_link=0x7f0a002b;
         public static final int wifi_settings=0x7f0a001a;
