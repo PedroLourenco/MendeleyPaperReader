@@ -43,7 +43,6 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	TextView title;
 
 
-
 	public static MainMenuActivityFragmentDetails newInstance(int index , String description) {
 		MainMenuActivityFragmentDetails f = new MainMenuActivityFragmentDetails();
 
@@ -162,11 +161,17 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 		String selection = null;
 
 		projection = new String[] {DatabaseOpenHelper._ID };
+		
+		if (doc_title.contains("'")) {
+			doc_title = doc_title.replaceAll("'", "''");
+		}
+		
 		selection = DatabaseOpenHelper.TITLE + " = '" + doc_title +"'";
 		Uri uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 
 		return getActivity().getApplicationContext().getContentResolver().query(uri, projection, selection, null, null);
 	}
+
 
 
 
