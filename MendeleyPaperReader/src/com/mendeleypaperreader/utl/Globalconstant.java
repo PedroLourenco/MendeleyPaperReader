@@ -29,7 +29,7 @@ public class Globalconstant {
     
     
     //API URLs
-    public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&limit=20&access_token=";
+    public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&limit=500&access_token=";
     public static String get_docs_in_folders = "https://mix.mendeley.com/folders/id/documents?access_token=";
     public static String get_docs_ann = "https://mix.mendeley.com/annotations/?document_id=doc_id&access_token=";
     public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";
