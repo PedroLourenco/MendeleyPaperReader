@@ -47,6 +47,8 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	public static MainMenuActivityFragmentDetails newInstance(int index , String description) {
 		MainMenuActivityFragmentDetails f = new MainMenuActivityFragmentDetails();
 
+		Log.d(Globalconstant.TAG, "dd - " + f);
+		
 		// Supply index input as an argument.
 		Bundle args = new Bundle();
 		args.putInt("index", index);
@@ -78,6 +80,8 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 
+		Log.d(Globalconstant.TAG, "dd" + this);
+		
 		if (container == null) {
 			// We have different layouts, and in one of them this
 			// fragment's containing frame doesn't exist.  The fragment
@@ -156,6 +160,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 
 
 
+
 	private Cursor getDocId (String doc_title){
 
 		String[] projection = null;
@@ -177,6 +182,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 
 	public void onResume() {
 		super.onResume();
+		
 		// Restart loader so that it refreshes displayed items according to database
 		if (Globalconstant.LOG)
 			Log.d(Globalconstant.TAG,"onResume");
@@ -189,6 +195,7 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 			getLoaderManager().restartLoader(1, null, this);
 		}
 	}
+
 
 
 

@@ -63,7 +63,7 @@
     <string name="doi">DOI:</string>
     <string name="pmid">PMID:</string>
     <string name="issn">ISSN:</string>
-    <string name="urls">URLS</string>
+    <string name="urls">URL</string>
     <string name="readers">Readers:</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_about">About</string>

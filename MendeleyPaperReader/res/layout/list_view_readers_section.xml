@@ -6,5 +6,5 @@
     android:paddingTop="@dimen/doc_type_paddingTop"  
     android:paddingBottom="@dimen/doc_type_paddingBottom"  
     android:paddingLeft="@dimen/doc_type_paddingLeft" 
-    android:background="#e5e5e5"
-    android:textColor="#000000" /> 
+    android:background="#cccccc"
+    android:textColor="#ffffff" /> 

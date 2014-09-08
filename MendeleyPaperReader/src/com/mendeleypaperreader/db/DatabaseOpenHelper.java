@@ -204,8 +204,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			db.execSQL(CREATE_TABLE_FILE);
 			db.execSQL(CREATE_TABLE_PROFILE);
 			db.execSQL(CREATE_TABLE_FOLDERS_DOCS);
-			db.execSQL(CREATE_TABLE_CATALOG_DOCS);
-			db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
+			//db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
 			db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
 	}
 
@@ -213,10 +212,10 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		//Release_2 version 0.2.0 - Add column reader_count to table documents_details 
 		//Database verson 2
-				//db.execSQL("ALTER TABLE document_details ADD COLUMN reader_count TEXT ;");
-				//db.execSQL(CREATE_TABLE_CATALOG_DOCS);
+				db.execSQL("ALTER TABLE document_details ADD COLUMN reader_count TEXT ;");
 				//db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
-				//db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
+				db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
+				
 				
 				
 				

@@ -70,6 +70,9 @@ public class DocumentsDetailsActivity extends Activity  {
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
+		Log.d(Globalconstant.TAG, "dd - " + this);
+		
+		
 		doc_abstract = new TextView(this);
 		doc_url = new TextView(this);
 		doc_pmid = new TextView(this);
@@ -87,7 +90,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		OnClickListener click_on_abstract = new OnClickListener() {
 
 			public void onClick(View v) {
-				Intent abstract_intent = new Intent(getApplicationContext(), ReadersActivity.class);
+				Intent abstract_intent = new Intent(getApplicationContext(), AbstractDescriptionActivity.class);
 				abstract_intent.putExtra("abstract", mAbstract);
 				startActivity(abstract_intent);
 			}
@@ -110,7 +113,8 @@ public class DocumentsDetailsActivity extends Activity  {
 			}
 		};
 
-		readerCounterValue.setOnClickListener(click_on_readers);
+		if(!readerValue.equals("0"))
+			readerCounterValue.setOnClickListener(click_on_readers);
 		
 		
 
@@ -190,11 +194,25 @@ public class DocumentsDetailsActivity extends Activity  {
 		
 		
 	}
+	
+	
+	@Override
+	protected void onPause() {
+	    super.onDestroy();
+	    Log.d(Globalconstant.TAG, "onPause - DOC_DETAILS");
+	    if( cursorProfiel != null && !cursorProfiel. isClosed() ){
+	    	cursorProfiel.close();
+	    }
+	    if( cursorDetails != null && !cursorDetails.isClosed() ){
+	    	cursorDetails.close();
+	    }
+	    
+	}
 
 	@Override
 	protected void onDestroy() {
 	    super.onDestroy();
-	    
+	    Log.d(Globalconstant.TAG, "onDestroy - DOC_DETAILS");
 	    if( cursorProfiel != null && !cursorProfiel. isClosed() ){
 	    	cursorProfiel.close();
 	    }
@@ -400,7 +418,9 @@ public class DocumentsDetailsActivity extends Activity  {
 		//Resize arraw
 		Drawable image = getApplicationContext().getResources().getDrawable(R.drawable.arrow);
 		image.setBounds(0, 0, 20, 20);
-		doc_abstract.setCompoundDrawables(null, null, image, null);
+		
+		if(!mAbstract.isEmpty())
+			doc_abstract.setCompoundDrawables(null, null, image, null);
 		RelativeLayout.LayoutParams layout_doc_abstract = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
 		layout_doc_abstract.addRule(RelativeLayout.BELOW, relativeLayout_line.getId());
 		layout_doc_abstract.setMargins(0, getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingTop), 0,getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingBottom));
@@ -689,9 +709,12 @@ public class DocumentsDetailsActivity extends Activity  {
 		readerCounterValue = new TextView(this);
 		RelativeLayout.LayoutParams layoutReaderCounterValue;
 		readerCounterValue.setBackgroundColor(Color.WHITE);
-		readerCounterValue.setCompoundDrawables(null, null, image, null);
-		readerCounterValue.setId(25);
 		readerValue = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.READER_COUNT));
+		
+		if(!readerValue.equals("0") || !readerValue.isEmpty())
+			readerCounterValue.setCompoundDrawables(null, null, image, null);
+		
+		readerCounterValue.setId(25);
 		readerCounterValue.setText(getResources().getString(R.string.readers) + "\t\t" + readerValue);
 		readerCounterValue.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimensionPixelSize(R.dimen.doc_details));
 		readerCounterValue.setPadding(getResources().getDimensionPixelOffset(R.dimen.doc_type_paddingLeft), 0, 0, 0);
@@ -742,9 +765,10 @@ public class DocumentsDetailsActivity extends Activity  {
 
 
 
-		String email_text = resources.getString(R.string.email_text) + "<br/><br/><b>" + doc_title + "</b><br/><br/>" + resources.getString(R.string.email_authors) + doc_authors_text + "<br/><br/>" + resources.getString(R.string.email_publication) + doc_source_text + "<br/><br/>" + resources.getString(R.string.email_mendeley_profile) + getProfileSettings(DatabaseOpenHelper.PROFILE_LINK) + "<br/><br/>" + resources.getString(R.string.email_play_store) ;
+		String email_text = resources.getString(R.string.email_text) + "<br/><br/><b>" + doc_title + "</b><br/><br/>" + resources.getString(R.string.email_authors) + doc_authors_text + "<br/><br/>" + resources.getString(R.string.email_publication) + doc_source_text + "<br/><br/>" + "<br/><br/>"  + t_doc_url + "<br/><br/>" + resources.getString(R.string.email_mendeley_profile) + getProfileSettings(DatabaseOpenHelper.PROFILE_LINK) + "<br/><br/>" + resources.getString(R.string.email_play_store) ;
 		String email_subject_text = getProfileSettings(DatabaseOpenHelper.PROFILE_DISPLAY_NAME)  + resources.getString(R.string.email_subject);
 		String sms_text = doc_title; 
+		
 
 		if(sms_text.length() > 85){
 

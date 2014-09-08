@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
@@ -111,7 +112,7 @@ public class LoadData {
 
 
 	public void getUserLibrary(String url) {
-
+		int startTime = (int) System.currentTimeMillis();
 		ContentValues values = new ContentValues();
 		ContentValues authors_values = new ContentValues();
 		JSONParser jParser = new JSONParser();
@@ -172,12 +173,12 @@ public class LoadData {
 						values.put(DatabaseOpenHelper.LAST_MODIFIED, "");
 					}
 
-					if(temp.has(Globalconstant.DAY)){
+					/*if(temp.has(Globalconstant.DAY)){
 						values.put(DatabaseOpenHelper.DAY,temp.get(Globalconstant.DAY).asText());
 					}else{
 						values.put(DatabaseOpenHelper.DAY, "");
 					}
-
+					*/
 					if(temp.has(Globalconstant.GROUP_ID)){
 						values.put(DatabaseOpenHelper.GROUP_ID,temp.get(Globalconstant.GROUP_ID).asText());
 					}else{
@@ -188,13 +189,13 @@ public class LoadData {
 					}else{
 						values.put(DatabaseOpenHelper.SOURCE, "");
 					}
-
+					/*
 					if(temp.has(Globalconstant.REVISION)){
 						values.put(DatabaseOpenHelper.REVISION,temp.get(Globalconstant.REVISION).asText());
 					}else{
 						values.put(DatabaseOpenHelper.REVISION, "");
 					}
-
+					*/
 					if(temp.has(Globalconstant.PAGES)){
 						values.put(DatabaseOpenHelper.PAGES, temp.get(Globalconstant.PAGES).asText());
 					}else{
@@ -215,42 +216,50 @@ public class LoadData {
 					//	values.put(DatabaseOpenHelper.WEBSITE, temp.get(Globalconstant.WEBSITE).asText());
 					//}else{
 					//	values.put(DatabaseOpenHelper.WEBSITE, "");
-					//}
+					//
+					/*
 					if(temp.has(Globalconstant.PUBLISHER)){
 						values.put(DatabaseOpenHelper.PUBLISHER, temp.get(Globalconstant.PUBLISHER).asText());
 					}else{
 						values.put(DatabaseOpenHelper.PUBLISHER, "");
 					}
+					
 					if(temp.has(Globalconstant.CITY)){
 						values.put(DatabaseOpenHelper.CITY, temp.get(Globalconstant.CITY).asText());
 					}else{
 						values.put(DatabaseOpenHelper.CITY, "");
 					}
+					
 					if(temp.has(Globalconstant.EDITION)){
 						values.put(DatabaseOpenHelper.EDITION, temp.get(Globalconstant.EDITION).asText());
 					}else{
 						values.put(DatabaseOpenHelper.EDITION, "");
 					}
+					
 					if(temp.has(Globalconstant.INSTITUTION)){
 						values.put(DatabaseOpenHelper.INSTITUTION, temp.get(Globalconstant.INSTITUTION).asText());
 					}else{
 						values.put(DatabaseOpenHelper.INSTITUTION, "");
 					}
+					
 					if(temp.has(Globalconstant.SERIES)){
 						values.put(DatabaseOpenHelper.SERIES, temp.get(Globalconstant.SERIES).asText());
 					}else{
 						values.put(DatabaseOpenHelper.SERIES, "");
 					}
+					
 					if(temp.has(Globalconstant.EDITORS)){
 						values.put(DatabaseOpenHelper.EDITORS, temp.get(Globalconstant.EDITORS).asText());
 					}else{
 						values.put(DatabaseOpenHelper.EDITORS, "");
 					}
+					
 					if(temp.has(Globalconstant.READ)){
 						values.put(DatabaseOpenHelper.READ, temp.get(Globalconstant.READ).asText());
 					}else{
 						values.put(DatabaseOpenHelper.READ, "");
 					}
+					*/
 					if(temp.has(Globalconstant.STARRED)){
 						values.put(DatabaseOpenHelper.STARRED, temp.get(Globalconstant.STARRED).asText());
 					}else{
@@ -262,6 +271,7 @@ public class LoadData {
 					}else{
 						values.put(DatabaseOpenHelper.AUTHORED, "");
 					}
+					/*
 					if(temp.has(Globalconstant.CONFIRMED)){
 						values.put(DatabaseOpenHelper.CONFIRMED, temp.get(Globalconstant.CONFIRMED).asText());
 					}else{
@@ -272,6 +282,7 @@ public class LoadData {
 					}else{
 						values.put(DatabaseOpenHelper.HIDDEN, "");
 					}
+					*/
 					if(temp.has(Globalconstant.ABSTRACT)){
 						values.put(DatabaseOpenHelper.ABSTRACT, temp.get(Globalconstant.ABSTRACT).asText());
 					}else{
@@ -305,9 +316,9 @@ public class LoadData {
 					}
 
 					//"identifiers":{"pmid":"17319744","doi":"10.1371/journal.pgen.0030007","issn":"1553-7404"}
-					String pmid = "";
-					String doi = "";
-					String issn = "";
+					//String pmid = "";
+					//String doi = "";
+					//String issn = "";
 					
 					if(temp.has(Globalconstant.IDENTIFIERS)){	
 
@@ -326,7 +337,7 @@ public class LoadData {
 							Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) identifierIterator.next();
 							
 							
-							
+							/*
 							if(entry.getKey().equals("pmid")){
 								pmid = entry.getValue().asText();
 							}else if (entry.getKey().equals("doi")){
@@ -334,7 +345,7 @@ public class LoadData {
 							}else if (entry.getKey().equals("issn")){
 								issn = entry.getValue().asText();	
 							}
-							
+							*/
 							
 							values.put(entry.getKey(),entry.getValue().asText());
 						}
@@ -349,7 +360,7 @@ public class LoadData {
 					}
 
 					Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_DOC_DETAILS, values);
-					getMetadata( docId, docTitle,pmid, doi ,issn);
+					
 				}
 				jp.close();
 			}
@@ -357,6 +368,11 @@ public class LoadData {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+int executionTime = (int) (System.currentTimeMillis() - startTime);
+		
+		Log.i(Globalconstant.TAG, "Execute Time - getLIBRARY:" + executionTime);
+		
 	}
 
 
@@ -408,170 +424,176 @@ public class LoadData {
 	}
 
 
+private Cursor getDocInfo2(){
 
+		
+		String[] projection = null;
+		String selection = null;
+		String orderBy = null;
+		Cursor query;
+		
+		projection = new String[] {DatabaseOpenHelper._ID + " as _id",  DatabaseOpenHelper.PMID,DatabaseOpenHelper.DOI, DatabaseOpenHelper.ISSN, DatabaseOpenHelper.ISBN, DatabaseOpenHelper.SCOPUS, DatabaseOpenHelper.ARXIV};
+		
+		Uri  uri = MyContentProvider.CONTENT_URI_DOC_DETAILS;
+
+		int startTime = (int) System.currentTimeMillis();
+		query = this.context.getContentResolver().query(uri, projection, selection, null, orderBy);
+		int executionTime = (int) (System.currentTimeMillis() - startTime);
+		
+		
+		
+		return query;
+
+	}
+	
+	
+	
 	
 
+public void getCatalogId2(){
 
-	//{"catalog_id":"89ad19f9-b22d-3287-a4f5-358777952c71","score":73}
-	private void getMetadata(String docId, String docTitle, String pmid, String doi, String issn){
+	ContentValues values = new ContentValues();
+	ContentValues academic_docs_values = new ContentValues();
+	//ContentValues country_docs_values = new ContentValues();
+	Cursor cursorDocs;
+	String urlfilter = null;
+	//String counter = null;
+	boolean toProcess = true;
+	Uri uri_ = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 
-		ContentValues values = new ContentValues();
+	cursorDocs = getDocInfo2();
 
-		String cataloId = null;
-		String aux_title = null;
-		String url;
-		String urlPmid = "";
-		String urlDoi = "";
-		String urlIssn = "";
-		String urlTitle = "";
+	while(cursorDocs.moveToNext()){
 
+		String docId = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper._ID));
+		String pmid = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.PMID));
+		String doi = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.DOI));
+		String issn = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ISSN));
+		String isbn = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ISBN));
+		String scopus = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.SCOPUS));
+		String arxiv = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ARXIV));
 
-		try {
-			aux_title = URLEncoder.encode(docTitle, "UTF-8");
+		String where = DatabaseOpenHelper._ID + " = '" + docId + "'";
+		String where2 = DatabaseOpenHelper._ID + " = '" + docId + "' and " + DatabaseOpenHelper.READER_COUNT + " IS NULL";
 
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			if (Globalconstant.LOG)
-				Log.e(Globalconstant.TAG, "Failed to download file");
-			e1.printStackTrace();
-		}
-
-
-
+		
 		if(!pmid.isEmpty()){
-			urlPmid = "?pmid=" + pmid;			
-		}else if(!doi.isEmpty()){			
-			urlDoi = "?doi=" + doi;	
-		}
-		
-		if(!docTitle.isEmpty() && pmid.isEmpty() && doi.isEmpty() && issn.isEmpty()) {
-			urlTitle = "?title=" + aux_title;
+			toProcess = true;
+			urlfilter = "pmid=" + pmid;		
+		}else if(!doi.isEmpty()){	
+			toProcess = true;
+			urlfilter = "doi=" + doi;	
+		}else if(!issn.isEmpty()){	
+			toProcess = true;
+			urlfilter = "issn=" + issn;	
+		}else if(!doi.isEmpty()){	
+			toProcess = true;
+			urlfilter = "isbn=" + isbn;	
+		} else if(!scopus.isEmpty()){
+			toProcess = true;
+			urlfilter = "scopus=" + scopus;	
+		}else if(!arxiv.isEmpty()){		
+			toProcess = true;
+			urlfilter = "arxiv=" + arxiv;	
 		}else{
-			urlTitle = "&title=" + aux_title;
-		}
-
-		String urlParam = urlPmid + urlDoi + urlIssn + urlTitle;
-
-
-		url= Globalconstant.get_metadata_url + urlParam + "&access_token=" + access_token; 
-
-		if(Globalconstant.LOG)
-			Log.d(Globalconstant.TAG, "METADATA url: " + url);
-
-		JSONParser jParser = new JSONParser();
-		ObjectMapper mapper = new ObjectMapper();
-		JsonFactory factory = mapper.getFactory(); 
-		List<InputStream> link = new ArrayList<InputStream>();
-		link = jParser.getJACKSONFromUrl(url,false);
-
-		try {
-
-			for( InputStream oneItem : link ) {
-				JsonParser jp = factory.createParser(oneItem);	
-				JsonNode rootNode = mapper.readTree(jp);
-
-				if (rootNode.has("catalog_id")){
-					cataloId = rootNode.get("catalog_id").asText();
-					values.put(DatabaseOpenHelper.CATALOG_ID, cataloId);
-					values.put(DatabaseOpenHelper.DOC_DETAILS_ID, docId);
-				}
-				if (rootNode.has("score")){
-					values.put(DatabaseOpenHelper.SCORE, rootNode.get("score").asText());	
-				}
-				if(!cataloId.isEmpty()){
-					Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_CATALOG_DOCS, values); 
-				}
-
-				getCatalogId(docId,cataloId);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-
-	private void getCatalogId(String docId, String catalogId){
-
-		ContentValues values = new ContentValues();
-		ContentValues academic_docs_values = new ContentValues();
-		ContentValues country_docs_values = new ContentValues();
-		
-
-		String auxurl = Globalconstant.get_catalod_id_url;
-		String url = auxurl.replace("doc_id", catalogId) + access_token; 
-
-		if(Globalconstant.LOG)
-			Log.d(Globalconstant.TAG, "getCatalogId url: " + url);
-
-		JSONParser jParser = new JSONParser();
-		ObjectMapper mapper = new ObjectMapper();
-		JsonFactory factory = mapper.getFactory(); 
-		List<InputStream> link = new ArrayList<InputStream>();
-		link = jParser.getJACKSONFromUrl(url,false);
-
-		try {
-
-			for( InputStream oneItem : link ) {
-				JsonParser jp = factory.createParser(oneItem);	
-				JsonNode rootNode = mapper.readTree(jp);
-
-				if (rootNode.has("link")){
-					values.put(DatabaseOpenHelper.WEBSITE, rootNode.get("link").asText());
-				}
-
-				if (rootNode.has("reader_count")){
-					values.put(DatabaseOpenHelper.READER_COUNT, rootNode.get("reader_count").asText());		
-				}
-				else{
-					values.put(DatabaseOpenHelper.READER_COUNT, "0");
-				}
-
-				//update table
-				String where = DatabaseOpenHelper._ID + " = '" + docId + "'";
-				Uri uri_ = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
-				this.context.getContentResolver().update(uri_, values, where, null);
-
-				if (rootNode.has("reader_count_by_academic_status")){
-
-					Iterator<Entry<String, JsonNode>> identifierIterator = rootNode.get("reader_count_by_academic_status").fields();
-
-					while (identifierIterator.hasNext() ){
-
-						Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) identifierIterator.next();
-
-						academic_docs_values.put(DatabaseOpenHelper.DOC_DETAILS_ID, docId);
-						academic_docs_values.put(DatabaseOpenHelper.STATUS,entry.getKey());
-						academic_docs_values.put(DatabaseOpenHelper.COUNT,entry.getValue().asText());
-						Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_ACADEMIC_DOCS, academic_docs_values); 
-					}
-				}
-				
+			toProcess = false;
+			//update table
 			
-				if (rootNode.has("reader_count_by_country")){
+			values.put(DatabaseOpenHelper.READER_COUNT, "0");	
+			
+			this.context.getContentResolver().update(uri_, values, where, null);
+			
+		}
 
-					Iterator<Entry<String, JsonNode>> identifierIterator = rootNode.get("reader_count_by_country").fields();
 
-					while (identifierIterator.hasNext() ){
+		if(toProcess){
 
-						Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) identifierIterator.next();
+			String url = Globalconstant.get_catalog_url + urlfilter + "&view=stats&access_token=" + access_token;
+			
+			if(Globalconstant.LOG)
+				Log.d(Globalconstant.TAG, "getCatalogId url: " + url);
 
-						country_docs_values.put(DatabaseOpenHelper.DOC_DETAILS_ID, docId);
-						country_docs_values.put(DatabaseOpenHelper.COUNTRY,entry.getKey());
-						country_docs_values.put(DatabaseOpenHelper.COUNT,entry.getValue().asText());
-						Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_COUNTRY_DOCS, country_docs_values); 
-					}
+			JSONParser jParser = new JSONParser();
+			ObjectMapper mapper = new ObjectMapper();
+			JsonFactory factory = mapper.getFactory(); 
+			List<InputStream> link = new ArrayList<InputStream>();
+			link = jParser.getJACKSONFromUrl(url,false);
+			
+			try {
+
+				for( InputStream oneItem : link ) {
+					JsonParser jp = factory.createParser(oneItem);	
+					JsonNode rootNode = mapper.readTree(jp);
+				
+					
+					Iterator<JsonNode> ite = rootNode.iterator();
+
+					while (ite.hasNext() ) {
+						JsonNode temp = ite.next();
+			
+				if (temp.has("link")){
+					values.put(DatabaseOpenHelper.WEBSITE, temp.get("link").asText());
+				}
+
+				if (temp.has("reader_count")){
+		
+					values.put(DatabaseOpenHelper.READER_COUNT, temp.get("reader_count").asText());
 				}
 				
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	
-////////	
+				//update table
+				
+				this.context.getContentResolver().update(uri_, values, where, null);
+					
+					
+				if (temp.has("reader_count_by_academic_status")){
+
+						Iterator<Entry<String, JsonNode>> identifierIterator = temp.get("reader_count_by_academic_status").fields();
+
+						while (identifierIterator.hasNext() ){
+
+							Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) identifierIterator.next();
+
+							academic_docs_values.put(DatabaseOpenHelper.DOC_DETAILS_ID, docId);
+							academic_docs_values.put(DatabaseOpenHelper.STATUS,entry.getKey());
+							academic_docs_values.put(DatabaseOpenHelper.COUNT,entry.getValue().asText());
+							Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_ACADEMIC_DOCS, academic_docs_values); 
+						}
+					}
+
+				/*
+					if (temp.has("reader_count_by_country")){
+
+						Iterator<Entry<String, JsonNode>> identifierIterator = temp.get("reader_count_by_country").fields();
+
+						while (identifierIterator.hasNext() ){
+
+							Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) identifierIterator.next();
+
+							country_docs_values.put(DatabaseOpenHelper.DOC_DETAILS_ID, docId);
+							country_docs_values.put(DatabaseOpenHelper.COUNTRY,entry.getKey());
+							country_docs_values.put(DatabaseOpenHelper.COUNT,entry.getValue().asText());
+							Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_COUNTRY_DOCS, country_docs_values); 
+						}
+					}
+					*/
+				}
+
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		values.put(DatabaseOpenHelper.READER_COUNT, "0");
+		values.put(DatabaseOpenHelper.WEBSITE, "");
+		this.context.getContentResolver().update(uri_, values, where2, null);
+		
+	}
+}
+
+
+
 	public void getProfileInfo(String url){
 
 		ContentValues values = new ContentValues();

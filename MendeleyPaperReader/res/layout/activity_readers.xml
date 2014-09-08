@@ -11,8 +11,9 @@
     	android:paddingTop="@dimen/doc_type_paddingTop"  
     	android:paddingBottom="@dimen/doc_type_paddingBottom"  
     	android:paddingLeft="@dimen/doc_type_paddingLeft"
-    	android:background="#e5e5e5"
-    	android:text="READERS"/> 
+    	android:background="@drawable/gradient_bg_list"
+    	style="?android:attr/windowTitleStyle"
+    	android:text="READERS" /> 
     	
     <TextView
         android:id="@+id/readersTotal"
