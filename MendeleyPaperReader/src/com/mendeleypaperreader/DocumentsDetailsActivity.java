@@ -1,14 +1,16 @@
 package com.mendeleypaperreader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.LabeledIntent;
 import android.content.pm.PackageManager;
@@ -21,6 +23,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Html;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
@@ -33,9 +37,10 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.mendeleypaperreader.db.DatabaseOpenHelper;
 import com.mendeleypaperreader.utl.ConnectionDetector;
+import com.mendeleypaperreader.utl.DownloaderThread;
 import com.mendeleypaperreader.utl.GetAccessToken;
 import com.mendeleypaperreader.utl.Globalconstant;
 import com.mendeleypaperreader.utl.MyContentProvider;
@@ -54,14 +59,28 @@ public class DocumentsDetailsActivity extends Activity  {
 
 	// private Cursor mAdapter;
 	private TextView doc_abstract, doc_url, doc_pmid, doc_issn, doc_catalog, readerCounterValue;
-	private String docId, mAbstract, t_doc_url, issn, doi, pmid, doc_title, doc_authors_text, doc_source_text, readerValue;
+	private String docId, mAbstract, t_doc_url, issn, doi, pmid, doc_title, doc_authors_text, doc_source_text, readerValue, isDownloaded;
 	private static SessionManager session;
 	private static String code;
 	private static String refresh_token;
 	private Boolean isInternetPresent = false;
 	private Cursor cursorProfiel;
 	private Cursor cursorDetails;
-
+	private Cursor cursorFile;
+	private Thread downloaderThread;
+	private ImageView download;
+    private ProgressDialog progressDialog;
+    private DocumentsDetailsActivity thisActivity;
+    
+	
+	// Used to communicate state changes in the DownloaderThread
+    public static final int MESSAGE_DOWNLOAD_STARTED = 1000;
+    public static final int MESSAGE_DOWNLOAD_COMPLETE = 1001;
+    public static final int MESSAGE_UPDATE_PROGRESS_BAR = 1002;
+    public static final int MESSAGE_DOWNLOAD_CANCELED = 1003;
+    public static final int MESSAGE_CONNECTING_STARTED = 1004;
+    public static final int MESSAGE_ENCOUNTERED_ERROR = 1005;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +89,11 @@ public class DocumentsDetailsActivity extends Activity  {
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		Log.d(Globalconstant.TAG, "dd - " + this);
-		
+		final ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+
+		thisActivity = this;
+        downloaderThread = null;
+        progressDialog = null;
 		
 		doc_abstract = new TextView(this);
 		doc_url = new TextView(this);
@@ -85,7 +107,7 @@ public class DocumentsDetailsActivity extends Activity  {
 
 		//Get to populate activity
 		fillData(getdocDetails());
-
+		getFile();
 		//Onlcick on abstract
 		OnClickListener click_on_abstract = new OnClickListener() {
 
@@ -175,8 +197,7 @@ public class DocumentsDetailsActivity extends Activity  {
 			public void onClick(View v) {
 
 				// check internet connection
-				ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
-
+				
 				isInternetPresent = connectionDetector.isConnectingToInternet();
 
 				if(isInternetPresent){
@@ -192,6 +213,66 @@ public class DocumentsDetailsActivity extends Activity  {
 		
 		
 		
+	    download = (ImageView) findViewById(R.id.download);
+		
+		if(cursorFile.getCount() <= 0){
+			download.setVisibility(View.INVISIBLE);
+			
+		}
+		
+		
+		String flagDownload = cursorDetails.getString(cursorDetails.getColumnIndex(DatabaseOpenHelper.IS_DOWNLOAD));
+		
+		if(flagDownload != null && flagDownload.equals("YES")){
+			download.setImageResource(R.drawable.ic_action_read);
+			
+		}
+		
+		//CLICK onDownload ICON
+		OnClickListener click_on_download_icon = new OnClickListener() {
+
+			public void onClick(View v) {
+
+				isInternetPresent = connectionDetector.isConnectingToInternet();
+				
+				if(isInternetPresent){
+					String fileNames = cursorFile.getString(cursorFile.getColumnIndex(DatabaseOpenHelper.FILE_NAME));
+					String mimeType = cursorFile.getString(cursorFile.getColumnIndex(DatabaseOpenHelper.FILE_MIME_TYPE));
+					
+					if(isDownloaded == null){
+						
+						String flileId = cursorFile.getString(cursorFile.getColumnIndex(DatabaseOpenHelper._ID));
+						
+						SessionManager session = new SessionManager(thisActivity); 
+						String access_token = session.LoadPreference("access_token");
+						String url = Globalconstant.get_files_by_doc_id.replace("file_id", flileId) + access_token;
+						downloaderThread = new DownloaderThread(thisActivity, url, flileId) ;		
+						downloaderThread.start();
+					}else{
+						
+						Log.d(Globalconstant.TAG, "OPEN FILE");
+						File file = new File(thisActivity.getExternalFilesDir(null).getAbsolutePath() +"/"+ fileNames);
+						Intent target = new Intent(Intent.ACTION_VIEW);
+						target.setDataAndType(Uri.fromFile(file),mimeType);
+						target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+						Intent intent = Intent.createChooser(target, "Open File");
+						try {
+						    startActivity(intent);
+						} catch (ActivityNotFoundException e) {
+						    // Instruct the user to install a PDF reader here, or something
+						}  
+					}
+					
+					
+				}else{
+					connectionDetector.showDialog(DocumentsDetailsActivity.this, ConnectionDetector.DEFAULT_DIALOG);
+				}	
+			}
+		};
+		download.setOnClickListener(click_on_download_icon);
+		
+		
 		
 	}
 	
@@ -199,7 +280,7 @@ public class DocumentsDetailsActivity extends Activity  {
 	@Override
 	protected void onPause() {
 	    super.onDestroy();
-	    Log.d(Globalconstant.TAG, "onPause - DOC_DETAILS");
+	    
 	    if( cursorProfiel != null && !cursorProfiel. isClosed() ){
 	    	cursorProfiel.close();
 	    }
@@ -212,7 +293,7 @@ public class DocumentsDetailsActivity extends Activity  {
 	@Override
 	protected void onDestroy() {
 	    super.onDestroy();
-	    Log.d(Globalconstant.TAG, "onDestroy - DOC_DETAILS");
+	    
 	    if( cursorProfiel != null && !cursorProfiel. isClosed() ){
 	    	cursorProfiel.close();
 	    }
@@ -267,7 +348,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		String[] projection = null;
 		String selection = null;
 
-		projection = new String[] {DatabaseOpenHelper.TYPE + " as _id",  DatabaseOpenHelper.TITLE, DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE , DatabaseOpenHelper.YEAR, DatabaseOpenHelper.VOLUME, DatabaseOpenHelper.PAGES,DatabaseOpenHelper.ISSUE,  DatabaseOpenHelper.ABSTRACT, DatabaseOpenHelper.WEBSITE, DatabaseOpenHelper.DOI, DatabaseOpenHelper.PMID, DatabaseOpenHelper.ISSN, DatabaseOpenHelper.STARRED , DatabaseOpenHelper.READER_COUNT};
+		projection = new String[] {DatabaseOpenHelper.TYPE + " as _id",  DatabaseOpenHelper.TITLE, DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE , DatabaseOpenHelper.YEAR, DatabaseOpenHelper.VOLUME, DatabaseOpenHelper.PAGES,DatabaseOpenHelper.ISSUE,  DatabaseOpenHelper.ABSTRACT, DatabaseOpenHelper.WEBSITE, DatabaseOpenHelper.DOI, DatabaseOpenHelper.PMID, DatabaseOpenHelper.ISSN, DatabaseOpenHelper.STARRED , DatabaseOpenHelper.READER_COUNT, DatabaseOpenHelper.IS_DOWNLOAD};
 		selection = DatabaseOpenHelper._ID + " = '" + docId +"'";
 		Uri  uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 
@@ -275,6 +356,26 @@ public class DocumentsDetailsActivity extends Activity  {
 		
 		return cursorDetails;
 
+	}
+	
+	private Cursor getFile(){
+		if(Globalconstant.LOG)
+			Log.d(Globalconstant.TAG, "getFile - DOC_DETAILS");
+
+		
+		String[] projection = null;
+		String selection = null;
+
+		projection = new String[] {DatabaseOpenHelper.FILE_ID + " as _id", DatabaseOpenHelper.FILE_NAME, DatabaseOpenHelper.FILE_MIME_TYPE};
+		selection = DatabaseOpenHelper.FILE_DOC_ID + " = '" + docId +"'";
+		Uri  uri = Uri.parse(MyContentProvider.CONTENT_URI_FILES + "/id");
+
+		cursorFile = getApplicationContext().getContentResolver().query(uri, projection, selection, null, null);
+		cursorFile.moveToPosition(0);
+		
+		
+			return cursorFile;
+	
 	}
 
 
@@ -305,6 +406,8 @@ public class DocumentsDetailsActivity extends Activity  {
 		TextView doc_type = (TextView) findViewById(R.id.docype);
 		doc_type.setText(cursor.getString(cursor.getColumnIndex("_id")).substring(0, 1).toUpperCase() + cursor.getString(cursor.getColumnIndex("_id")).substring(1)); 
 
+		isDownloaded = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.IS_DOWNLOAD));
+		
 		//Starred icon
 		ImageView starred = (ImageView) findViewById(R.id.favorite_star);
 		String aux_starred = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.STARRED)); 
@@ -685,7 +788,6 @@ public class DocumentsDetailsActivity extends Activity  {
 				layout_doc_url_title.addRule(RelativeLayout.BELOW, doc_catalog.getId());
 			}
 			else{
-				Log.d(Globalconstant.TAG, "4: " );
 				//Document URL
 				layout_doc_url_title.addRule(RelativeLayout.BELOW, relativeLayout_line_f.getId());
 			}
@@ -925,7 +1027,185 @@ public class DocumentsDetailsActivity extends Activity  {
 	}
 	
 
-	
+	/**
+     * This is the Handler for this activity. It will receive messages from the
+     * DownloaderThread and make the necessary updates to the UI.
+     */
+    public Handler activityHandler = new Handler()
+    {
+            public void handleMessage(Message msg)
+            {
+                    switch(msg.what)
+                    {
+                            /*
+                             * Handling MESSAGE_UPDATE_PROGRESS_BAR:
+                             * 1. Get the current progress, as indicated in the arg1 field
+                             *    of the Message.
+                             * 2. Update the progress bar.
+                             */
+                            case MESSAGE_UPDATE_PROGRESS_BAR:
+                                    if(progressDialog != null)
+                                    {
+                                            int currentProgress = msg.arg1;
+                                            progressDialog.setProgress(currentProgress);
+                                    }
+                                    break;
+                            
+                            /*
+                             * Handling MESSAGE_CONNECTING_STARTED:
+                             * 1. Get the URL of the file being downloaded. This is stored
+                             *    in the obj field of the Message.
+                             * 2. Create an indeterminate progress bar.
+                             * 3. Set the message that should be sent if user cancels.
+                             * 4. Show the progress bar.
+                             */
+                            case MESSAGE_CONNECTING_STARTED:
+                                    if(msg.obj != null && msg.obj instanceof String)
+                                    {
+                                            String url = (String) msg.obj;
+                                            // truncate the url
+                                            if(url.length() > 16)
+                                            {
+                                                    String tUrl = url.substring(0, 15);
+                                                    tUrl += "...";
+                                                    url = tUrl;
+                                            }
+                                            String pdTitle = thisActivity.getString(R.string.progress_dialog_title_connecting);
+                                            String pdMsg = thisActivity.getString(R.string.progress_dialog_message_prefix_connecting);
+                                            pdMsg += " " + url;
+                                            
+                                            dismissCurrentProgressDialog();
+                                            progressDialog = new ProgressDialog(thisActivity);
+                                            progressDialog.setTitle(pdTitle);
+                                            progressDialog.setMessage(pdMsg);
+                                            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                            progressDialog.setIndeterminate(true);
+                                            // set the message to be sent when this dialog is canceled
+                                            Message newMsg = Message.obtain(this, MESSAGE_DOWNLOAD_CANCELED);
+                                            progressDialog.setCancelMessage(newMsg);
+                                            progressDialog.show();
+                                    }
+                                    break;
+                                    
+                            /*
+                             * Handling MESSAGE_DOWNLOAD_STARTED:
+                             * 1. Create a progress bar with specified max value and current
+                             *    value 0; assign it to progressDialog. The arg1 field will
+                             *    contain the max value.
+                             * 2. Set the title and text for the progress bar. The obj
+                             *    field of the Message will contain a String that
+                             *    represents the name of the file being downloaded.
+                             * 3. Set the message that should be sent if dialog is canceled.
+                             * 4. Make the progress bar visible.
+                             */
+                            case MESSAGE_DOWNLOAD_STARTED:
+                                    // obj will contain a String representing the file name
+                                    if(msg.obj != null && msg.obj instanceof String)
+                                    {
+                                            int maxValue = msg.arg1;
+                                            String fileName = (String) msg.obj;
+                                            String pdTitle = thisActivity.getString(R.string.progress_dialog_title_downloading);
+                                            String pdMsg = thisActivity.getString(R.string.progress_dialog_message_prefix_downloading);
+                                            pdMsg += " " + fileName;
+                                            
+                                            dismissCurrentProgressDialog();
+                                            progressDialog = new ProgressDialog(thisActivity);
+                                            progressDialog.setTitle(pdTitle);
+                                            progressDialog.setMessage(pdMsg);
+                                            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                                            progressDialog.setProgress(0);
+                                            progressDialog.setMax(maxValue);
+                                            // set the message to be sent when this dialog is canceled
+                                            Message newMsg = Message.obtain(this, MESSAGE_DOWNLOAD_CANCELED);
+                                            progressDialog.setCancelMessage(newMsg);
+                                            progressDialog.setCancelable(true);
+                                            progressDialog.show();
+                                    }
+                                    break;
+                            
+                            /*
+                             * Handling MESSAGE_DOWNLOAD_COMPLETE:
+                             * 1. Remove the progress bar from the screen.
+                             * 2. Display Toast that says download is complete.
+                             */
+                            case MESSAGE_DOWNLOAD_COMPLETE:
+                                    dismissCurrentProgressDialog();
+                                    displayMessage(getString(R.string.user_message_download_complete));
+                                    //change icon
+                                    download.setImageResource(R.drawable.ic_action_read);
+                                    isDownloaded = "YES";
+                                    //update column - table documents_details - is_download
+                                    ContentValues values = new ContentValues();
+                                    Uri uri_ = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
+                                    values.put(DatabaseOpenHelper.IS_DOWNLOAD, "YES");	
+                                    String where = DatabaseOpenHelper._ID + " = '" + docId + "'";
+                                    thisActivity.getContentResolver().update(uri_, values, where, null);
+                                    break;
+                                    
+                            /*
+                             * Handling MESSAGE_DOWNLOAD_CANCELLED:
+                             * 1. Interrupt the downloader thread.
+                             * 2. Remove the progress bar from the screen.
+                             * 3. Display Toast that says download is complete.
+                             */
+                            case MESSAGE_DOWNLOAD_CANCELED:
+                                    if(downloaderThread != null)
+                                    {
+                                            downloaderThread.interrupt();
+                                    }
+                                    dismissCurrentProgressDialog();
+                                    displayMessage(getString(R.string.user_message_download_canceled));
+                                    break;
+                            
+                            /*
+                             * Handling MESSAGE_ENCOUNTERED_ERROR:
+                             * 1. Check the obj field of the message for the actual error
+                             *    message that will be displayed to the user.
+                             * 2. Remove any progress bars from the screen.
+                             * 3. Display a Toast with the error message.
+                             */
+                            case MESSAGE_ENCOUNTERED_ERROR:
+                                    // obj will contain a string representing the error message
+                                    if(msg.obj != null && msg.obj instanceof String)
+                                    {
+                                            String errorMessage = (String) msg.obj;
+                                            dismissCurrentProgressDialog();
+                                            displayMessage(errorMessage);
+                                    }
+                                    break;
+                                    
+                            default:
+                                    // nothing to do here
+                                    break;
+                    }
+            }
+    };
+    
+    /**
+     * If there is a progress dialog, dismiss it and set progressDialog to
+     * null.
+     */
+    public void dismissCurrentProgressDialog()
+    {
+            if(progressDialog != null)
+            {
+                    progressDialog.hide();
+                    progressDialog.dismiss();
+                    progressDialog = null;
+            }
+    }
+    
+    /**
+     * Displays a message to the user, in the form of a Toast.
+     * @param message Message to be displayed.
+     */
+    public void displayMessage(String message)
+    {
+            if(message != null)
+            {
+                    Toast.makeText(thisActivity, message, Toast.LENGTH_SHORT).show();
+            }
+    }	
 	
 	
 

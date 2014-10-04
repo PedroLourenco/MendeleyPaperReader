@@ -94,15 +94,18 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 
     private void syncronizeData() throws JsonProcessingException, IOException{
     	int startTime = (int) System.currentTimeMillis();
-	publishProgress((int) (1 / ((float) 5) * 100));
+	publishProgress((int) (1 / ((float) 6) * 100));
 	load.getProfileInfo(Globalconstant.get_profile + access_token);
-	publishProgress((int) (2 / ((float) 5) * 100));
+	publishProgress((int) (2 / ((float) 6) * 100));
 	load.getUserLibrary(Globalconstant.get_user_library_url + access_token);
-	publishProgress((int) (3 / ((float) 5) * 100));
+	publishProgress((int) (3 / ((float) 6) * 100));
 	load.getFolders(Globalconstant.get_user_folders_url + access_token);
-	publishProgress((int) (4 / ((float) 5) * 100));
-	load.getCatalogId2();
-	publishProgress((int) (5 / ((float) 4.7) * 100));
+	publishProgress((int) (4 / ((float) 6) * 100));
+	load.getCatalogId();
+	publishProgress((int) (5 / ((float) 6) * 100));
+	
+	load.getFiles(Globalconstant.get_files + access_token);
+	publishProgress((int) (6 / ((float) 5.6) * 100));
 	int executionTime = (int) (System.currentTimeMillis() - startTime);
 	
 	Log.i(Globalconstant.TAG, "Execute Time of SYNC:" + executionTime);

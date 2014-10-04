@@ -26,11 +26,8 @@ public class Globalconstant {
      public static String GRANT_TYPE = "refresh_token";
      public static String TOKEN_URL = "https://api-oauth2.mendeley.com/oauth/token";
     
-    //API URLs
-    
-     //public static String get_catalog_url	= "https://mix.mendeley.com/catalog?pmid=21993624&access_token=MSwxNDEwMDg1MzM4MzYzLDIxMjg1NDkxLDcxNCxhbGwsLGp3NjZBQjJjNEoteUMxWVA5STR6d19jN2tnVQ#!"
-     public static String get_catalog_url	= "https://mix.mendeley.com/catalog?";
-    			 
+    //API URLs  
+    public static String get_catalog_url = "https://mix.mendeley.com/catalog?";			 
     public static String get_metadata_url = "https://mix.mendeley.com/metadata";	
     public static String get_catalod_id_url = "https://mix.mendeley.com/catalog/doc_id?view=all&access_token=";
     public static String get_user_library_url = "https://mix.mendeley.com/documents?view=all&limit=200&access_token=";
@@ -38,9 +35,14 @@ public class Globalconstant {
     public static String get_docs_ann = "https://mix.mendeley.com/annotations/?document_id=doc_id&access_token=";
     public static String get_user_folders_url = "https://mix.mendeley.com/folders?access_token=";
     public static String get_files = "https://mix.mendeley.com/files?access_token=";
-    public static String get_files_by_doc_id = "https://mix.mendeley.com/files?document_id=doc_id&access_token=";
+    public static String get_files_by_doc_id = "https://mix.mendeley.com/files/file_id?access_token=";
     public static String get_profile = "https://mix.mendeley.com/profiles/me?access_token=";
 
+    
+    
+    
+    
+    //09d6d55c-86d3-87a7-0e95-d34f318018df
     //URLs
     public static String ISSN_URL = "http://www.worldcat.org/issn/"; 
     public static String DOI_URL = "http://dx.doi.org/";

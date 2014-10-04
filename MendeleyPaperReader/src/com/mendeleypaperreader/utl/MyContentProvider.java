@@ -39,15 +39,16 @@ public class MyContentProvider extends ContentProvider {
 	public static final int ALL_FOLDERS = 5;
 	public static final int FOLDERS_ID = 6;
 	public static final int ALL_FILES = 7;
-	public static final int ALL_PROFILE = 8;
-	public static final int ALL_PROFILE_ID = 9;
-	public static final int DELETE_DATA_BASE = 10;
-	public static final int ALL_FOLDERS_DOCS = 11;
-	public static final int ALL_CATALOG_DOCS = 12;
-	public static final int ALL_ACADEMIC_DOCS = 13;
-	public static final int ALL_ACADEMIC_DOCS_ID = 14;
-	public static final int ALL_COUNTRY_DOCS = 15;
-	public static final int ALL_COUNTRY_DOCS_ID = 16;
+	public static final int ALL_FILES_ID = 8;
+	public static final int ALL_PROFILE = 9;
+	public static final int ALL_PROFILE_ID = 10;
+	public static final int DELETE_DATA_BASE = 11;
+	public static final int ALL_FOLDERS_DOCS = 12;
+	public static final int ALL_CATALOG_DOCS = 13;
+	public static final int ALL_ACADEMIC_DOCS = 14;
+	public static final int ALL_ACADEMIC_DOCS_ID = 15;
+	public static final int ALL_COUNTRY_DOCS = 16;
+	public static final int ALL_COUNTRY_DOCS_ID = 17;
 
 	private static final UriMatcher sURIMatcher = 
 			new UriMatcher(UriMatcher.NO_MATCH);
@@ -60,6 +61,7 @@ public class MyContentProvider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS, ALL_FOLDERS);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS + "/#", FOLDERS_ID);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FILES, ALL_FILES);
+		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FILES + "/id", ALL_FILES_ID);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_PROFILE, ALL_PROFILE);
 		sURIMatcher.addURI(AUTHORITY, "DUMMY", DELETE_DATA_BASE);
 		sURIMatcher.addURI(AUTHORITY, DatabaseOpenHelper.TABLE_FOLDERS_DOCS, ALL_FOLDERS_DOCS);
@@ -269,8 +271,12 @@ public class MyContentProvider extends ContentProvider {
 			queryBuilder.setTables(DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS);
 			queryBuilder.appendWhere(selection);
 			break;	
+			
+		case ALL_FILES_ID:		   
 
-
+			queryBuilder.setTables(DatabaseOpenHelper.TABLE_FILES);
+			queryBuilder.appendWhere(selection);
+			break;
 
 		default:
 			throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -304,6 +310,17 @@ public class MyContentProvider extends ContentProvider {
 								selectionArgs); 
 			}
 
+			break;
+		case ALL_FILES_ID:
+
+			if(!TextUtils.isEmpty(selection)){
+
+				rowsUpdated = 
+						db.update(DatabaseOpenHelper.TABLE_FILES, 
+								values,
+								selection, 
+								selectionArgs); 
+			}
 
 			break;
 		default:
@@ -334,8 +351,6 @@ public class MyContentProvider extends ContentProvider {
 		count = count + db.delete(DatabaseOpenHelper.TABLE_FOLDERS, selection, selectionArgs);
 		count = count + db.delete(DatabaseOpenHelper.TABLE_FILES, selection, selectionArgs);
 		count = count + db.delete(DatabaseOpenHelper.TABLE_PROFILE, selection, selectionArgs);
-		count = count + db.delete(DatabaseOpenHelper.TABLE_CATALOG_DOCS, selection, selectionArgs);
-		count = count + db.delete(DatabaseOpenHelper.TABLE_ACADEMIC_STATUS_DOCS, selection, selectionArgs);
 		count = count + db.delete(DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS, selection, selectionArgs);
 		return count;
 	}

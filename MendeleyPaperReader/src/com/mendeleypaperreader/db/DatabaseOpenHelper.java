@@ -127,7 +127,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
 	final private static String CREATE_TABLE_ACADEMIC_STATUS_DOCS = "CREATE TABLE academic_status_docs (" + DOC_DETAILS_ID + " TEXT, " + STATUS + " TEXT, " + COUNT + " TEXT) ";
 	
-	final private static String CREATE_TABLE_COUNTRY_STATUS_DOCS = "CREATE TABLE country_status_docs (" + DOC_DETAILS_ID + " TEXT, " + COUNTRY + " TEXT, " + COUNT + " TEXT) ";
+	//final private static String CREATE_TABLE_COUNTRY_STATUS_DOCS = "CREATE TABLE country_status_docs (" + DOC_DETAILS_ID + " TEXT, " + COUNTRY + " TEXT, " + COUNT + " TEXT) ";
 	
 	
 	final private static String CREATE_TABLE_DOCUMENT_DETAILS =
@@ -168,8 +168,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			+ AUTHORED + " TEXT, "
 			+ CONFIRMED + " TEXT, "
 			+ FOLDER_ID + " TEXT, "
-			+ HIDDEN + " TEXT, " 
-			+ READER_COUNT + ")";
+			+ HIDDEN + " TEXT, "
+			+ IS_DOWNLOAD + " TEXT, "
+			+ READER_COUNT + " TEXT )";
 			
 			
 			
@@ -204,8 +205,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			db.execSQL(CREATE_TABLE_FILE);
 			db.execSQL(CREATE_TABLE_PROFILE);
 			db.execSQL(CREATE_TABLE_FOLDERS_DOCS);
-			//db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
-			db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
+			db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
+			//db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
 	}
 
 	@Override
@@ -213,8 +214,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 		//Release_2 version 0.2.0 - Add column reader_count to table documents_details 
 		//Database verson 2
 				db.execSQL("ALTER TABLE document_details ADD COLUMN reader_count TEXT ;");
-				//db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
-				db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
+				db.execSQL("ALTER TABLE document_details ADD COLUMN is_downloaded TEXT ;");
+				db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
+				//db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
 				
 				
 				
