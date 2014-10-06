@@ -218,11 +218,11 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + "' '" + "||" + DatabaseOpenHelper.YEAR + " as data"}; 
 			uri = MyContentProvider.CONTENT_URI_DOC_DETAILS;
 		}
-		else if (getShownIndex() == 2){ //Starred = true
+		else if (getShownIndex() == 2){ //dadded
 
 			title.setText(Globalconstant.MYLIBRARY[1]);
 			projection = new String[] {DatabaseOpenHelper.TITLE + " as _id",  DatabaseOpenHelper.AUTHORS, DatabaseOpenHelper.SOURCE + "||" + "' '" + "||" + DatabaseOpenHelper.YEAR + " as data"};
-			selection = DatabaseOpenHelper.ADDED + " BETWEEN datetime('now', 'start of month') AND datetime('now', 'localtime')";
+			selection = DatabaseOpenHelper.ADDED + " >= datetime('now', 'start of month')";
 			uri = Uri.parse(MyContentProvider.CONTENT_URI_DOC_DETAILS + "/id");
 		}
 		else if (getShownIndex() == 3){ //Starred = true

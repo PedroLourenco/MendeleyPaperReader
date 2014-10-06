@@ -64,6 +64,7 @@ public class DocumentsDetailsActivity extends Activity  {
 	private static String code;
 	private static String refresh_token;
 	private Boolean isInternetPresent = false;
+	private Boolean isToSync = false;
 	private Cursor cursorProfiel;
 	private Cursor cursorDetails;
 	private Cursor cursorFile;
@@ -242,7 +243,7 @@ public class DocumentsDetailsActivity extends Activity  {
 					if(isDownloaded == null){
 						
 						String flileId = cursorFile.getString(cursorFile.getColumnIndex(DatabaseOpenHelper._ID));
-						
+						refreshToken();
 						SessionManager session = new SessionManager(thisActivity); 
 						String access_token = session.LoadPreference("access_token");
 						String url = Globalconstant.get_files_by_doc_id.replace("file_id", flileId) + access_token;
@@ -250,7 +251,7 @@ public class DocumentsDetailsActivity extends Activity  {
 						downloaderThread.start();
 					}else{
 						
-						Log.d(Globalconstant.TAG, "OPEN FILE");
+						//Open file
 						File file = new File(thisActivity.getExternalFilesDir(null).getAbsolutePath() +"/"+ fileNames);
 						Intent target = new Intent(Intent.ACTION_VIEW);
 						target.setDataAndType(Uri.fromFile(file),mimeType);
@@ -318,6 +319,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.menu_refresh:
+			isToSync = true;
 			refreshToken();
 			return true;
 
@@ -744,8 +746,8 @@ public class DocumentsDetailsActivity extends Activity  {
 		RelativeLayout.LayoutParams layout_doc_url_title;
 		RelativeLayout.LayoutParams layout_doc_url;
 		RelativeLayout.LayoutParams layout_reader_count;
-
-		if(t_doc_url != null){
+		
+		if(!t_doc_url.isEmpty()){
 
 			//Document URL Title
 			doc_url_title.setId(22);
@@ -826,13 +828,13 @@ public class DocumentsDetailsActivity extends Activity  {
 		layoutReaderCounterValue.addRule(RelativeLayout.BELOW, readerCounter.getId());
 		
 		
-		if(t_doc_url != null){
+		if(!t_doc_url.isEmpty()){
 			layout_reader_count.addRule(RelativeLayout.BELOW, doc_url.getId());
-		}else if(t_doc_url == null && !issn.isEmpty() ){
+		}else if(t_doc_url.isEmpty() && !issn.isEmpty() ){
 			layout_reader_count.addRule(RelativeLayout.BELOW, doc_issn.getId());	
-		}else if(t_doc_url == null && issn.isEmpty() && !pmid.isEmpty()){
+		}else if(t_doc_url.isEmpty() && issn.isEmpty() && !pmid.isEmpty()){
 			layout_reader_count.addRule(RelativeLayout.BELOW, doc_pmid.getId());	
-		}else if(t_doc_url == null && issn.isEmpty() && pmid.isEmpty() && !doi.isEmpty()){
+		}else if(t_doc_url.isEmpty() && issn.isEmpty() && pmid.isEmpty() && !doi.isEmpty()){
 			layout_reader_count.addRule(RelativeLayout.BELOW, doc_catalog.getId());	
 		}else{
 			layout_reader_count.addRule(RelativeLayout.BELOW, relativeLayout_line_f.getId());
@@ -947,10 +949,12 @@ public class DocumentsDetailsActivity extends Activity  {
 		ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
 
 		isInternetPresent = connectionDetector.isConnectingToInternet();
-
+Log.d(Globalconstant.TAG, "ISTOSYNC: " + isToSync);
 		if(isInternetPresent){
-			getContentResolver().delete(MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,null, null);
-			new ProgressTask().execute();
+			if(isToSync == true){
+				getContentResolver().delete(MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,null, null);			
+			}
+			new ProgressTask().execute();	
 		}
 		else{
 			connectionDetector.showDialog(DocumentsDetailsActivity.this, ConnectionDetector.DEFAULT_DIALOG);
@@ -989,24 +993,17 @@ public class DocumentsDetailsActivity extends Activity  {
 
 			if (json != null) {
 				try {
-					String token = json.getString("access_token");
-					String expire = json.getString("expires_in");
-					String refresh = json.getString("refresh_token");
-
 					// Save access token in shared preferences
 					session.savePreferences("access_token", json.getString("access_token"));
 					session.savePreferences("expires_in", json.getString("expires_in"));
 					session.savePreferences("refresh_token", json.getString("refresh_token"));
-
-
-					//Get data from server
-					syncData();
-
-					if (Globalconstant.LOG) {
-						Log.d("refresh_token - Token Access", token);
-						Log.d("refresh_token - Expire", expire);
-						Log.d("refresh_token - Refresh", refresh);			
+					Log.d(Globalconstant.TAG, "ISTOSYNC: " + isToSync);
+					if(isToSync == true){
+						//Get data from server
+						syncData();
+						isToSync = false;
 					}
+					
 
 				} catch (JSONException e) {
 					e.printStackTrace();

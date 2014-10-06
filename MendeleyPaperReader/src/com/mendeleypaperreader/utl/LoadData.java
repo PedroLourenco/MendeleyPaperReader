@@ -236,12 +236,12 @@ public class LoadData {
 						values.put(DatabaseOpenHelper.LAST_MODIFIED, "");
 					}
 
-					/*if(temp.has(Globalconstant.DAY)){
-						values.put(DatabaseOpenHelper.DAY,temp.get(Globalconstant.DAY).asText());
+					if(temp.has(Globalconstant.CREATED)){
+						values.put(DatabaseOpenHelper.ADDED,temp.get(Globalconstant.CREATED).asText());
 					}else{
-						values.put(DatabaseOpenHelper.DAY, "");
+						values.put(DatabaseOpenHelper.ADDED, "");
 					}
-					 */
+					 
 					if(temp.has(Globalconstant.GROUP_ID)){
 						values.put(DatabaseOpenHelper.GROUP_ID,temp.get(Globalconstant.GROUP_ID).asText());
 					}else{

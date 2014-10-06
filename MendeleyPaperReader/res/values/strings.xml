@@ -40,7 +40,7 @@
     <!-- About activity -->
 
     <string name="msg_about">Get access to Mendeley database papers.</string>
-    <string name="bugfix"><b>Version 0.2.0 (XXXXXXX, 2014)</b> \n Readers counter by country.\n\n <b>Version 0.1.1 (September, 2014)</b> \n Bug Fix - n some devices app crashes when trying to open the browser. \n App crashes when trying to download large libraries.\n\n <b>Version 0.0.1 (July, 2014)</b> \n Initial Version.</string>
+    <string name="bugfix"><b>Version 0.2.0 (October, 2014)</b> \n Bug fix. \n Readers counter by Academic status. \n Download articles. \n\n <b>Version 0.1.1 (September, 2014)</b> \n Bug Fix - in some devices app crashes when trying to open the browser. \n App crashes when trying to download large libraries.\n\n <b>Version 0.0.1 (July, 2014)</b> \n Initial Version.</string>
     <string name="web_link"></string>
     <string name="msg_current_version">Version 0.2.0</string>
     <string name="email">pdrolourenco@gmail.com</string>
@@ -73,7 +73,7 @@
     
     
     
-    <string name="status_text_default">Enter the URL of the file to download.</string>
+    
     <string name="progress_dialog_title_downloading">Downloading...</string>
     <string name="progress_dialog_title_connecting">Connecting...</string>
     <string name="progress_dialog_message_prefix_downloading">Downloading file</string>

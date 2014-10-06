@@ -351,7 +351,7 @@ public class MyContentProvider extends ContentProvider {
 		count = count + db.delete(DatabaseOpenHelper.TABLE_FOLDERS, selection, selectionArgs);
 		count = count + db.delete(DatabaseOpenHelper.TABLE_FILES, selection, selectionArgs);
 		count = count + db.delete(DatabaseOpenHelper.TABLE_PROFILE, selection, selectionArgs);
-		count = count + db.delete(DatabaseOpenHelper.TABLE_COUNTRY_STATUS_DOCS, selection, selectionArgs);
+		count = count + db.delete(DatabaseOpenHelper.TABLE_ACADEMIC_STATUS_DOCS, selection, selectionArgs);
 		return count;
 	}
 

@@ -1425,9 +1425,9 @@ containing a value of this type.
          */
         public static final int email_subject=0x7f0a0023;
         public static final int email_text=0x7f0a0024;
-        public static final int error_message_bad_url=0x7f0a0042;
-        public static final int error_message_file_not_found=0x7f0a0043;
-        public static final int error_message_general=0x7f0a0044;
+        public static final int error_message_bad_url=0x7f0a0041;
+        public static final int error_message_file_not_found=0x7f0a0042;
+        public static final int error_message_general=0x7f0a0043;
         public static final int exit_msg=0x7f0a0020;
         public static final int hello_world=0x7f0a000e;
         public static final int issn=0x7f0a0034;
@@ -1445,13 +1445,12 @@ containing a value of this type.
         public static final int network_error=0x7f0a0017;
         public static final int no_network_connection=0x7f0a0018;
         public static final int pmid=0x7f0a0033;
-        public static final int progress_dialog_message_prefix_connecting=0x7f0a003f;
-        public static final int progress_dialog_message_prefix_downloading=0x7f0a003e;
-        public static final int progress_dialog_title_connecting=0x7f0a003d;
-        public static final int progress_dialog_title_downloading=0x7f0a003c;
+        public static final int progress_dialog_message_prefix_connecting=0x7f0a003e;
+        public static final int progress_dialog_message_prefix_downloading=0x7f0a003d;
+        public static final int progress_dialog_title_connecting=0x7f0a003c;
+        public static final int progress_dialog_title_downloading=0x7f0a003b;
         public static final int readers=0x7f0a0036;
         public static final int settings_3G=0x7f0a001b;
-        public static final int status_text_default=0x7f0a003b;
         public static final int sync_data=0x7f0a001e;
         /**  MainMenuActivity 
          */
@@ -1459,8 +1458,8 @@ containing a value of this type.
         public static final int title=0x7f0a0010;
         public static final int title_activity_readers=0x7f0a003a;
         public static final int urls=0x7f0a0035;
-        public static final int user_message_download_canceled=0x7f0a0041;
-        public static final int user_message_download_complete=0x7f0a0040;
+        public static final int user_message_download_canceled=0x7f0a0040;
+        public static final int user_message_download_complete=0x7f0a003f;
         public static final int warning=0x7f0a0021;
         public static final int web_link=0x7f0a002b;
         public static final int wifi_settings=0x7f0a001a;
