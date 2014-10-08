@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -74,6 +75,25 @@ public class MainActivity extends Activity {
 		// Session Manager
 		session = new SessionManager(MainActivity.this);
 
+		//delete peferences on update app
+		Integer version = 1;
+		try
+		{
+		    version = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+		    Log.d(Globalconstant.TAG, "version: " + version);
+		} 
+		catch (NameNotFoundException e)
+		{
+		    e.printStackTrace();
+		}
+
+		if(!version.toString().equals(session.LoadPreference("versionCode")))
+		{
+		    session.deletePreferences();
+		    session.savePreferences("versionCode", version.toString());
+		}
+		
+		
 		// check internet connection
 		final ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
 

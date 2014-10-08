@@ -93,7 +93,7 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 
 
     private void syncronizeData() throws JsonProcessingException, IOException{
-    	int startTime = (int) System.currentTimeMillis();
+    	
 	publishProgress((int) (1 / ((float) 6) * 100));
 	load.getProfileInfo(Globalconstant.get_profile + access_token);
 	publishProgress((int) (2 / ((float) 6) * 100));
@@ -106,9 +106,7 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 	
 	load.getFiles(Globalconstant.get_files + access_token);
 	publishProgress((int) (6 / ((float) 5.6) * 100));
-	int executionTime = (int) (System.currentTimeMillis() - startTime);
 	
-	Log.i(Globalconstant.TAG, "Execute Time of SYNC:" + executionTime);
 	
 
     }

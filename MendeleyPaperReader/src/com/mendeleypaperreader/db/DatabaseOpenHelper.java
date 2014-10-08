@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.mendeleypaperreader.MainActivity;
 import com.mendeleypaperreader.utl.Globalconstant;
+import com.mendeleypaperreader.utl.SessionManager;
 
 /**
  * Classname: DatabaseOpenHelper 
@@ -212,9 +214,14 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		//Release_2 version 0.2.0 - Add column reader_count to table documents_details 
+		
+		SessionManager session;
+		session = new SessionManager(this.mContext);
+		session.savePreferences("versioCode", "03");
+		
 		//Database verson 2
 				db.execSQL("ALTER TABLE document_details ADD COLUMN reader_count TEXT ;");
-				db.execSQL("ALTER TABLE document_details ADD COLUMN is_downloaded TEXT ;");
+				db.execSQL("ALTER TABLE document_details ADD COLUMN is_download TEXT ;");
 				db.execSQL(CREATE_TABLE_ACADEMIC_STATUS_DOCS);
 				//db.execSQL(CREATE_TABLE_COUNTRY_STATUS_DOCS);
 				

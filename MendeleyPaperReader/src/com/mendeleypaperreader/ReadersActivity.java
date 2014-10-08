@@ -16,9 +16,9 @@ import com.mendeleypaperreader.utl.MyContentProvider;
 public class ReadersActivity extends ListActivity {
 
 	private Cursor cursorAcademicStatus;
-	private Cursor cursorCountryStatus;
+	//private Cursor cursorCountryStatus;
 	SimpleCursorAdapter mAdapterAcademicStatus;
-	SimpleCursorAdapter mAdapterCountryStatus;
+	//SimpleCursorAdapter mAdapterCountryStatus;
 
 
 	@Override
@@ -32,24 +32,24 @@ public class ReadersActivity extends ListActivity {
 		redersValue.setText(getCounterValue());
 
 		cursorAcademicStatus = getAcademicStatus();
-		cursorCountryStatus = getCountryStatus();
+		//cursorCountryStatus = getCountryStatus();
 
 		String[] dataColumnsAcademic = {"_id", DatabaseOpenHelper.COUNT}; 
 		int[] viewIDsAcademic = { R.id.readersStatus, R.id.readersCount };
 
-		String[] dataColumnsCountry = {"_id", DatabaseOpenHelper.COUNT};
-		int[] viewIDsCountry = { R.id.readersStatus, R.id.readersCount };
+		//String[] dataColumnsCountry = {"_id", DatabaseOpenHelper.COUNT};
+		//int[] viewIDsCountry = { R.id.readersStatus, R.id.readersCount };
 
 		mAdapterAcademicStatus = new SimpleCursorAdapter(getApplicationContext(), R.layout.readers_list, cursorAcademicStatus, dataColumnsAcademic, viewIDsAcademic, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-		mAdapterCountryStatus = new SimpleCursorAdapter(getApplicationContext(), R.layout.readers_list, cursorCountryStatus, dataColumnsCountry, viewIDsCountry, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		//mAdapterCountryStatus = new SimpleCursorAdapter(getApplicationContext(), R.layout.readers_list, cursorCountryStatus, dataColumnsCountry, viewIDsCountry, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 
 		// Add section to list and merge two adatpers
 		MergeAdapter mergeAdapter = new MergeAdapter();
 
-		mergeAdapter.addAdapter(new ListTitleAdapter(getApplicationContext(), getResources().getString(R.string.countryStatus), mAdapterCountryStatus, R.layout.listview_section));
-		mergeAdapter.addAdapter(mAdapterCountryStatus);
+		//mergeAdapter.addAdapter(new ListTitleAdapter(getApplicationContext(), getResources().getString(R.string.countryStatus), mAdapterCountryStatus, R.layout.listview_section));
+		//mergeAdapter.addAdapter(mAdapterCountryStatus);
 		mergeAdapter.addAdapter(new ListTitleAdapter(getApplicationContext(), getResources().getString(R.string.academicStatus), mAdapterAcademicStatus, R.layout.listview_section));
 		mergeAdapter.addAdapter(mAdapterAcademicStatus);
 
@@ -92,7 +92,7 @@ public class ReadersActivity extends ListActivity {
 
 	}
 
-	private Cursor getCountryStatus(){
+	/*private Cursor getCountryStatus(){
 
 		String docId = getDocId();
 		String[] projection = null;
@@ -107,13 +107,13 @@ public class ReadersActivity extends ListActivity {
 		return getApplicationContext().getContentResolver().query(uri, projection, selection, null, orderBy);
 
 	}
-
+*/
 	
 	@Override
 	protected void onDestroy() {
 	    super.onDestroy();
 	    cursorAcademicStatus.close();
-	    cursorCountryStatus.close();
+	    //cursorCountryStatus.close();
 	}
 	
 }

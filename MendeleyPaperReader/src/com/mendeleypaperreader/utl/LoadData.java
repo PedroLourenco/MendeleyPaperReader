@@ -1,6 +1,7 @@
 package com.mendeleypaperreader.utl;
 
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.Settings.Global;
 import android.util.Log;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -213,6 +215,8 @@ public class LoadData {
 						docTitle = "";
 						values.put(DatabaseOpenHelper.TITLE, docTitle);
 					}
+					
+					Log.d(Globalconstant.TAG, "TITLE: " + docTitle);
 
 					if(temp.has(Globalconstant.TYPE)){
 						values.put(DatabaseOpenHelper.TYPE,temp.get(Globalconstant.TYPE).asText());
@@ -357,13 +361,28 @@ public class LoadData {
 					if(temp.has(Globalconstant.AUTHORS)){	
 						Iterator<JsonNode> authorsIterator = temp.get(Globalconstant.AUTHORS).elements();
 						String authors = "";
+						Log.d(Globalconstant.TAG, "authorsIterator: " + authorsIterator);
+						Log.d(Globalconstant.TAG, "AUTHORS: " + temp.get(Globalconstant.AUTHORS));
+						
+						String aux_surname = null, aux_forenamed = null;
+						
 						while (authorsIterator.hasNext() ){
 
 							JsonNode author = authorsIterator.next();
-							author.get(Globalconstant.FORENAME);
+							
+							if(author.has(Globalconstant.FORENAME)){
+								aux_forenamed = author.get(Globalconstant.FORENAME).asText();
+								Log.d(Globalconstant.TAG, "aux_forenamed: " + aux_forenamed);
+							}
+									
+							if(author.has(Globalconstant.SURNAME)){
+								aux_surname = author.get(Globalconstant.SURNAME).asText();
+								Log.d(Globalconstant.TAG, "aux_forenamed: " + aux_surname);
+							}		
+							
 							author.get(Globalconstant.SURNAME);
 
-							String author_name = author.get(Globalconstant.FORENAME).asText()	+ " "+ author.get(Globalconstant.SURNAME).asText();
+							String author_name = aux_forenamed	+ " "+ aux_surname;
 
 							authors += author_name + ",";
 							values.put(DatabaseOpenHelper.AUTHORS, authors.substring(0,authors.length()-1));
@@ -508,15 +527,23 @@ public class LoadData {
 
 			String docId = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper._ID));
 			String pmid = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.PMID));
-			String doi = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.DOI));
-			String issn = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ISSN));
-			String isbn = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ISBN));
-			String scopus = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.SCOPUS));
-			String arxiv = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ARXIV));
-
+			String auxDoi = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.DOI));
+			String doi = URLEncoder.encode(auxDoi);
+			String auxIssn = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ISSN));
+			String issn = URLEncoder.encode(auxIssn);
+			String auxIsbn = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ISBN));
+			String isbn = URLEncoder.encode(auxIsbn);
+			String auxScopus = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.SCOPUS));
+			String scopus = URLEncoder.encode(auxScopus);
+			String auxArxiv = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ARXIV));
+			String arxiv = URLEncoder.encode(auxArxiv);
+			
 			String where = DatabaseOpenHelper._ID + " = '" + docId + "'";
 			String where2 = DatabaseOpenHelper._ID + " = '" + docId + "' and " + DatabaseOpenHelper.READER_COUNT + " IS NULL";
 
+			
+			
+			
 
 			if(!pmid.isEmpty()){
 				toProcess = true;
