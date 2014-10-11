@@ -949,7 +949,7 @@ public class DocumentsDetailsActivity extends Activity  {
 		ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
 
 		isInternetPresent = connectionDetector.isConnectingToInternet();
-Log.d(Globalconstant.TAG, "ISTOSYNC: " + isToSync);
+
 		if(isInternetPresent){
 			if(isToSync == true){
 				getContentResolver().delete(MyContentProvider.CONTENT_URI_DELETE_DATA_BASE,null, null);			
@@ -997,7 +997,7 @@ Log.d(Globalconstant.TAG, "ISTOSYNC: " + isToSync);
 					session.savePreferences("access_token", json.getString("access_token"));
 					session.savePreferences("expires_in", json.getString("expires_in"));
 					session.savePreferences("refresh_token", json.getString("refresh_token"));
-					Log.d(Globalconstant.TAG, "ISTOSYNC: " + isToSync);
+			
 					if(isToSync == true){
 						//Get data from server
 						syncData();

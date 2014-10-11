@@ -2,16 +2,13 @@ package com.mendeleypaperreader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import com.mendeleypaperreader.utl.ConnectionDetector;
 import com.mendeleypaperreader.utl.GetAccessToken;
 import com.mendeleypaperreader.utl.Globalconstant;
@@ -120,7 +117,6 @@ public class DetailsActivity extends FragmentActivity {
 		protected void onPreExecute() {
 			code = session.LoadPreference("Code");
 			refresh_token = session.LoadPreference("refresh_token");
-
 		}
 
 
@@ -129,25 +125,15 @@ public class DetailsActivity extends FragmentActivity {
 
 			if (json != null) {
 				try {
-					String token = json.getString("access_token");
-					String expire = json.getString("expires_in");
-					String refresh = json.getString("refresh_token");
-
+					
 					// Save access token in shared preferences
 					session.savePreferences("access_token", json.getString("access_token"));
 					session.savePreferences("expires_in", json.getString("expires_in"));
 					session.savePreferences("refresh_token", json.getString("refresh_token"));
 
-
 					//Get data from server
 					syncData();
-
-					if (Globalconstant.LOG) {
-						Log.d("refresh_token - Token Access", token);
-						Log.d("refresh_token - Expire", expire);
-						Log.d("refresh_token - Refresh", refresh);			
-					}
-
+					
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

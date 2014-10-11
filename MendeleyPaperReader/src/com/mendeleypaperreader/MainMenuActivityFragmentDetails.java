@@ -47,8 +47,6 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	public static MainMenuActivityFragmentDetails newInstance(int index , String description) {
 		MainMenuActivityFragmentDetails f = new MainMenuActivityFragmentDetails();
 
-		Log.d(Globalconstant.TAG, "dd - " + f);
-		
 		// Supply index input as an argument.
 		Bundle args = new Bundle();
 		args.putInt("index", index);
@@ -80,8 +78,6 @@ public class MainMenuActivityFragmentDetails  extends ListFragment  implements L
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 
-		Log.d(Globalconstant.TAG, "dd" + this);
-		
 		if (container == null) {
 			// We have different layouts, and in one of them this
 			// fragment's containing frame doesn't exist.  The fragment

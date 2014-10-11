@@ -43,7 +43,6 @@ public class MainMenuActivity extends FragmentActivity
 	private static SessionManager session;
 	private Boolean isInternetPresent = false;
 	private String db_uploded_flag ;
-
 	private static String refresh_token;
 	private static String code;
 
@@ -199,23 +198,15 @@ public class MainMenuActivity extends FragmentActivity
 					String expire = json.getString("expires_in");
 					String refresh = json.getString("refresh_token");
 
-					Log.d("expires_on", session.LoadPreference("expires_on"));
 					
 					// Save access token in shared preferences
 					session.savePreferences("access_token", json.getString("access_token"));
 					session.savePreferences("expires_in", json.getString("expires_in"));
 					session.savePreferences("refresh_token", json.getString("refresh_token"));
 					
-					
 					Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
-					Log.d(Globalconstant.TAG, "TIME: " + calendar.getTime().toString());
 					calendar.add(Calendar.SECOND, 3600);
-					
-					
-					Log.d(Globalconstant.TAG,"expires_on_new: "+ calendar.getTime().toString());
 					session.savePreferences("expires_on", calendar.getTime().toString());
-					
-					
 					
 					//Get data from server
 					syncData();

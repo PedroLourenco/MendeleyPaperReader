@@ -103,7 +103,6 @@ public class SyncDataAsync extends AsyncTask<String,Integer,String> {
 	publishProgress((int) (4 / ((float) 6) * 100));
 	load.getCatalogId();
 	publishProgress((int) (5 / ((float) 6) * 100));
-	
 	load.getFiles(Globalconstant.get_files + access_token);
 	publishProgress((int) (6 / ((float) 5.6) * 100));
 	

@@ -59,9 +59,6 @@ public class GetAccessToken {
 	    httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
 	    httpPost.setEntity(new UrlEncodedFormEntity(params));
 	    
-	    Log.e(Globalconstant.TAG, "httpPost: "+ httpPost);
-	    
-	    
 	    HttpResponse httpResponse = httpClient.execute(httpPost);
 	    HttpEntity httpEntity = httpResponse.getEntity();
 	    is = httpEntity.getContent();
@@ -87,14 +84,14 @@ public class GetAccessToken {
 	} catch (Exception e) {
 	    e.getMessage();
 	    if (Globalconstant.LOG)
-		Log.e(Globalconstant.TAG, "Error converting result " + e.toString());
+	    	Log.e(Globalconstant.TAG, "Error converting result " + e.toString());
 	}
 	// Parse the String to a JSON Object
 	try {
 	    jObj = new JSONObject(json);
 	} catch (JSONException e) {
 	    if (Globalconstant.LOG)
-		Log.e(Globalconstant.TAG, "Error parsing data " + e.toString());
+	    	Log.e(Globalconstant.TAG, "Error parsing data " + e.toString());
 	}
 	// Return JSON String
 	return jObj;
@@ -116,9 +113,6 @@ public class GetAccessToken {
 	    params.add(new BasicNameValuePair("refresh_token", refresh_token));
 	    httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
 	    httpPost.setEntity(new UrlEncodedFormEntity(params));
-	    
-	    Log.e(Globalconstant.TAG, "httpPost: "+ httpPost);
-	    
 	    
 	    HttpResponse httpResponse = httpClient.execute(httpPost);
 	    HttpEntity httpEntity = httpResponse.getEntity();

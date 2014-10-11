@@ -33,7 +33,6 @@ import com.mendeleypaperreader.db.DatabaseOpenHelper;
 public class LoadData {
 
 	private Context context;
-	//private String doc_detail_id;
 	private static SessionManager session;
 	private static String access_token;
 	public LoadData(Context context) {
@@ -214,9 +213,7 @@ public class LoadData {
 					}else{
 						docTitle = "";
 						values.put(DatabaseOpenHelper.TITLE, docTitle);
-					}
-					
-					Log.d(Globalconstant.TAG, "TITLE: " + docTitle);
+					}	
 
 					if(temp.has(Globalconstant.TYPE)){
 						values.put(DatabaseOpenHelper.TYPE,temp.get(Globalconstant.TYPE).asText());
@@ -256,13 +253,7 @@ public class LoadData {
 					}else{
 						values.put(DatabaseOpenHelper.SOURCE, "");
 					}
-					/*
-					if(temp.has(Globalconstant.REVISION)){
-						values.put(DatabaseOpenHelper.REVISION,temp.get(Globalconstant.REVISION).asText());
-					}else{
-						values.put(DatabaseOpenHelper.REVISION, "");
-					}
-					 */
+					
 					if(temp.has(Globalconstant.PAGES)){
 						values.put(DatabaseOpenHelper.PAGES, temp.get(Globalconstant.PAGES).asText());
 					}else{
@@ -279,54 +270,7 @@ public class LoadData {
 					}else{
 						values.put(DatabaseOpenHelper.ISSUE, "");
 					}
-					//if(temp.has(Globalconstant.WEBSITE)){
-					//	values.put(DatabaseOpenHelper.WEBSITE, temp.get(Globalconstant.WEBSITE).asText());
-					//}else{
-					//	values.put(DatabaseOpenHelper.WEBSITE, "");
-					//
-					/*
-					if(temp.has(Globalconstant.PUBLISHER)){
-						values.put(DatabaseOpenHelper.PUBLISHER, temp.get(Globalconstant.PUBLISHER).asText());
-					}else{
-						values.put(DatabaseOpenHelper.PUBLISHER, "");
-					}
-
-					if(temp.has(Globalconstant.CITY)){
-						values.put(DatabaseOpenHelper.CITY, temp.get(Globalconstant.CITY).asText());
-					}else{
-						values.put(DatabaseOpenHelper.CITY, "");
-					}
-
-					if(temp.has(Globalconstant.EDITION)){
-						values.put(DatabaseOpenHelper.EDITION, temp.get(Globalconstant.EDITION).asText());
-					}else{
-						values.put(DatabaseOpenHelper.EDITION, "");
-					}
-
-					if(temp.has(Globalconstant.INSTITUTION)){
-						values.put(DatabaseOpenHelper.INSTITUTION, temp.get(Globalconstant.INSTITUTION).asText());
-					}else{
-						values.put(DatabaseOpenHelper.INSTITUTION, "");
-					}
-
-					if(temp.has(Globalconstant.SERIES)){
-						values.put(DatabaseOpenHelper.SERIES, temp.get(Globalconstant.SERIES).asText());
-					}else{
-						values.put(DatabaseOpenHelper.SERIES, "");
-					}
-
-					if(temp.has(Globalconstant.EDITORS)){
-						values.put(DatabaseOpenHelper.EDITORS, temp.get(Globalconstant.EDITORS).asText());
-					}else{
-						values.put(DatabaseOpenHelper.EDITORS, "");
-					}
-
-					if(temp.has(Globalconstant.READ)){
-						values.put(DatabaseOpenHelper.READ, temp.get(Globalconstant.READ).asText());
-					}else{
-						values.put(DatabaseOpenHelper.READ, "");
-					}
-					 */
+					
 					if(temp.has(Globalconstant.STARRED)){
 						values.put(DatabaseOpenHelper.STARRED, temp.get(Globalconstant.STARRED).asText());
 					}else{
@@ -338,18 +282,7 @@ public class LoadData {
 					}else{
 						values.put(DatabaseOpenHelper.AUTHORED, "");
 					}
-					/*
-					if(temp.has(Globalconstant.CONFIRMED)){
-						values.put(DatabaseOpenHelper.CONFIRMED, temp.get(Globalconstant.CONFIRMED).asText());
-					}else{
-						values.put(DatabaseOpenHelper.CONFIRMED, "");
-					}
-					if(temp.has(Globalconstant.HIDDEN)){
-						values.put(DatabaseOpenHelper.HIDDEN, temp.get(Globalconstant.HIDDEN).asText());
-					}else{
-						values.put(DatabaseOpenHelper.HIDDEN, "");
-					}
-					 */
+					
 					if(temp.has(Globalconstant.ABSTRACT)){
 						values.put(DatabaseOpenHelper.ABSTRACT, temp.get(Globalconstant.ABSTRACT).asText());
 					}else{
@@ -361,9 +294,6 @@ public class LoadData {
 					if(temp.has(Globalconstant.AUTHORS)){	
 						Iterator<JsonNode> authorsIterator = temp.get(Globalconstant.AUTHORS).elements();
 						String authors = "";
-						Log.d(Globalconstant.TAG, "authorsIterator: " + authorsIterator);
-						Log.d(Globalconstant.TAG, "AUTHORS: " + temp.get(Globalconstant.AUTHORS));
-						
 						String aux_surname = null, aux_forenamed = null;
 						
 						while (authorsIterator.hasNext() ){
@@ -372,13 +302,18 @@ public class LoadData {
 							
 							if(author.has(Globalconstant.FORENAME)){
 								aux_forenamed = author.get(Globalconstant.FORENAME).asText();
-								Log.d(Globalconstant.TAG, "aux_forenamed: " + aux_forenamed);
+								
+							}else{
+								aux_forenamed = "";
 							}
 									
 							if(author.has(Globalconstant.SURNAME)){
 								aux_surname = author.get(Globalconstant.SURNAME).asText();
-								Log.d(Globalconstant.TAG, "aux_forenamed: " + aux_surname);
-							}		
+								
+							}
+							else{
+								aux_surname = "";
+							}
 							
 							author.get(Globalconstant.SURNAME);
 
@@ -397,10 +332,6 @@ public class LoadData {
 						values.put(DatabaseOpenHelper.AUTHORS, "");
 					}
 
-					//"identifiers":{"pmid":"17319744","doi":"10.1371/journal.pgen.0030007","issn":"1553-7404"}
-					//String pmid = "";
-					//String doi = "";
-					//String issn = "";
 
 					if(temp.has(Globalconstant.IDENTIFIERS)){	
 
@@ -477,7 +408,6 @@ public class LoadData {
 					}else{
 						values.put(DatabaseOpenHelper.FOLDER_ID, "");
 						values.put(DatabaseOpenHelper.DOC_DETAILS_ID, "");
-
 					}
 					Uri uri = this.context.getContentResolver().insert(MyContentProvider.CONTENT_URI_FOLDERS_DOCS, values);
 
@@ -526,7 +456,8 @@ public class LoadData {
 		while(cursorDocs.moveToNext()){
 
 			String docId = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper._ID));
-			String pmid = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.PMID));
+			String auxPmid = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.PMID));
+			String pmid = URLEncoder.encode(auxPmid);
 			String auxDoi = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.DOI));
 			String doi = URLEncoder.encode(auxDoi);
 			String auxIssn = cursorDocs.getString(cursorDocs.getColumnIndex(DatabaseOpenHelper.ISSN));
@@ -541,9 +472,7 @@ public class LoadData {
 			String where = DatabaseOpenHelper._ID + " = '" + docId + "'";
 			String where2 = DatabaseOpenHelper._ID + " = '" + docId + "' and " + DatabaseOpenHelper.READER_COUNT + " IS NULL";
 
-			
-			
-			
+
 
 			if(!pmid.isEmpty()){
 				toProcess = true;
@@ -604,7 +533,6 @@ public class LoadData {
 								values.put(DatabaseOpenHelper.READER_COUNT, temp.get("reader_count").asText());
 							}
 
-
 							//update table			
 							this.context.getContentResolver().update(uri_, values, where, null);				
 
@@ -645,8 +573,7 @@ public class LoadData {
 
 
 		JSONParser jParser = new JSONParser();
-		ObjectMapper mapper = new ObjectMapper();
-		JsonFactory factory = mapper.getFactory(); 
+		ObjectMapper mapper = new ObjectMapper(); 
 		List<InputStream> link = new ArrayList<InputStream>();
 		link = jParser.getJACKSONFromUrl(url,true);
 
