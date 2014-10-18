@@ -1,4 +1,4 @@
-package com.mendeleypaperreader.utl;
+package com.mendeleypaperreader.sessionManager;
 
 import android.content.Context;
 import android.content.SharedPreferences;

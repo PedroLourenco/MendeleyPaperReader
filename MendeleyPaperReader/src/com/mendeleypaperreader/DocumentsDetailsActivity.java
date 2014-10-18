@@ -38,14 +38,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.mendeleypaperreader.contentProvider.MyContentProvider;
 import com.mendeleypaperreader.db.DatabaseOpenHelper;
+import com.mendeleypaperreader.jsonParser.SyncDataAsync;
+import com.mendeleypaperreader.sessionManager.GetAccessToken;
+import com.mendeleypaperreader.sessionManager.SessionManager;
 import com.mendeleypaperreader.utl.ConnectionDetector;
 import com.mendeleypaperreader.utl.DownloaderThread;
-import com.mendeleypaperreader.utl.GetAccessToken;
 import com.mendeleypaperreader.utl.Globalconstant;
-import com.mendeleypaperreader.utl.MyContentProvider;
-import com.mendeleypaperreader.utl.SessionManager;
-import com.mendeleypaperreader.utl.SyncDataAsync;
 
 /**
  * Classname: DocumentsDetailsActivity 

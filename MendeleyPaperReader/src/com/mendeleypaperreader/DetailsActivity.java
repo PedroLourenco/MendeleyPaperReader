@@ -9,12 +9,13 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.mendeleypaperreader.contentProvider.MyContentProvider;
+import com.mendeleypaperreader.jsonParser.SyncDataAsync;
+import com.mendeleypaperreader.sessionManager.GetAccessToken;
+import com.mendeleypaperreader.sessionManager.SessionManager;
 import com.mendeleypaperreader.utl.ConnectionDetector;
-import com.mendeleypaperreader.utl.GetAccessToken;
 import com.mendeleypaperreader.utl.Globalconstant;
-import com.mendeleypaperreader.utl.MyContentProvider;
-import com.mendeleypaperreader.utl.SessionManager;
-import com.mendeleypaperreader.utl.SyncDataAsync;
 
 /**
  * Classname: DetailsActivity 

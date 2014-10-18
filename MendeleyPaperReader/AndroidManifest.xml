@@ -61,7 +61,7 @@
         </activity>
 
         <provider
-            android:name=".utl.MyContentProvider"
+            android:name="com.mendeleypaperreader.contentProvider.MyContentProvider"
             android:authorities="com.android.mendeleypaperreader.utl.MyContentProvider"
             android:exported="false" />
 

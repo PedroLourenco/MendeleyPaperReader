@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Message;
 import com.mendeleypaperreader.DocumentsDetailsActivity;
 import com.mendeleypaperreader.R;
+import com.mendeleypaperreader.contentProvider.MyContentProvider;
 import com.mendeleypaperreader.db.DatabaseOpenHelper;
 
 /**

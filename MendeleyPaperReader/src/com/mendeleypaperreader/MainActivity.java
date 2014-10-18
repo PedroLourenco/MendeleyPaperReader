@@ -27,10 +27,10 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.mendeleypaperreader.sessionManager.GetAccessToken;
+import com.mendeleypaperreader.sessionManager.SessionManager;
 import com.mendeleypaperreader.utl.ConnectionDetector;
-import com.mendeleypaperreader.utl.GetAccessToken;
 import com.mendeleypaperreader.utl.Globalconstant;
-import com.mendeleypaperreader.utl.SessionManager;
 
 /**
  * Classname: MainActivity 

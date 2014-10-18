@@ -1,4 +1,4 @@
-package com.mendeleypaperreader.utl;
+package com.mendeleypaperreader.jsonParser;
 
 import java.io.IOException;
 
@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mendeleypaperreader.R;
+import com.mendeleypaperreader.sessionManager.SessionManager;
+import com.mendeleypaperreader.utl.Globalconstant;
 
 
 public class SyncDataAsync extends AsyncTask<String,Integer,String> {

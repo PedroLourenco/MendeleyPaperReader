@@ -10,8 +10,8 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import com.mendeleypaperreader.adapter.ListTitleAdapter;
 import com.mendeleypaperreader.adapter.MergeAdapter;
+import com.mendeleypaperreader.contentProvider.MyContentProvider;
 import com.mendeleypaperreader.db.DatabaseOpenHelper;
-import com.mendeleypaperreader.utl.MyContentProvider;
 
 public class ReadersActivity extends ListActivity {
 
